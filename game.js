@@ -148,7 +148,6 @@ ctx.fillText("🚀", 0, 0);
 ctx.restore();
 }
 
-// Astronaut als Emoji (kein Bild)
 function drawAstronaut() {
 ctx.font = "40px Arial";
 ctx.textAlign = "left";
