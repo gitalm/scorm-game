@@ -1,26 +1,22 @@
 [
-  {
-    "question": "Was ist $\\log_2(8)$?",
-    "answers": ["2", "3", "4"],
-    "correctAnswer": 1,
-    "explanation": "Denn $2^3 = 8$."
-  },
-  {
-    "question": "Löse $2x + 3 = 7$",
-    "answers": ["x = 1", "x = 2", "x = 3"],
-    "correctAnswer": 1,
-    "explanation": "$2x = 4 \\rightarrow x = 2$."
-  },
-  {
-    "question": "Was ist $\\sqrt{64}$?",
-    "answers": ["7", "8", "9"],
-    "correctAnswer": 1,
-    "explanation": "Denn $8 \\times 8 = 64$."
-  },
-  {
-    "question": "Berechne $3!$",
-    "answers": ["6", "18", "720"],
-    "correctAnswer": 0,
-    "explanation": "$3! = 3 \\times 2 \\times 1 = 6$."
-  }
+  { "question": "Was ist $\\frac{1}{2} + \\frac{1}{2}$?", "answers": ["1", "$\\frac{1}{4}$", "2"], "correctAnswer": 0, "explanation": "Zwei Hälften ergeben ein Ganzes: $1$." },
+  { "question": "Was ist $\\frac{1}{4} + \\frac{1}{4}$?", "answers": ["$\\frac{1}{8}$", "$\\frac{1}{2}$", "$\\frac{2}{8}$"], "correctAnswer": 1, "explanation": "$\\frac{1}{4} + \\frac{1}{4} = \\frac{2}{4}$, gekürzt $\\frac{1}{2}$." },
+  { "question": "Berechne: $\\frac{3}{4} - \\frac{1}{4}$?", "answers": ["$\\frac{1}{4}$", "$\\frac{1}{2}$", "$\\frac{4}{4}$"], "correctAnswer": 1, "explanation": "$\\frac{3}{4} - \\frac{1}{4} = \\frac{2}{4} = \\frac{1}{2}$." },
+  { "question": "Was ist das Doppelte von $\\frac{1}{2}$?", "answers": ["$\\frac{1}{4}$", "1", "2"], "correctAnswer": 1, "explanation": "$2 \\times \\frac{1}{2} = \\frac{2}{2} = 1$." },
+  { "question": "Was ist $\\frac{1}{3} + \\frac{1}{3}$?", "answers": ["$\\frac{2}{6}$", "$\\frac{2}{3}$", "1"], "correctAnswer": 1, "explanation": "Die Zähler werden addiert: $\\frac{1+1}{3} = \\frac{2}{3}$." },
+  { "question": "Berechne: $1 - \\frac{1}{4}$", "answers": ["$\\frac{1}{4}$", "$\\frac{3}{4}$", "$\\frac{4}{1}$"], "correctAnswer": 1, "explanation": "$1$ Ganzes sind $\\frac{4}{4}$. $\\frac{4}{4} - \\frac{1}{4} = \\frac{3}{4}$." },
+  { "question": "Was ist $\\frac{1}{2} \\times \\frac{1}{2}$?", "answers": ["1", "$\\frac{1}{4}$", "$\\frac{2}{4}$"], "correctAnswer": 1, "explanation": "Zähler mal Zähler, Nenner mal Nenner: $\\frac{1 \\times 1}{2 \\times 2} = \\frac{1}{4}$." },
+  { "question": "Was ist die Hälfte von $\\frac{1}{2}$?", "answers": ["$\\frac{1}{4}$", "1", "$\\frac{2}{4}$"], "correctAnswer": 0, "explanation": "$\\frac{1}{2} : 2 = \\frac{1}{4}$." },
+  { "question": "Berechne: $\\frac{2}{5} + \\frac{1}{5}$", "answers": ["$\\frac{3}{10}$", "$\\frac{3}{5}$", "$\\frac{2}{25}$"], "correctAnswer": 1, "explanation": "$\\frac{2+1}{5} = \\frac{3}{5}$." },
+  { "question": "Was ergibt $\\frac{5}{5}$?", "answers": ["0", "1", "5"], "correctAnswer": 1, "explanation": "Wenn Zähler und Nenner gleich sind, ist der Wert $1$." },
+  { "question": "Was ist $\\frac{3}{8} + \\frac{1}{8}$?", "answers": ["$\\frac{4}{16}$", "$\\frac{1}{2}$", "$\\frac{1}{4}$"], "correctAnswer": 1, "explanation": "$\\frac{3+1}{8} = \\frac{4}{8} = \\frac{1}{2}$." },
+  { "question": "Berechne: $\\frac{1}{2} \\times 4$", "answers": ["2", "$\\frac{1}{8}$", "$\\frac{4}{8}$"], "correctAnswer": 0, "explanation": "$\\frac{1}{2}$ von $4$ ist $2$." },
+  { "question": "Was ist $\\frac{10}{2}$?", "answers": ["20", "5", "12"], "correctAnswer": 1, "explanation": "Der Bruchstrich ist ein Geteilt-Zeichen: $10 : 2 = 5$." },
+  { "question": "Berechne: $\\frac{2}{3} - \\frac{1}{3}$", "answers": ["$\\frac{1}{3}$", "$\\frac{1}{0}$", "1"], "correctAnswer": 0, "explanation": "$\\frac{2-1}{3} = \\frac{1}{3}$." },
+  { "question": "Was ist $\\frac{1}{2} + \\frac{1}{4}$?", "answers": ["$\\frac{2}{6}$", "$\\frac{3}{4}$", "$\\frac{2}{4}$"], "correctAnswer": 1, "explanation": "$\\frac{1}{2} = \\frac{2}{4}$. Dann: $\\frac{2}{4} + \\frac{1}{4} = \\frac{3}{4}$." },
+  { "question": "Was ist $\\frac{3}{4} + \\frac{1}{4}$?", "answers": ["1", "$\\frac{4}{8}$", "$\\frac{1}{2}$"], "correctAnswer": 0, "explanation": "$\\frac{3+1}{4} = \\frac{4}{4} = 1$." },
+  { "question": "Berechne: $2 - \\frac{1}{2}$", "answers": ["$\\frac{1}{2}$", "$\\frac{3}{2}$", "1"], "correctAnswer": 1, "explanation": "$2$ Ganze sind $\\frac{4}{2}$. $\\frac{4}{2} - \\frac{1}{2} = \\frac{3}{2}$ ($1,5$)." },
+  { "question": "Was ist $\\frac{1}{5} \\times 5$?", "answers": ["$\\frac{1}{25}$", "1", "5"], "correctAnswer": 1, "explanation": "$\\frac{5}{5} = 1$." },
+  { "question": "Was ist $\\frac{4}{12}$ gekürzt?", "answers": ["$\\frac{1}{2}$", "$\\frac{1}{3}$", "$\\frac{1}{4}$"], "correctAnswer": 1, "explanation": "Beide durch 4 teilen: $\\frac{1}{3}$." },
+  { "question": "Berechne: $\\frac{1}{3} \\times \\frac{1}{2}$", "answers": ["$\\frac{2}{3}$", "$\\frac{1}{5}$", "$\\frac{1}{6}$"], "correctAnswer": 2, "explanation": "Nenner multiplizieren: $3 \\times 2 = 6$, also $\\frac{1}{6}$." }
 ]
