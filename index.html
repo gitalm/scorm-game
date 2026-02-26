@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>Mathe-Raketen-Spiel</title>
-    <link rel="stylesheet" href="katex.min.css">
+    <link rel="stylesheet" href="katex/katex.min.css" /> <!-- Optional für Mathe -->
     <style>
         body {
             margin: 0;
@@ -24,15 +24,17 @@
         }
         #questionDisplay {
             position: absolute;
-            top: 20px;
+            top: 60px;
             left: 50%;
             transform: translateX(-50%);
             color: white;
-            font-size: 20px;
+            font-size: 24px;
             background-color: rgba(0, 0, 0, 0.7);
             padding: 10px;
             border-radius: 10px;
             text-shadow: 0 0 5px #fff;
+            min-width: 300px;
+            text-align: center;
         }
     </style>
 </head>
@@ -40,8 +42,7 @@
     <div id="scoreDisplay">Punkte: 0</div>
     <div id="questionDisplay"></div>
     <canvas id="gameCanvas" width="800" height="600"></canvas>
-
-    <script src="katex.min.js"></script>
+    <script src="katex/katex.min.js"></script> <!-- Optional für Mathe -->
     <script src="game.js"></script>
 </body>
 </html>
