@@ -1,9 +1,14 @@
 [
-  { "question": "Was ist $\\frac{1}{2} + \\frac{1}{2}$?", "answers": ["$1$", "$\\frac{1}{4}$", "$2$"], "correctAnswer": 0, "explanation": "Zwei Hälften ergeben ein Ganzes: $1$." },
-  { "question": "Was ist $\\frac{1}{4} + \\frac{1}{4}$?", "answers": ["$\\frac{1}{8}$", "$\\frac{1}{2}$", "$\\frac{2}{8}$"], "correctAnswer": 1, "explanation": "$\\frac{1}{4} + \\frac{1}{4} = \\frac{2}{4}$, gekürzt $\\frac{1}{2}$." },
-  { "question": "Berechne: $\\frac{3}{4} - \\frac{1}{4}$?", "answers": ["$\\frac{1}{4}$", "$\\frac{1}{2}$", "$\\frac{4}{4}$"], "correctAnswer": 1, "explanation": "$\\frac{3}{4} - \\frac{1}{4} = \\frac{2}{4} = \\frac{1}{2}$." },
-  { "question": "Was ist das Doppelte von $\\frac{1}{2}$?", "answers": ["$\\frac{1}{4}$", "$1$", "$2$"], "correctAnswer": 1, "explanation": "$2 \\cdot \\frac{1}{2} = \\frac{2}{2} = 1$." },
-  { "question": "Was ist $\\frac{1}{3} + \\frac{1}{3}$?", "answers": ["$\\frac{2}{6}$", "$\\frac{2}{3}$", "$1$"], "correctAnswer": 1, "explanation": "Die Zähler werden addiert: $\\frac{1+1}{3} = \\frac{2}{3}$." },
-  { "question": "Was ist $\\frac{1}{2} \\cdot \\frac{1}{2}$?", "answers": ["$1$", "$\\frac{1}{4}$", "$\\frac{2}{4}$"], "correctAnswer": 1, "explanation": "Zähler mal Zähler, Nenner mal Nenner: $\\frac{1 \\cdot 1}{2 \\cdot 2} = \\frac{1}{4}$." },
-  { "question": "Was ist $\\frac{4}{12}$ gekürzt?", "answers": ["$\\frac{1}{2}$", "$\\frac{1}{3}$", "$\\frac{1}{4}$"], "correctAnswer": 1, "explanation": "Beide durch 4 teilen ergibt $\\frac{1}{3}$." }
+  { 
+    "question": "Was ist $\\frac{1}{2} + \\frac{1}{2}$?", 
+    "answers": ["$1$", "$\\frac{1}{4}$", "$2$"], 
+    "correctAnswer": 0, 
+    "explanation": "Zwei Hälften ergeben ein Ganzes: $1$." 
+  },
+  { 
+    "question": "Was ist $\\frac{1}{4} + \\frac{1}{4}$?", 
+    "answers": ["$\\frac{1}{8}$", "$\\frac{1}{2}$", "$\\frac{2}{8}$"], 
+    "correctAnswer": 1, 
+    "explanation": "$\\frac{1}{4} + \\frac{1}{4} = \\frac{2}{4} = \\frac{1}{2}$." 
+  }
 ]

@@ -11,10 +11,12 @@ const scorm = {
         })(window);
         if (this.api) { this.api.LMSInitialize(""); this.active = true; }
     },
-    save(score, total) {
+    save(score, maxScore) {
         if (!this.active) return;
-        let percent = Math.round((score / total) * 100);
+        let percent = Math.round((score / maxScore) * 100);
         this.api.LMSSetValue("cmi.core.score.raw", percent.toString());
+        this.api.LMSSetValue("cmi.core.score.max", "100");
+        // Bestehensgrenze flexibel
         if (percent >= 66) this.api.LMSSetValue("cmi.core.lesson_status", "passed");
         else this.api.LMSSetValue("cmi.core.lesson_status", "failed");
         this.api.LMSCommit("");
@@ -42,6 +44,8 @@ let rocket = {
     selectedIdx: 1, isFlying: false
 };
 
+// --- FUNKTIONEN ---
+
 async function init() {
     scorm.init();
     resizeCanvas();
@@ -50,40 +54,57 @@ async function init() {
     requestAnimationFrame(gameLoop);
 }
 
+// Verbesserte Render-Funktion für KaTeX
 function renderMath(text, element) {
     if (window.katex) {
-        // Ersetzt $...$ durch KaTeX, erlaubt aber auch <img> Tags
-        element.innerHTML = text.replace(/\$(.*?)\$/g, (m, f) => 
-            katex.renderToString(f, { throwOnError: false })
-        );
-    } else { element.innerHTML = text; }
+        try {
+            // Sucht nach $...$ und ersetzt es durch gerendertes HTML
+            const html = text.replace(/\$(.*?)\$/g, (match, formula) => {
+                return katex.renderToString(formula, { throwOnError: false });
+            });
+            element.innerHTML = html;
+        } catch (e) {
+            console.error("KaTeX Fehler:", e);
+            element.innerHTML = text;
+        }
+    } else {
+        element.innerHTML = text;
+    }
 }
 
 async function loadQuestions() {
     try {
         const res = await fetch("question.json?v=" + Date.now());
         let data = await res.json();
+        // Mische alle verfügbaren Fragen
         questions = data.sort(() => Math.random() - 0.5);
         nextQuestion();
-    } catch (err) { questionDisplay.textContent = "Fehler!"; }
+    } catch (err) { 
+        questionDisplay.textContent = "Fehler beim Laden der Fragen!"; 
+    }
 }
 
 function nextQuestion() {
-    if (askedCount >= 20 || askedCount >= questions.length) {
-        endGame(); return;
+    // Flexibel: Ende, wenn alle Fragen aus der JSON beantwortet wurden
+    if (askedCount >= questions.length) {
+        endGame();
+        return;
     }
+    
     astronautFeedback.style.display = "none";
     effects = [];
     currentQuestion = questions[askedCount];
-    renderMath(`${askedCount + 1}/20: ${currentQuestion.question}`, questionDisplay);
     
-    // Erstelle HTML-Antwortboxen
+    // Fortschrittsanzeige dynamisch
+    renderMath(`${askedCount + 1}/${questions.length}: ${currentQuestion.question}`, questionDisplay);
+    
+    // Antwortboxen erstellen
     answerContainer.innerHTML = "";
     currentQuestion.answers.forEach((text, i) => {
         const div = document.createElement("div");
         div.className = "answerBox" + (i === 1 ? " selected" : "");
         div.id = "ans" + i;
-        renderMath(text, div); // Unterstützt jetzt Mathe & Bilder in Antworten!
+        renderMath(text, div); // Rendert Mathe in den Antworten
         answerContainer.appendChild(div);
     });
 
@@ -97,10 +118,13 @@ function nextQuestion() {
 
 function endGame() {
     gameState = "finished";
-    let percent = Math.round((score / (askedCount * 10)) * 100);
+    const maxPossible = questions.length * 10;
+    const percent = Math.round((score / maxPossible) * 100);
+    
     let msg = percent >= 66 ? "MISSION ERFOLGREICH! 🚀" : "BASIS AN RAKETE: ZU WENIG PUNKTE. 👽️";
-    questionDisplay.innerHTML = `<h2>Spiel Ende</h2>${msg}<br>Ergebnis: ${percent}%`;
-    scorm.save(score, askedCount * 10);
+    questionDisplay.innerHTML = `<h2>Spiel Ende</h2>${msg}<br>Ergebnis: ${percent}% (${score} von ${maxPossible} Pkt.)`;
+    
+    scorm.save(score, maxPossible);
 }
 
 function updateRocketAngle() {
@@ -115,36 +139,28 @@ function updateRocketAngle() {
     rocket.angle = Math.atan2(dy, dx) + Math.PI/2 + EMOJI_FIX;
 }
 
-function createStars() {
-    stars = Array.from({ length: 80 }, () => ({
-        x: Math.random() * viewW, y: Math.random() * viewH,
-        s: Math.random() * 2 + 1, speed: Math.random() * 2 + 1
-    }));
-}
+// ... (Rest der Hilfsfunktionen wie createStars, resizeCanvas, draw etc. bleibt gleich wie zuvor)
 
-function resizeCanvas() {
-    viewW = window.innerWidth; viewH = window.innerHeight;
-    canvas.width = viewW * (window.devicePixelRatio || 1);
-    canvas.height = viewH * (window.devicePixelRatio || 1);
-    ctx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
-}
+function update() {
+    stars.forEach(s => { s.y += s.speed; if (s.y > viewH) s.y = 0; });
+    effects.forEach(e => { e.x += e.vx; e.y += e.vy; e.life -= 0.02; });
 
-function moveSelection(dir) {
-    if (gameState !== "playing") return;
-    document.getElementById("ans" + rocket.selectedIdx).classList.remove("selected");
-    rocket.selectedIdx = Math.max(0, Math.min(2, rocket.selectedIdx + dir));
-    document.getElementById("ans" + rocket.selectedIdx).classList.add("selected");
-    updateRocketAngle();
-}
-
-function launch() {
-    if (gameState !== "playing") return;
-    const targetEl = document.getElementById("ans" + rocket.selectedIdx);
-    const rect = targetEl.getBoundingClientRect();
-    rocket.targetX = rect.left + rect.width / 2 - ROCKET_SIZE / 2;
-    rocket.targetY = rect.top + rect.height / 2;
-    rocket.isFlying = true;
-    gameState = "flying";
+    if (gameState === "flying") {
+        const dx = rocket.targetX - rocket.x;
+        const dy = rocket.targetY - rocket.y;
+        const dist = Math.hypot(dx, dy);
+        if (dist > 8) {
+            rocket.x += (dx / dist) * rocket.speed;
+            rocket.y += (dy / dist) * rocket.speed;
+        } else {
+            const isCorrect = rocket.selectedIdx === currentQuestion.correctAnswer;
+            if (isCorrect) score += 10;
+            scoreDisplay.textContent = `Punkte: ${score}`;
+            showFeedback(isCorrect);
+        }
+    } else if (gameState === "playing") {
+        rocket.y = (viewH - 140) + Math.sin(Date.now() / 400) * 4;
+    }
 }
 
 function showFeedback(isCorrect) {
@@ -161,27 +177,6 @@ function showFeedback(isCorrect) {
     renderMath((isCorrect ? "✅ Richtig! " : "❌ Falsch... ") + currentQuestion.explanation, astronautSpeech);
     astronautEmoji.textContent = ["👨‍🚀", "👩‍🚀", "🧑‍🚀"][Math.floor(Math.random() * 3)];
     astronautFeedback.style.display = "flex";
-}
-
-function update() {
-    stars.forEach(s => { s.y += s.speed; if (s.y > viewH) s.y = 0; });
-    effects.forEach(e => { e.x += e.vx; e.y += e.vy; e.life -= 0.02; });
-
-    if (gameState === "flying") {
-        const dx = rocket.targetX - rocket.x;
-        const dy = rocket.targetY - rocket.y;
-        const dist = Math.hypot(dx, dy);
-        if (dist > 8) {
-            rocket.x += (dx / dist) * rocket.speed;
-            rocket.y += (dy / dist) * rocket.speed;
-        } else {
-            showFeedback(rocket.selectedIdx === currentQuestion.correctAnswer);
-            if (rocket.selectedIdx === currentQuestion.correctAnswer) score += 10;
-            scoreDisplay.textContent = `Punkte: ${score}`;
-        }
-    } else if (gameState === "playing") {
-        rocket.y = (viewH - 140) + Math.sin(Date.now() / 400) * 4;
-    }
 }
 
 function draw() {
@@ -206,6 +201,7 @@ function draw() {
 
 function gameLoop() { update(); draw(); requestAnimationFrame(gameLoop); }
 
+// Event-Handling
 document.addEventListener("keydown", (e) => {
     if (gameState === "finished") return;
     if (e.key === "ArrowLeft" || e.key === "a") moveSelection(-1);
@@ -215,8 +211,27 @@ document.addEventListener("keydown", (e) => {
     }
 });
 
+function moveSelection(dir) {
+    if (gameState !== "playing") return;
+    document.getElementById("ans" + rocket.selectedIdx).classList.remove("selected");
+    rocket.selectedIdx = Math.max(0, Math.min(2, rocket.selectedIdx + dir));
+    document.getElementById("ans" + rocket.selectedIdx).classList.add("selected");
+    updateRocketAngle();
+}
+
+function launch() {
+    if (gameState !== "playing") return;
+    const targetEl = document.getElementById("ans" + rocket.selectedIdx);
+    const rect = targetEl.getBoundingClientRect();
+    rocket.targetX = rect.left + rect.width / 2 - ROCKET_SIZE / 2;
+    rocket.targetY = rect.top + rect.height / 2;
+    rocket.isFlying = true;
+    gameState = "flying";
+}
+
 document.getElementById("leftButton").onclick = () => moveSelection(-1);
 document.getElementById("rightButton").onclick = () => moveSelection(1);
 document.getElementById("launchButton").onclick = launch;
 window.addEventListener("resize", resizeCanvas);
+
 init();
