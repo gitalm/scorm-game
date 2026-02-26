@@ -23,29 +23,29 @@ let feedback = { type: null, x: null, y: null, timer: 0 };
 let ufos = []; // UFOs im Hintergrund
 let gameRunning = true;
 
-// Fragen und Antworten
 const questions = [
     {
-        question: "Was ist 2 + 2?",
-        answers: ["3", "4"],
-        correctAnswer: "4"
+        question: "\\frac{1}{2} + \\frac{1}{2} = ?",
+        answers: ["\\frac{1}{4}", "1"],
+        correctAnswer: "1"
     },
     {
-        question: "Was ist 5 * 3?",
-        answers: ["15", "20"],
-        correctAnswer: "15"
+        question: "x^2 = 16 \\Rightarrow x = ?",
+        answers: ["4", "\\pm 4"],
+        correctAnswer: "\\pm 4"
     },
     {
-        question: "Was ist 10 - 7?",
-        answers: ["2", "3"],
-        correctAnswer: "3"
+        question: "\\sqrt{25} = ?",
+        answers: ["4", "5"],
+        correctAnswer: "5"
     },
     {
-        question: "Was ist 8 / 2?",
-        answers: ["3", "4"],
-        correctAnswer: "4"
+        question: "\\int_0^1 x \\, dx = ?",
+        answers: ["\\frac{1}{2}", "1"],
+        correctAnswer: "\\frac{1}{2}"
     }
 ];
+
 
 // Funktion, um eine zufällige Frage auszuwählen
 function getRandomQuestion() {
@@ -255,5 +255,33 @@ document.addEventListener("keydown", (e) => {
 });
 
 // Spiel starten
-placeAnswers();
+function placeAnswers() {
+    answers = [];
+    const question = getRandomQuestion();
+    currentQuestion = question;
+
+    // KaTeX zum Rendern der Frage verwenden
+    katex.render(question.question, questionDisplay, {
+        throwOnError: false
+    });
+
+    // Antworten links und rechts platzieren
+    const answerWidth = 100;
+    const answerHeight = 40;
+    const leftX = canvas.width / 4 - answerWidth / 2;
+    const rightX = (3 * canvas.width) / 4 - answerWidth / 2;
+    const y = canvas.height / 2;
+
+    question.answers.forEach((answer, index) => {
+        answers.push({
+            text: answer,
+            x: index === 0 ? leftX : rightX,
+            y: y,
+            width: answerWidth,
+            height: answerHeight,
+            isCorrect: answer === question.correctAnswer
+        });
+    });
+}
+
 drawGame();

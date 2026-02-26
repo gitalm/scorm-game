@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Mathe-Raketen-Spiel</title>
+    <link rel="stylesheet" href="katex.min.css">
     <style>
         body {
             margin: 0;
@@ -37,8 +38,10 @@
 </head>
 <body>
     <div id="scoreDisplay">Punkte: 0</div>
-    <div id="questionDisplay">Frage erscheint hier...</div>
+    <div id="questionDisplay"></div>
     <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+    <script src="katex.min.js"></script>
     <script src="game.js"></script>
 </body>
 </html>
