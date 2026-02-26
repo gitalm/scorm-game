@@ -1,79 +1,54 @@
 body {
-    margin: 0;
-    overflow: hidden;
+    margin: 0; overflow: hidden;
     background-color: #050510;
-    font-family: sans-serif;
-    touch-action: none;
-    color: white;
+    font-family: sans-serif; touch-action: none; color: white;
 }
 
-#scoreDisplay {
-    position: absolute;
-    bottom: 20px;
-    left: 20px;
-    font-size: 20px;
-    z-index: 5;
-    color: #ffd700;
-}
+#scoreDisplay { position: absolute; top: 20px; left: 20px; font-size: 20px; color: #ffd700; z-index: 10; }
 
 #questionDisplay {
-    position: absolute;
-    top: 100px; /* Platz für Feedback lassen */
-    left: 50%;
-    transform: translateX(-50%);
-    width: 85%;
-    max-width: 500px;
-    background: rgba(0, 0, 0, 0.8);
-    padding: 15px;
+    position: absolute; top: 80px; left: 50%; transform: translateX(-50%);
+    width: 90%; max-width: 600px; background: rgba(0, 0, 0, 0.85);
+    padding: 15px; border-radius: 15px; border: 1px solid #555;
+    text-align: center; font-size: 22px; z-index: 10;
+}
+
+/* Container für die flexiblen Antworten */
+#answerContainer {
+    position: absolute; top: 35%; left: 0; width: 100%;
+    display: flex; justify-content: space-around; pointer-events: none; z-index: 20;
+}
+
+.answerBox {
+    width: 140px; min-height: 60px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.3);
     border-radius: 12px;
-    border: 1px solid #555;
-    text-align: center;
-    font-size: 20px;
-    z-index: 10;
+    display: flex; align-items: center; justify-content: center;
+    padding: 10px; text-align: center; transition: all 0.2s;
+    font-size: 18px; color: white;
+}
+
+.answerBox.selected {
+    background: rgba(255, 255, 0, 0.25);
+    border-color: yellow;
+    transform: scale(1.05);
 }
 
 #astronautFeedback {
-    position: absolute;
-    top: 10px; /* Jetzt oben am Bildschirm */
-    left: 50%;
-    transform: translateX(-50%);
-    background: white;
-    color: #111;
-    padding: 12px;
-    border-radius: 15px;
-    width: 90%;
-    max-width: 500px;
-    display: none;
-    align-items: center;
-    gap: 15px;
-    z-index: 1000; /* Ganz nach vorne */
-    box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+    position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+    background: white; color: #111; padding: 15px; border-radius: 15px;
+    width: 90%; max-width: 550px; display: none; align-items: center; gap: 15px;
+    z-index: 1000; box-shadow: 0 5px 25px rgba(0,0,0,0.5);
 }
 
-#astronautEmoji { font-size: 40px; }
-#astronautSpeech { font-size: 15px; line-height: 1.4; flex: 1; }
+#astronautEmoji { font-size: 45px; }
+#astronautSpeech { font-size: 16px; flex: 1; }
 
-#touchControls {
-    position: absolute;
-    bottom: 20px;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    z-index: 10;
-}
+#touchControls { position: absolute; bottom: 20px; width: 100%; display: flex; justify-content: center; gap: 15px; z-index: 10; }
+.touchButton { background: rgba(255, 255, 255, 0.1); border: 2px solid white; color: white; padding: 15px; border-radius: 10px; min-width: 65px; }
+#launchButton { background: #e63946; padding: 15px 40px; font-weight: bold; }
 
-.touchButton {
-    background: rgba(255, 255, 255, 0.1);
-    border: 2px solid white;
-    color: white;
-    padding: 15px;
-    border-radius: 10px;
-    min-width: 60px;
-}
-
-#launchButton { background: #e63946; padding: 15px 30px; }
-
-/* KaTeX Styling */
-.katex { font-size: 1.1em; color: black !important; }
-#questionDisplay .katex { color: white !important; }
+/* KaTeX in Antworten schwarz, in Fragen weiß */
+.answerBox .katex { color: white; }
+#astronautFeedback .katex { color: black; }

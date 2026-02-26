@@ -3,22 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mathe-Rakete</title>
+    <title>ByLKI Raketen-Quiz</title>
     <link rel="stylesheet" href="styles.css">
+    <!-- KaTeX für Formeln -->
     <link rel="stylesheet" href="katex.min.css">
     <script defer src="katex.min.js"></script>
 </head>
 <body>
-
     <div id="scoreDisplay">Punkte: 0</div>
-    <div id="questionDisplay">Mission startet...</div>
+    <div id="questionDisplay">Lade Mission...</div>
 
     <canvas id="gameCanvas"></canvas>
+    
+    <!-- Hier erscheinen die flexiblen Antworten (Mathe, Bilder, Text) -->
+    <div id="answerContainer"></div>
 
-    <!-- Verbessertes Astronauten Feedback -->
     <div id="astronautFeedback">
         <div id="astronautEmoji">👩‍🚀</div>
-        <div id="astronautSpeech">Lade Triebwerke...</div>
+        <div id="astronautSpeech"></div>
     </div>
 
     <div id="touchControls">
