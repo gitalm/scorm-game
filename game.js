@@ -6,28 +6,42 @@ const questionDisplay = document.getElementById("questionDisplay");
 
 // Spielvariablen
 let score = 0;
-let rocket = { x: canvas.width / 2, y: canvas.height - 50, width: 30, height: 50, speed: 5 };
+let rocket = {
+    x: canvas.width / 2 - 25,
+    y: canvas.height - 100,
+    width: 50,
+    height: 50,
+    speed: 5,
+    isMovingToAnswer: false,
+    targetX: null,
+    targetY: null
+};
 let answers = [];
 let currentQuestion = null;
-let asteroids = [];
+let feedback = { type: null, x: null, y: null, timer: 0 };
 let gameRunning = true;
 
 // Fragen und Antworten
 const questions = [
     {
         question: "Was ist 2 + 2?",
-        answers: ["3", "4", "5"],
+        answers: ["3", "4"],
         correctAnswer: "4"
     },
     {
         question: "Was ist 5 * 3?",
-        answers: ["10", "15", "20"],
+        answers: ["15", "20"],
         correctAnswer: "15"
     },
     {
         question: "Was ist 10 - 7?",
-        answers: ["2", "3", "4"],
+        answers: ["2", "3"],
         correctAnswer: "3"
+    },
+    {
+        question: "Was ist 8 / 2?",
+        answers: ["3", "4"],
+        correctAnswer: "4"
     }
 ];
 
@@ -36,22 +50,27 @@ function getRandomQuestion() {
     return questions[Math.floor(Math.random() * questions.length)];
 }
 
-// Funktion, um Antworten im Weltall zu platzieren
+// Funktion, um Antworten links und rechts zu platzieren
 function placeAnswers() {
     answers = [];
     const question = getRandomQuestion();
     currentQuestion = question;
     questionDisplay.textContent = question.question;
-    questionDisplay.style.display = "block";
 
-    // Antworten an zufälligen Positionen platzieren
+    // Antworten links und rechts platzieren
+    const answerWidth = 100;
+    const answerHeight = 40;
+    const leftX = canvas.width / 4 - answerWidth / 2;
+    const rightX = (3 * canvas.width) / 4 - answerWidth / 2;
+    const y = canvas.height / 2;
+
     question.answers.forEach((answer, index) => {
         answers.push({
             text: answer,
-            x: Math.random() * (canvas.width - 100) + 50,
-            y: Math.random() * (canvas.height - 200) + 50,
-            width: 80,
-            height: 30,
+            x: index === 0 ? leftX : rightX,
+            y: y,
+            width: answerWidth,
+            height: answerHeight,
             isCorrect: answer === question.correctAnswer
         });
     });
@@ -61,9 +80,9 @@ function placeAnswers() {
 function drawRocket() {
     ctx.fillStyle = "red";
     ctx.beginPath();
-    ctx.moveTo(rocket.x, rocket.y);
-    ctx.lineTo(rocket.x + rocket.width / 2, rocket.y - rocket.height);
-    ctx.lineTo(rocket.x + rocket.width, rocket.y);
+    ctx.moveTo(rocket.x + rocket.width / 2, rocket.y);
+    ctx.lineTo(rocket.x, rocket.y + rocket.height);
+    ctx.lineTo(rocket.x + rocket.width, rocket.y + rocket.height);
     ctx.closePath();
     ctx.fill();
 }
@@ -74,24 +93,55 @@ function drawAnswers() {
     answers.forEach(answer => {
         ctx.fillRect(answer.x, answer.y, answer.width, answer.height);
         ctx.fillStyle = "black";
-        ctx.fillText(answer.text, answer.x + 10, answer.y + 20);
+        ctx.font = "16px Arial";
+        ctx.fillText(answer.text, answer.x + 10, answer.y + 25);
         ctx.fillStyle = "white";
     });
 }
 
-// Funktion, um Asteroiden zu zeichnen
-function drawAsteroids() {
-    ctx.fillStyle = "gray";
-    asteroids.forEach(asteroid => {
-        ctx.beginPath();
-        ctx.arc(asteroid.x, asteroid.y, asteroid.radius, 0, Math.PI * 2);
-        ctx.fill();
-    });
+// Funktion, um Feedback (Punkt oder Feind) zu zeichnen
+function drawFeedback() {
+    if (feedback.type) {
+        if (feedback.type === "point") {
+            ctx.fillStyle = "gold";
+            ctx.beginPath();
+            ctx.arc(feedback.x, feedback.y, 15, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = "black";
+            ctx.font = "16px Arial";
+            ctx.fillText("+1", feedback.x - 8, feedback.y + 5);
+        } else if (feedback.type === "enemy") {
+            ctx.fillStyle = "gray";
+            ctx.beginPath();
+            ctx.arc(feedback.x, feedback.y, 20, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = "red";
+            ctx.font = "16px Arial";
+            ctx.fillText("X", feedback.x - 5, feedback.y + 5);
+        }
+        feedback.timer--;
+        if (feedback.timer <= 0) {
+            feedback.type = null;
+        }
+    }
+}
+
+// Funktion, um die Rakete zur Antwort zu bewegen
+function moveRocketToAnswer(targetX, targetY) {
+    rocket.isMovingToAnswer = true;
+    rocket.targetX = targetX;
+    rocket.targetY = targetY;
+}
+
+// Funktion, um die Rakete zurück zur Mittelposition zu bewegen
+function returnRocketToCenter() {
+    rocket.isMovingToAnswer = true;
+    rocket.targetX = canvas.width / 2 - rocket.width / 2;
+    rocket.targetY = canvas.height - 100;
 }
 
 // Funktion, um Kollisionen zu überprüfen
 function checkCollisions() {
-    // Kollision mit Antworten
     answers.forEach((answer, index) => {
         if (
             rocket.x < answer.x + answer.width &&
@@ -102,88 +152,10 @@ function checkCollisions() {
             if (answer.isCorrect) {
                 score++;
                 scoreDisplay.textContent = `Punkte: ${score}`;
+                feedback = { type: "point", x: answer.x + answer.width / 2, y: answer.y, timer: 30 };
             } else {
-                // Falsche Antwort: Asteroiden erscheinen
-                for (let i = 0; i < 3; i++) {
-                    asteroids.push({
-                        x: Math.random() * canvas.width,
-                        y: 0,
-                        radius: 15 + Math.random() * 10,
-                        speed: 2 + Math.random() * 3
-                    });
-                }
+                feedback = { type: "enemy", x: answer.x + answer.width / 2, y: answer.y, timer: 30 };
             }
-            // Neue Frage und Antworten platzieren
-            placeAnswers();
-            // Kollision entfernen
-            answers.splice(index, 1);
-        }
-    });
-
-    // Kollision mit Asteroiden
-    asteroids.forEach((asteroid, index) => {
-        if (
-            rocket.x < asteroid.x + asteroid.radius &&
-            rocket.x + rocket.width > asteroid.x - asteroid.radius &&
-            rocket.y < asteroid.y + asteroid.radius &&
-            rocket.y + rocket.height > asteroid.y - asteroid.radius
-        ) {
-            // Spiel beendet oder Punkte abziehen
-            score = Math.max(0, score - 1);
-            scoreDisplay.textContent = `Punkte: ${score}`;
-            asteroids.splice(index, 1);
-        }
-    });
-}
-
-// Funktion, um Asteroiden zu bewegen
-function moveAsteroids() {
-    asteroids.forEach(asteroid => {
-        asteroid.y += asteroid.speed;
-    });
-    // Asteroiden entfernen, die den Bildschirm verlassen
-    asteroids = asteroids.filter(asteroid => asteroid.y < canvas.height);
-}
-
-// Funktion, um das Spiel zu zeichnen
-function drawGame() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Sterne im Hintergrund
-    ctx.fillStyle = "white";
-    for (let i = 0; i < 100; i++) {
-        ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 1, 1);
-    }
-
-    drawRocket();
-    drawAnswers();
-    drawAsteroids();
-    checkCollisions();
-    moveAsteroids();
-
-    if (gameRunning) {
-        requestAnimationFrame(drawGame);
-    }
-}
-
-// Tastatursteuerung für die Rakete
-document.addEventListener("keydown", (e) => {
-    switch (e.key) {
-        case "ArrowLeft":
-            rocket.x = Math.max(0, rocket.x - rocket.speed);
-            break;
-        case "ArrowRight":
-            rocket.x = Math.min(canvas.width - rocket.width, rocket.x + rocket.speed);
-            break;
-        case "ArrowUp":
-            rocket.y = Math.max(0, rocket.y - rocket.speed);
-            break;
-        case "ArrowDown":
-            rocket.y = Math.min(canvas.height - rocket.height, rocket.y + rocket.speed);
-            break;
-    }
-});
-
-// Spiel starten
-placeAnswers();
-drawGame();
+            setTimeout(() => {
+                placeAnswers();
+                returnRocketToCent
