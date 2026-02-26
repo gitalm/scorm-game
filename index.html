@@ -2,47 +2,28 @@
 <html>
 <head>
     <title>Mathe-Raketen-Spiel</title>
-    <link rel="stylesheet" href="katex/katex.min.css" /> <!-- Optional für Mathe -->
-    <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            background-color: #000;
-            font-family: Arial, sans-serif;
-        }
-        #gameCanvas {
-            display: block;
-            background-color: #000;
-        }
-        #scoreDisplay {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            color: white;
-            font-size: 24px;
-            text-shadow: 0 0 5px #fff;
-        }
-        #questionDisplay {
-            position: absolute;
-            top: 60px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: white;
-            font-size: 24px;
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 10px;
-            border-radius: 10px;
-            text-shadow: 0 0 5px #fff;
-            min-width: 300px;
-            text-align: center;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="katex/katex.min.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div id="scoreDisplay">Punkte: 0</div>
     <div id="questionDisplay"></div>
     <canvas id="gameCanvas" width="800" height="600"></canvas>
-    <script src="katex/katex.min.js"></script> <!-- Optional für Mathe -->
+
+    <!-- Touch-Buttons für Mobile -->
+    <div id="touchControls">
+        <button class="touchButton" id="leftButton">←</button>
+        <button class="touchButton" id="middleButton">↑</button>
+        <button class="touchButton" id="rightButton">→</button>
+    </div>
+
+    <!-- Astronaut-Feedback -->
+    <div id="astronautFeedback">
+        <div id="astronautSpeech">Tipp: Versuche es mit der mittleren Antwort!</div>
+    </div>
+
+    <script src="katex/katex.min.js"></script>
     <script src="game.js"></script>
 </body>
 </html>
