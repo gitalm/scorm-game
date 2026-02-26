@@ -1,70 +1,37 @@
 body {
     margin: 0;
     overflow: hidden;
-    background: radial-gradient(circle at bottom, #1b2735 0%, #090a0f 100%);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #050510;
+    font-family: sans-serif;
     touch-action: none;
     color: white;
-}
-
-#gameCanvas {
-    display: block;
 }
 
 #scoreDisplay {
     position: absolute;
     top: 20px;
     left: 20px;
-    font-size: 24px;
+    font-size: 22px;
     font-weight: bold;
     z-index: 10;
+    color: #ffd700;
 }
 
 #questionDisplay {
     position: absolute;
-    top: 70px;
+    top: 60px;
     left: 50%;
     transform: translateX(-50%);
-    width: 90%;
-    max-width: 600px;
-    background: rgba(0, 0, 0, 0.6);
-    padding: 20px;
-    border-radius: 15px;
-    border: 1px solid rgba(255,255,255,0.2);
+    width: 85%;
+    max-width: 500px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid #444;
     text-align: center;
-    font-size: 22px;
-    z-index: 10;
-}
-
-#touchControls {
-    position: absolute;
-    bottom: 30px;
-    left: 0;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    z-index: 20;
-}
-
-.touchButton {
-    background: rgba(255, 255, 255, 0.2);
-    border: 2px solid white;
-    color: white;
-    padding: 15px 25px;
     font-size: 20px;
-    border-radius: 10px;
-    cursor: pointer;
-    backdrop-filter: blur(5px);
-}
-
-.touchButton:active {
-    background: white;
-    color: black;
-}
-
-#launchButton {
-    background: rgba(255, 69, 0, 0.6);
+    z-index: 10;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
 }
 
 #astronautFeedback {
@@ -73,23 +40,49 @@ body {
     left: 50%;
     transform: translateX(-50%);
     background: white;
-    color: black;
+    color: #111;
     padding: 15px;
-    border-radius: 20px;
-    max-width: 80%;
-    display: none;
-    z-index: 30;
+    border-radius: 15px;
+    width: 80%;
+    max-width: 400px;
+    display: none; /* Wird via JS auf 'flex' gesetzt */
+    align-items: center;
+    gap: 15px;
+    z-index: 100;
+    box-shadow: 0 0 30px rgba(255,255,255,0.2);
 }
 
-#astronautFeedback::after {
-    content: '';
+#astronautEmoji {
+    font-size: 40px;
+}
+
+#astronautSpeech {
+    font-size: 16px;
+    line-height: 1.4;
+}
+
+#touchControls {
     position: absolute;
-    bottom: -10px;
-    left: 20px;
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    border-top: 10px solid white;
+    bottom: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
 }
 
-/* KaTeX Anpassung */
-.katex { font-size: 1.2em; }
+.touchButton {
+    background: rgba(255, 255, 255, 0.15);
+    border: 2px solid white;
+    color: white;
+    padding: 15px 20px;
+    font-size: 18px;
+    border-radius: 8px;
+    min-width: 70px;
+}
+
+#launchButton {
+    background: #e63946;
+    font-weight: bold;
+}
+
+.katex { font-size: 1.1em; }
