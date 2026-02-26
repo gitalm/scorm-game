@@ -78,8 +78,7 @@ astronautFeedback.style.display = "none";
 }, 5000);
 }
 
-// Frage-Rendering: Teile zwischen ...
-... mit KaTeX rendern
+// Frage-Rendering: Teile zwischen ...... mit KaTeX rendern
 function escapeHtml(s) {
 return s.replace(/[&<>"']/g, c => ({ "&":"&", "<":"<", ">":">", '"':""", "'":"'" }[c]));
 }
