@@ -12,19 +12,21 @@ let questions = [];
 let currentQuestion = null;
 let answers = [];
 let stars = [];
+let effects = []; // Für ✨ und 👽️
 let gameState = "loading"; 
 
 const ROCKET_SIZE = 50;
+const ROCKET_OFFSET = -Math.PI / 4; // Korrektur, da 🚀 nach NE zeigt
+
 let rocket = {
     x: 0, y: 0,
     targetX: 0, targetY: 0,
-    angle: 0,
-    speed: 10,
+    angle: ROCKET_OFFSET,
+    speed: 12,
     selectedIdx: 1,
     isFlying: false
 };
 
-// Astronauten-Pool für Abwechslung
 const astronauts = ["👨‍🚀", "👩‍🚀", "🧑‍🚀"];
 
 async function init() {
@@ -34,15 +36,15 @@ async function init() {
     requestAnimationFrame(gameLoop);
 }
 
-// Hilfsfunktion für KaTeX-Rendering in HTML-Elementen
+// Rendert Text mit KaTeX Unterstützung
 function renderMath(text, element) {
-    if (!window.katex) {
+    if (window.katex) {
+        element.innerHTML = text.replace(/\$(.*?)\$/g, (m, f) => 
+            katex.renderToString(f, { throwOnError: false })
+        );
+    } else {
         element.textContent = text;
-        return;
     }
-    element.innerHTML = text.replace(/\$(.*?)\$/g, (m, formula) => 
-        katex.renderToString(formula, { throwOnError: false })
-    );
 }
 
 async function loadQuestions() {
@@ -64,7 +66,7 @@ function nextQuestion() {
     answers = currentQuestion.answers.map((text, i) => ({
         text,
         x: spacing * i + spacing / 2 - 65,
-        y: viewH * 0.3,
+        y: viewH * 0.35, // Etwas tiefer, da Feedback jetzt oben ist
         w: 130, h: 50
     }));
     
@@ -74,10 +76,11 @@ function nextQuestion() {
 
 function resetRocket() {
     rocket.x = viewW / 2 - ROCKET_SIZE / 2;
-    rocket.y = viewH - 150;
-    rocket.angle = 0; 
+    rocket.y = viewH - 120;
+    rocket.angle = ROCKET_OFFSET; 
     rocket.selectedIdx = 1;
     rocket.isFlying = false;
+    effects = [];
 }
 
 function createStars() {
@@ -85,7 +88,7 @@ function createStars() {
         x: Math.random() * viewW,
         y: Math.random() * viewH,
         s: Math.random() * 2 + 1,
-        speed: Math.random() * 2 + 0.5 // Unterschiedliche Geschwindigkeiten für Tiefe
+        speed: Math.random() * 3 + 1
     }));
 }
 
@@ -99,14 +102,13 @@ function resizeCanvas() {
     if (gameState !== "loading") resetRocket();
 }
 
-// Steuerung
 function moveSelection(dir) {
-    if (gameState !== "playing") return;
+    if (gameState !== "playing" || rocket.isFlying) return;
     rocket.selectedIdx = Math.max(0, Math.min(2, rocket.selectedIdx + dir));
 }
 
 function launch() {
-    if (gameState !== "playing") return;
+    if (gameState !== "playing" || rocket.isFlying) return;
     const target = answers[rocket.selectedIdx];
     rocket.targetX = target.x + target.w / 2 - ROCKET_SIZE / 2;
     rocket.targetY = target.y + target.h;
@@ -118,21 +120,36 @@ function showFeedback(isCorrect) {
     const emoji = astronauts[Math.floor(Math.random() * astronauts.length)];
     astronautEmoji.textContent = emoji;
     
-    const prefix = isCorrect ? "✅ Richtig! " : "❌ Oh weh... ";
+    // Effekt-Icons setzen
+    const icon = isCorrect ? "✨" : "👽️";
+    for(let i=0; i<8; i++) {
+        effects.push({
+            x: rocket.x + 25, y: rocket.y,
+            vx: (Math.random()-0.5)*10, vy: (Math.random()-0.5)*10,
+            char: icon, life: 1.0
+        });
+    }
+
+    const prefix = isCorrect ? "✅ Richtig! " : "❌ Falsch... ";
     renderMath(prefix + currentQuestion.explanation, astronautSpeech);
     
     astronautFeedback.style.display = "flex";
     setTimeout(() => {
         astronautFeedback.style.display = "none";
         nextQuestion();
-    }, 4000);
+    }, 4500);
 }
 
 function update() {
-    // Sterne bewegen (Weltraum-Flug-Effekt)
     stars.forEach(star => {
         star.y += star.speed;
         if (star.y > viewH) star.y = 0;
+    });
+
+    // Partikel-Effekte updaten
+    effects.forEach(e => {
+        e.x += e.vx; e.y += e.vy;
+        e.life -= 0.02;
     });
 
     if (gameState === "flying") {
@@ -140,9 +157,8 @@ function update() {
         const dy = rocket.targetY - rocket.y;
         const dist = Math.hypot(dx, dy);
         
-        // Rakete zum Ziel drehen (Emoji-Korrektur: Rakete zeigt meist nach oben rechts)
-        // Wir addieren oder subtrahieren Winkel, bis die Spitze passt.
-        rocket.angle = Math.atan2(dy, dx) + Math.PI / 4; 
+        // Winkel berechnen + Emoji-Korrektur (-45 Grad)
+        rocket.angle = Math.atan2(dy, dx) + Math.PI/2 + ROCKET_OFFSET;
 
         if (dist > 5) {
             rocket.x += (dx / dist) * rocket.speed;
@@ -154,9 +170,10 @@ function update() {
             gameState = "feedback";
             showFeedback(correct);
         }
-    } else {
-        // Leichte Schwankung im Stand
-        rocket.angle = Math.sin(Date.now() / 500) * 0.1;
+    } else if (gameState === "playing") {
+        // Sanftes Schweben im Stand (kein Zittern)
+        rocket.y = (viewH - 120) + Math.sin(Date.now() / 400) * 5;
+        rocket.angle = ROCKET_OFFSET + Math.sin(Date.now() / 600) * 0.05;
     }
 }
 
@@ -164,29 +181,34 @@ function draw() {
     ctx.fillStyle = "#050510";
     ctx.fillRect(0, 0, viewW, viewH);
     
-    // Sterne zeichnen
     ctx.fillStyle = "white";
     stars.forEach(s => ctx.fillRect(s.x, s.y, s.s, s.s));
 
-    // Antworten zeichnen
+    // Effekte zeichnen
+    effects.forEach(e => {
+        if(e.life > 0) {
+            ctx.globalAlpha = e.life;
+            ctx.font = "30px Arial";
+            ctx.fillText(e.char, e.x, e.y);
+        }
+    });
+    ctx.globalAlpha = 1.0;
+
     answers.forEach((ans, i) => {
         const isSelected = rocket.selectedIdx === i;
         ctx.fillStyle = isSelected ? "rgba(255, 255, 0, 0.2)" : "rgba(255, 255, 255, 0.05)";
         ctx.strokeStyle = isSelected ? "yellow" : "white";
         ctx.lineWidth = isSelected ? 3 : 1;
-        
         ctx.beginPath();
         ctx.roundRect(ans.x, ans.y, ans.w, ans.h, 8);
         ctx.fill();
         ctx.stroke();
-        
         ctx.fillStyle = "white";
         ctx.font = "18px Arial";
         ctx.textAlign = "center";
         ctx.fillText(ans.text, ans.x + ans.w / 2, ans.y + ans.h / 2 + 6);
     });
 
-    // Rakete zeichnen
     ctx.save();
     ctx.translate(rocket.x + ROCKET_SIZE/2, rocket.y + ROCKET_SIZE/2);
     ctx.rotate(rocket.angle);

@@ -9,57 +9,49 @@ body {
 
 #scoreDisplay {
     position: absolute;
-    top: 20px;
+    bottom: 20px;
     left: 20px;
-    font-size: 22px;
-    font-weight: bold;
-    z-index: 10;
+    font-size: 20px;
+    z-index: 5;
     color: #ffd700;
 }
 
 #questionDisplay {
     position: absolute;
-    top: 60px;
+    top: 100px; /* Platz für Feedback lassen */
     left: 50%;
     transform: translateX(-50%);
     width: 85%;
     max-width: 500px;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.8);
     padding: 15px;
     border-radius: 12px;
-    border: 1px solid #444;
+    border: 1px solid #555;
     text-align: center;
     font-size: 20px;
     z-index: 10;
-    box-shadow: 0 0 20px rgba(0,0,0,0.5);
 }
 
 #astronautFeedback {
     position: absolute;
-    bottom: 120px;
+    top: 10px; /* Jetzt oben am Bildschirm */
     left: 50%;
     transform: translateX(-50%);
     background: white;
     color: #111;
-    padding: 15px;
+    padding: 12px;
     border-radius: 15px;
-    width: 80%;
-    max-width: 400px;
-    display: none; /* Wird via JS auf 'flex' gesetzt */
+    width: 90%;
+    max-width: 500px;
+    display: none;
     align-items: center;
     gap: 15px;
-    z-index: 100;
-    box-shadow: 0 0 30px rgba(255,255,255,0.2);
+    z-index: 1000; /* Ganz nach vorne */
+    box-shadow: 0 5px 20px rgba(0,0,0,0.5);
 }
 
-#astronautEmoji {
-    font-size: 40px;
-}
-
-#astronautSpeech {
-    font-size: 16px;
-    line-height: 1.4;
-}
+#astronautEmoji { font-size: 40px; }
+#astronautSpeech { font-size: 15px; line-height: 1.4; flex: 1; }
 
 #touchControls {
     position: absolute;
@@ -68,21 +60,20 @@ body {
     display: flex;
     justify-content: center;
     gap: 15px;
+    z-index: 10;
 }
 
 .touchButton {
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.1);
     border: 2px solid white;
     color: white;
-    padding: 15px 20px;
-    font-size: 18px;
-    border-radius: 8px;
-    min-width: 70px;
+    padding: 15px;
+    border-radius: 10px;
+    min-width: 60px;
 }
 
-#launchButton {
-    background: #e63946;
-    font-weight: bold;
-}
+#launchButton { background: #e63946; padding: 15px 30px; }
 
-.katex { font-size: 1.1em; }
+/* KaTeX Styling */
+.katex { font-size: 1.1em; color: black !important; }
+#questionDisplay .katex { color: white !important; }
