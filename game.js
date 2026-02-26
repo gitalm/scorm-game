@@ -1,3 +1,4 @@
+// --- SCORM API ---
 const scorm = {
     active: false,
     init() {
@@ -14,9 +15,13 @@ const scorm = {
         if (!this.active) return;
         let percent = Math.round((score / total) * 100);
         this.api.LMSSetValue("cmi.core.score.raw", percent.toString());
+        this.api.LMSSetValue("cmi.core.score.max", "100");
         if (percent >= 66) this.api.LMSSetValue("cmi.core.lesson_status", "passed");
         else this.api.LMSSetValue("cmi.core.lesson_status", "failed");
         this.api.LMSCommit("");
+    },
+    terminate() {
+        if (this.active) this.api.LMSFinish("");
     }
 };
 
@@ -35,6 +40,8 @@ let askedCount = 0, stars = [], effects = [], gameState = "loading";
 const ROCKET_SIZE = 55;
 const EMOJI_FIX = -Math.PI / 4; 
 let rocket = { x: 0, y: 0, targetX: 0, targetY: 0, angle: EMOJI_FIX, speed: 20, selectedIdx: 1, isFlying: false };
+
+// --- LOGIK ---
 
 function renderMath(text, element) {
     if (window.katex) {
@@ -98,18 +105,38 @@ function nextQuestion() {
 
 function endGame() {
     gameState = "finished";
-    answerContainer.innerHTML = "";
+    answerContainer.innerHTML = ""; 
+    astronautFeedback.style.display = "none";
+    
     const maxP = questions.length * 10;
     const perc = Math.round((score / maxP) * 100);
     const passed = perc >= 66;
+    
+    // SCORM Übertragung findet JETZT statt
+    scorm.save(score, maxP);
+
     questionDisplay.innerHTML = `
         <div class="end-screen">
             <h2>Missionsbericht</h2>
             <div class="stat-box">${perc}% Erfolg</div>
             <p>${passed ? "Hervorragend! Die Basis ist stolz auf dich. 🚀" : "Mission abgebrochen. Wir brauchen mehr Training! 👽️"}</p>
-            <small>${score} von ${maxP} Punkten erreicht</small>
+            <div class="end-btn-container">
+                <button class="end-btn btn-restart" onclick="restartGame()">Neustart</button>
+                <button class="end-btn" onclick="exitGame()">Beenden</button>
+            </div>
         </div>`;
-    scorm.save(score, maxP);
+}
+
+function restartGame() {
+    score = 0;
+    askedCount = 0;
+    scoreDisplay.textContent = `Punkte: ${score}`;
+    loadQuestions(); // Lädt JSON neu und mischt Fragen
+}
+
+function exitGame() {
+    scorm.terminate();
+    alert("Du kannst dieses Fenster jetzt schließen. Deine Ergebnisse wurden gespeichert.");
 }
 
 function update() {
@@ -133,7 +160,7 @@ function update() {
 function draw() {
     ctx.clearRect(0, 0, viewW, viewH);
     ctx.fillStyle = "white"; 
-    for(let i=0; i<50; i++) ctx.fillRect(Math.random()*viewW, Math.random()*viewH, 1, 1); // Statische Sterne für Performance
+    for(let i=0; i<40; i++) { ctx.fillRect((i*97)%viewW, (i*137)%viewH, 1, 1); }
     effects.forEach(e => { if(e.life > 0) { ctx.globalAlpha = e.life; ctx.font = "30px Arial"; ctx.fillText(e.char, e.x, e.y); } });
     ctx.globalAlpha = 1.0;
     if (gameState !== "finished") {
