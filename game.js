@@ -99,19 +99,33 @@ function drawUFOs() {
     });
 }
 
-// Funktion, um Antworten zu zeichnen
 function drawAnswers() {
-    ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
     answers.forEach(answer => {
-        ctx.fillRect(answer.x, answer.y, answer.width, answer.height);
-        ctx.fillStyle = "black";
-        ctx.font = "16px Arial";
-        ctx.textAlign = "center";
-        ctx.fillText(answer.text, answer.x + answer.width / 2, answer.y + answer.height / 2 + 6);
         ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
-        ctx.textAlign = "left";
+        ctx.fillRect(answer.x, answer.y, answer.width, answer.height);
+
+        // KaTeX zum Rendern der Antwort verwenden
+        const answerTextElement = document.createElement("div");
+        answerTextElement.style.position = "absolute";
+        answerTextElement.style.left = `${answer.x}px`;
+        answerTextElement.style.top = `${answer.y}px`;
+        answerTextElement.style.color = "black";
+        answerTextElement.style.fontSize = "16px";
+        answerTextElement.style.width = `${answer.width}px`;
+        answerTextElement.style.textAlign = "center";
+        document.body.appendChild(answerTextElement);
+
+        katex.render(answer.text, answerTextElement, {
+            throwOnError: false
+        });
+
+        // Entferne das temporäre Element nach dem Rendern
+        setTimeout(() => {
+            document.body.removeChild(answerTextElement);
+        }, 100);
     });
 }
+
 
 // Funktion, um Feedback (Punkt oder Feind) zu zeichnen
 function drawFeedback() {
