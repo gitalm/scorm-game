@@ -65,7 +65,7 @@ placeAnswers();
 
 } catch (err) {
 console.error(err);
-showAstronautFeedback("Fragen konnten nicht geladen werden. Prüfe question.json und den Pfad.");
+showAstronautFeedback("Fragen konnten nicht geladen werden. Pruefe question.json und den Pfad.");
 }
 }
 
@@ -78,14 +78,12 @@ astronautFeedback.style.display = "none";
 }, 5000);
 }
 
-// Frage-Rendering: Text mit KaTeX-Teilen zwischen …
-… rendern
+// Frage-Rendering: Teile zwischen ...
+... mit KaTeX rendern
 function escapeHtml(s) {
 return s.replace(/[&<>"']/g, c => ({ "&":"&", "<":"<", ">":">", '"':""", "'":"'" }[c]));
 }
 function renderQuestionWithKatex(str) {
-// TeX zwischen …
-… rendern, Rest als HTML-Text
 const parts = str.split("$");
 let html = "";
 for (let i = 0; i < parts.length; i++) {
@@ -94,7 +92,7 @@ if (i % 2 === 1 && window.katex) {
 try {
 html += katex.renderToString(chunk, { throwOnError: false });
 } catch {
-html += escapeHtml(chunk); // Fallback
+html += escapeHtml(chunk);
 }
 } else {
 html += escapeHtml(chunk);
@@ -148,6 +146,7 @@ ctx.fillText("🚀", 0, 0);
 ctx.restore();
 }
 
+// Astronaut als Emoji (kein Bild)
 function drawAstronaut() {
 ctx.font = "40px Arial";
 ctx.textAlign = "left";
@@ -190,7 +189,7 @@ ctx.fillText("💥", feedback.x, feedback.y);
 }
 }
 
-// Rakete bewegen und Kollision prüfen
+// Rakete bewegen und Kollision pruefen
 function moveRocket() {
 if (!rocket.isFlying) return;
 
@@ -327,3 +326,7 @@ moveRocket();
 
 requestAnimationFrame(drawGame);
 }
+
+// Start
+loadQuestions();
+drawGame();
