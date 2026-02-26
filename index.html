@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mathe-Raketen-Spiel</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #000;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        #gameCanvas {
+            display: block;
+            background-color: #000;
+        }
+        #questionBox {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+            display: none;
+        }
+        #score {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div id="score">Punkte: 0</div>
+    <div id="questionBox">
+        <p id="questionText">Frage erscheint hier...</p>
+        <button id="answer1">Antwort 1</button>
+        <button id="answer2">Antwort 2</button>
+        <button id="answer3">Antwort 3</button>
+    </div>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        const questionBox = document.getElementById("questionBox");
+        const questionText = document.getElementById("questionText");
+        const answerButtons = [
+            document.getElementById("answer1"),
+            document.getElementById("answer2"),
+            document.getElementById("answer3")
+        ];
+        const scoreElement = document.getElementById("score");
+
+        let score = 0;
+        let rocket = { x: 400, y: 500, width: 50, height: 50 };
+        let enemies = [];
+        let currentQuestion = null;
+
+        // Beispiel-Fragen
+        const questions = [
+            {
+                question: "Was ist 2 + 2?",
+                answers: ["3", "4", "5"],
+                correctAnswer: 1
+            },
+            {
+                question: "Was ist 5 * 3?",
+                answers: ["10", "15", "20"],
+                correctAnswer: 1
+            }
+        ];
+
+        // Zeichne die Rakete
+        function drawRocket() {
+            ctx.fillStyle = "red";
+            ctx.fillRect(rocket.x, rocket.y, rocket.width, rocket.height);
+            ctx.fillStyle = "orange";
+            ctx.fillRect(rocket.x + 20, rocket.y - 20, 10, 30);
+        }
+
+        // Zeichne Feinde (Asteroiden)
+        function drawEnemies() {
+            ctx.fillStyle = "gray";
+            enemies.forEach(enemy => {
+                ctx.beginPath();
+                ctx.arc(enemy.x, enemy.y, enemy.radius, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        }
+
+        // Zeichne das Spiel
+        function drawGame() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawRocket();
+            drawEnemies();
+            requestAnimationFrame(drawGame);
+        }
+
+        // Starte das Spiel
+        function startGame() {
+            drawGame();
+            showRandomQuestion();
+        }
+
+        // Zeige eine zufällige Frage
+        function showRandomQuestion() {
+            currentQuestion = questions[Math.floor(Math.random() * questions.length)];
+            questionText.textContent = currentQuestion.question;
+            currentQuestion.answers.forEach((answer, index) => {
+                answerButtons[index].textContent = answer;
+            });
+            questionBox.style.display = "block";
+        }
+
+        // Überprüfe die Antwort
+        function checkAnswer(selectedIndex) {
+            if (selectedIndex === currentQuestion.correctAnswer) {
+                score++;
+                scoreElement.textContent = `Punkte: ${score}`;
+            } else {
+                enemies.push({ x: Math.random() * canvas.width, y: 0, radius: 20 });
+            }
+            questionBox.style.display = "none";
+            setTimeout(showRandomQuestion, 2000);
+        }
+
+        // Event-Listener für Antworten
+        answerButtons.forEach((button, index) => {
+            button.addEventListener("click", () => checkAnswer(index));
+        });
+
+        // Starte das Spiel
+        startGame();
+    </script>
+</body>
+</html>
