@@ -1,14 +1,22 @@
 [
-  { 
-    "question": "Berechne: $\\frac{1}{2} \\cdot \\frac{3}{4}$", 
-    "answers": ["$\\frac{4}{6}$", "$\\frac{3}{8}$", "$\\frac{3}{6}$"], 
-    "correctAnswer": 1, 
-    "explanation": "Zähler $\\cdot$ Zähler ($1 \\cdot 3 = 3$) und Nenner $\\cdot$ Nenner ($2 \\cdot 4 = 8$)." 
-  },
-  { 
-    "question": "Was ist $\\frac{1}{3} + \\frac{1}{3}$?", 
-    "answers": ["$\\frac{2}{6}$", "$\\frac{2}{3}$", "$1$"], 
-    "correctAnswer": 1, 
-    "explanation": "Nenner bleibt gleich, Zähler werden addiert: $\\frac{1+1}{3} = \\frac{2}{3}$." 
-  }
+  { "question": "$\\frac{1}{4} + \\frac{1}{2}$", "answers": ["$\\frac{2}{6}$", "$\\frac{3}{4}$", "$\\frac{2}{4}$"], "correctAnswer": 1, "explanation": "$\\frac{1}{2}$ ist das gleiche wie $\\frac{2}{4}$. Zusammen mit $\\frac{1}{4}$ ergibt das $\\frac{3}{4}$." },
+  { "question": "$\\frac{3}{4} - \\frac{1}{8}$", "answers": ["$\\frac{2}{4}$", "$\\frac{5}{8}$", "$\\frac{1}{2}$"], "correctAnswer": 1, "explanation": "$\\frac{3}{4} = \\frac{6}{8}$. Dann: $\\frac{6}{8} - \\frac{1}{8} = \\frac{5}{8}$." },
+  { "question": "$\\frac{2}{3} \\cdot \\frac{4}{5}$", "answers": ["$\\frac{8}{15}$", "$\\frac{6}{8}$", "$\\frac{10}{12}$"], "correctAnswer": 0, "explanation": "Zähler $\\cdot$ Zähler ($2 \\cdot 4 = 8$) und Nenner $\\cdot$ Nenner ($3 \\cdot 5 = 15$)." },
+  { "question": "$\\frac{3}{5} : 2$", "answers": ["$\\frac{6}{5}$", "$\\frac{3}{10}$", "$\\frac{1}{5}$"], "correctAnswer": 1, "explanation": "Durch eine Zahl teilen heißt, den Nenner mit dieser Zahl zu multiplizieren: $\\frac{3}{5 \\cdot 2} = \\frac{3}{10}$." },
+  { "question": "$\\frac{1}{3} + \\frac{1}{6}$", "answers": ["$\\frac{2}{9}$", "$\\frac{3}{6}$", "$\\frac{1}{2}$"], "correctAnswer": 2, "explanation": "$\\frac{1}{3} = \\frac{2}{6}$. $\\frac{2}{6} + \\frac{1}{6} = \\frac{3}{6} = \\frac{1}{2}$." },
+  { "question": "$\\frac{9}{12}$ gekürzt", "answers": ["$\\frac{1}{3}$", "$\\frac{3}{4}$", "$\\frac{2}{3}$"], "correctAnswer": 1, "explanation": "Beide Zahlen lassen sich durch 3 teilen. $9:3=3$ und $12:3=4$." },
+  { "question": "$1 - \\frac{2}{7}$", "answers": ["$\\frac{5}{7}$", "$\\frac{1}{7}$", "$\\frac{6}{7}$"], "correctAnswer": 0, "explanation": "$1$ Ganzes sind $\\frac{7}{7}$. $\\frac{7}{7} - \\frac{2}{7} = \\frac{5}{7}$." },
+  { "question": "$\\frac{2}{5} \\cdot \\frac{3}{2}$", "answers": ["$\\frac{5}{7}$", "$\\frac{6}{10}$", "$\\frac{3}{5}$"], "correctAnswer": 2, "explanation": "$\\frac{2 \\cdot 3}{5 \\cdot 2} = \\frac{6}{10}$. Gekürzt ergibt das $\\frac{3}{5}$." },
+  { "question": "$\\frac{4}{5} + \\frac{2}{5}$", "answers": ["$1 \\frac{1}{5}$", "$1 \\frac{2}{5}$", "$\\frac{6}{10}$"], "correctAnswer": 1, "explanation": "$\\frac{6}{5}$ ist ein echter Bruch: $1$ Ganzes und $\\frac{1}{5}$ Rest." },
+  { "question": "$\\frac{3}{10} + \\frac{2}{5}$", "answers": ["$\\frac{5}{10}$", "$\\frac{7}{10}$", "$\\frac{5}{15}$"], "correctAnswer": 1, "explanation": "$\\frac{2}{5} = \\frac{4}{10}$. Dann: $\\frac{3}{10} + \\frac{4}{10} = \\frac{7}{10}$." },
+  { "question": "$\\frac{1}{3} \\cdot 3$", "answers": ["$\\frac{3}{9}$", "$1$", "$3$"], "correctAnswer": 1, "explanation": "Ein Drittel mal drei ergibt $\\frac{3}{3} = 1$." },
+  { "question": "$\\frac{1}{4} \\cdot \\frac{1}{4}$", "answers": ["$\\frac{2}{8}$", "$\\frac{1}{16}$", "$\\frac{1}{8}$"], "correctAnswer": 1, "explanation": "Nenner mal Nenner: $4 \\cdot 4 = 16$." },
+  { "question": "$\\frac{5}{6} - \\frac{1}{3}$", "answers": ["$\\frac{4}{3}$", "$\\frac{3}{6}$", "$\\frac{1}{2}$"], "correctAnswer": 2, "explanation": "$\\frac{1}{3} = \\frac{2}{6}$. $\\frac{5}{6} - \\frac{2}{6} = \\frac{3}{6} = \\frac{1}{2}$." },
+  { "question": "$\\frac{2}{9} + \\frac{4}{9}$", "answers": ["$\\frac{6}{18}$", "$\\frac{2}{3}$", "$\\frac{6}{9}$"], "correctAnswer": 1, "explanation": "$\\frac{6}{9}$ lässt sich mit 3 kürzen zu $\\frac{2}{3}$." },
+  { "question": "$\\frac{7}{8} \\cdot 0$", "answers": ["$\\frac{7}{8}$", "$0$", "$1$"], "correctAnswer": 1, "explanation": "Jeder Bruch mal Null ergibt Null." },
+  { "question": "$\\frac{12}{4}$", "answers": ["$3$", "$8$", "$48$"], "correctAnswer": 0, "explanation": "$12 : 4 = 3$." },
+  { "question": "$\\frac{1}{2} : \\frac{1}{2}$", "answers": ["$\\frac{1}{4}$", "$1$", "$2$"], "correctAnswer": 1, "explanation": "Eine Zahl durch sich selbst geteilt ergibt immer 1." },
+  { "question": "$\\frac{2}{7} + \\frac{3}{7}$", "answers": ["$\\frac{5}{14}$", "$\\frac{5}{7}$", "$1$"], "correctAnswer": 1, "explanation": "Zähler addieren: $2+3=5$." },
+  { "question": "$\\frac{3}{5}$ von $25$", "answers": ["$15$", "$10$", "$5$"], "correctAnswer": 0, "explanation": "$25 : 5 = 5$, und $5 \\cdot 3 = 15$." },
+  { "question": "$\\frac{1}{5} + \\frac{1}{10}$", "answers": ["$\\frac{2}{15}$", "$\\frac{3}{10}$", "$\\frac{3}{15}$"], "correctAnswer": 1, "explanation": "$\\frac{2}{10} + \\frac{1}{10} = \\frac{3}{10}$." }
 ]

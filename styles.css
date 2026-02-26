@@ -1,54 +1,63 @@
 body {
     margin: 0; overflow: hidden;
-    background-color: #050510;
-    font-family: sans-serif; touch-action: none; color: white;
+    background-color: #030308;
+    font-family: 'Segoe UI', Tahoma, sans-serif; touch-action: none; color: white;
 }
 
-#scoreDisplay { position: absolute; top: 20px; left: 20px; font-size: 20px; color: #ffd700; z-index: 10; }
+#scoreDisplay { position: absolute; top: 20px; left: 20px; font-size: 20px; color: #ffd700; z-index: 10; font-weight: bold; }
 
 #questionDisplay {
     position: absolute; top: 80px; left: 50%; transform: translateX(-50%);
-    width: 90%; max-width: 600px; background: rgba(0, 0, 0, 0.85);
-    padding: 15px; border-radius: 15px; border: 1px solid #555;
-    text-align: center; font-size: 22px; z-index: 10;
+    width: 90%; max-width: 600px; 
+    background: rgba(10, 10, 20, 0.95); /* Weniger Transparenz */
+    padding: 20px; border-radius: 15px; border: 2px solid #444;
+    text-align: center; font-size: 26px; z-index: 10;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
 }
 
-/* Container für die flexiblen Antworten */
 #answerContainer {
-    position: absolute; top: 35%; left: 0; width: 100%;
+    position: absolute; top: 38%; left: 0; width: 100%;
     display: flex; justify-content: space-around; pointer-events: none; z-index: 20;
 }
 
 .answerBox {
-    width: 140px; min-height: 60px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    width: 150px; min-height: 70px;
+    background: rgba(30, 30, 50, 0.95);
+    border: 2px solid rgba(255, 255, 255, 0.2);
     border-radius: 12px;
     display: flex; align-items: center; justify-content: center;
     padding: 10px; text-align: center; transition: all 0.2s;
-    font-size: 18px; color: white;
+    font-size: 22px; color: white;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
 }
 
 .answerBox.selected {
-    background: rgba(255, 255, 0, 0.25);
-    border-color: yellow;
-    transform: scale(1.05);
+    background: rgba(255, 255, 0, 0.3);
+    border-color: #ffff00;
+    transform: scale(1.1);
+    box-shadow: 0 0 25px rgba(255, 255, 0, 0.4);
 }
+
+/* ENDSCREEN */
+.end-screen {
+    line-height: 1.6;
+}
+.end-screen h2 { color: #ffd700; margin-top: 0; }
+.stat-box { font-size: 32px; margin: 15px 0; color: #00ffcc; }
 
 #astronautFeedback {
     position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
-    background: white; color: #111; padding: 15px; border-radius: 15px;
-    width: 90%; max-width: 550px; display: none; align-items: center; gap: 15px;
-    z-index: 1000; box-shadow: 0 5px 25px rgba(0,0,0,0.5);
+    background: #ffffff; color: #111; padding: 18px; border-radius: 15px;
+    width: 90%; max-width: 580px; display: none; align-items: center; gap: 20px;
+    z-index: 1000; box-shadow: 0 10px 40px rgba(0,0,0,0.7);
+    border: 3px solid #ffd700;
 }
 
-#astronautEmoji { font-size: 45px; }
-#astronautSpeech { font-size: 16px; flex: 1; }
+#astronautEmoji { font-size: 50px; }
+#astronautSpeech { font-size: 17px; flex: 1; font-weight: 500; }
 
-#touchControls { position: absolute; bottom: 20px; width: 100%; display: flex; justify-content: center; gap: 15px; z-index: 10; }
-.touchButton { background: rgba(255, 255, 255, 0.1); border: 2px solid white; color: white; padding: 15px; border-radius: 10px; min-width: 65px; }
-#launchButton { background: #e63946; padding: 15px 40px; font-weight: bold; }
+#touchControls { position: absolute; bottom: 20px; width: 100%; display: flex; justify-content: center; gap: 20px; z-index: 10; }
+.touchButton { background: rgba(255, 255, 255, 0.15); border: 2px solid white; color: white; padding: 18px; border-radius: 12px; min-width: 80px; font-size: 20px; }
+#launchButton { background: #ff4757; padding: 18px 50px; font-weight: bold; border-color: #ff6b81; }
 
-/* KaTeX in Antworten schwarz, in Fragen weiß */
-.answerBox .katex { color: white; }
-#astronautFeedback .katex { color: black; }
+.katex { font-size: 1.2em; }
