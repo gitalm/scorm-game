@@ -11,18 +11,18 @@ const scorm = {
         })(window);
         if (this.api) { this.api.LMSInitialize(""); this.active = true; }
     },
-    save(score, maxScore) {
+    save(score, total) {
         if (!this.active) return;
-        let percent = Math.round((score / maxScore) * 100);
+        let percent = Math.round((score / total) * 100);
         this.api.LMSSetValue("cmi.core.score.raw", percent.toString());
         this.api.LMSSetValue("cmi.core.score.max", "100");
-        // Bestehensgrenze flexibel
         if (percent >= 66) this.api.LMSSetValue("cmi.core.lesson_status", "passed");
         else this.api.LMSSetValue("cmi.core.lesson_status", "failed");
         this.api.LMSCommit("");
     }
 };
 
+// --- VARIABLEN ---
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 const answerContainer = document.getElementById("answerContainer");
@@ -40,71 +40,85 @@ const EMOJI_FIX = -Math.PI / 4;
 
 let rocket = {
     x: 0, y: 0, targetX: 0, targetY: 0,
-    angle: EMOJI_FIX, speed: 16,
+    angle: EMOJI_FIX, speed: 18,
     selectedIdx: 1, isFlying: false
 };
 
-// --- FUNKTIONEN ---
+// --- FUNKTIONEN (DEFINITIONEN) ---
 
-async function init() {
-    scorm.init();
-    resizeCanvas();
-    await loadQuestions();
-    createStars();
-    requestAnimationFrame(gameLoop);
-}
-
-// Verbesserte Render-Funktion für KaTeX
 function renderMath(text, element) {
     if (window.katex) {
-        try {
-            // Sucht nach $...$ und ersetzt es durch gerendertes HTML
-            const html = text.replace(/\$(.*?)\$/g, (match, formula) => {
-                return katex.renderToString(formula, { throwOnError: false });
-            });
-            element.innerHTML = html;
-        } catch (e) {
-            console.error("KaTeX Fehler:", e);
-            element.innerHTML = text;
-        }
-    } else {
-        element.innerHTML = text;
+        element.innerHTML = text.replace(/\$(.*?)\$/g, (m, f) => 
+            katex.renderToString(f, { throwOnError: false })
+        );
+    } else { element.innerHTML = text; }
+}
+
+function createStars() {
+    stars = Array.from({ length: 80 }, () => ({
+        x: Math.random() * viewW, y: Math.random() * viewH,
+        s: Math.random() * 2 + 1, speed: Math.random() * 2 + 1
+    }));
+}
+
+function resizeCanvas() {
+    viewW = window.innerWidth; viewH = window.innerHeight;
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = viewW * dpr;
+    canvas.height = viewH * dpr;
+    ctx.scale(dpr, dpr);
+    if (!rocket.isFlying) {
+        rocket.x = viewW / 2 - ROCKET_SIZE / 2;
+        rocket.y = viewH - 140;
     }
 }
 
-async function loadQuestions() {
-    try {
-        const res = await fetch("question.json?v=" + Date.now());
-        let data = await res.json();
-        // Mische alle verfügbaren Fragen
-        questions = data.sort(() => Math.random() - 0.5);
-        nextQuestion();
-    } catch (err) { 
-        questionDisplay.textContent = "Fehler beim Laden der Fragen!"; 
+function updateRocketAngle() {
+    const targetEl = document.getElementById("ans" + rocket.selectedIdx);
+    if (!targetEl) return;
+    const rect = targetEl.getBoundingClientRect();
+    const tx = rect.left + rect.width / 2;
+    const ty = rect.top + rect.height;
+    const dx = tx - (rocket.x + ROCKET_SIZE / 2);
+    const dy = ty - (rocket.y + ROCKET_SIZE / 2);
+    rocket.angle = Math.atan2(dy, dx) + Math.PI / 2 + EMOJI_FIX;
+}
+
+function showFeedback(isCorrect) {
+    if (gameState === "feedback") return; // Doppeltes Auslösen verhindern
+    gameState = "feedback"; 
+    askedCount++;
+    
+    if (isCorrect) score += 10;
+    scoreDisplay.textContent = `Punkte: ${score}`;
+
+    const char = isCorrect ? "✨" : "👽️";
+    for(let i=0; i<15; i++) {
+        effects.push({
+            x: rocket.x + 25, y: rocket.y + 25,
+            vx: (Math.random()-0.5)*15, vy: (Math.random()-0.5)*15,
+            char: char, life: 1.0
+        });
     }
+
+    renderMath((isCorrect ? "✅ Richtig! " : "❌ Falsch... ") + currentQuestion.explanation, astronautSpeech);
+    astronautEmoji.textContent = ["👨‍🚀", "👩‍🚀", "🧑‍🚀"][Math.floor(Math.random() * 3)];
+    astronautFeedback.style.display = "flex";
 }
 
 function nextQuestion() {
-    // Flexibel: Ende, wenn alle Fragen aus der JSON beantwortet wurden
-    if (askedCount >= questions.length) {
-        endGame();
-        return;
-    }
-    
+    if (askedCount >= questions.length) { endGame(); return; }
     astronautFeedback.style.display = "none";
     effects = [];
     currentQuestion = questions[askedCount];
-    
-    // Fortschrittsanzeige dynamisch
     renderMath(`${askedCount + 1}/${questions.length}: ${currentQuestion.question}`, questionDisplay);
     
-    // Antwortboxen erstellen
     answerContainer.innerHTML = "";
     currentQuestion.answers.forEach((text, i) => {
         const div = document.createElement("div");
         div.className = "answerBox" + (i === 1 ? " selected" : "");
         div.id = "ans" + i;
-        renderMath(text, div); // Rendert Mathe in den Antworten
+        renderMath(text, div);
         answerContainer.appendChild(div);
     });
 
@@ -120,26 +134,10 @@ function endGame() {
     gameState = "finished";
     const maxPossible = questions.length * 10;
     const percent = Math.round((score / maxPossible) * 100);
-    
     let msg = percent >= 66 ? "MISSION ERFOLGREICH! 🚀" : "BASIS AN RAKETE: ZU WENIG PUNKTE. 👽️";
-    questionDisplay.innerHTML = `<h2>Spiel Ende</h2>${msg}<br>Ergebnis: ${percent}% (${score} von ${maxPossible} Pkt.)`;
-    
+    questionDisplay.innerHTML = `<h2>Spiel Ende</h2>${msg}<br>Ergebnis: ${percent}%`;
     scorm.save(score, maxPossible);
 }
-
-function updateRocketAngle() {
-    const targetEl = document.getElementById("ans" + rocket.selectedIdx);
-    if (!targetEl) return;
-    const rect = targetEl.getBoundingClientRect();
-    const tx = rect.left + rect.width / 2;
-    const ty = rect.top + rect.height;
-    
-    const dx = tx - (rocket.x + ROCKET_SIZE / 2);
-    const dy = ty - (rocket.y + ROCKET_SIZE / 2);
-    rocket.angle = Math.atan2(dy, dx) + Math.PI/2 + EMOJI_FIX;
-}
-
-// ... (Rest der Hilfsfunktionen wie createStars, resizeCanvas, draw etc. bleibt gleich wie zuvor)
 
 function update() {
     stars.forEach(s => { s.y += s.speed; if (s.y > viewH) s.y = 0; });
@@ -149,46 +147,35 @@ function update() {
         const dx = rocket.targetX - rocket.x;
         const dy = rocket.targetY - rocket.y;
         const dist = Math.hypot(dx, dy);
-        if (dist > 8) {
+
+        if (dist > rocket.speed) {
             rocket.x += (dx / dist) * rocket.speed;
             rocket.y += (dy / dist) * rocket.speed;
         } else {
-            const isCorrect = rocket.selectedIdx === currentQuestion.correctAnswer;
-            if (isCorrect) score += 10;
-            scoreDisplay.textContent = `Punkte: ${score}`;
-            showFeedback(isCorrect);
+            // Ziel erreicht: Position festsetzen und Feedback triggern
+            rocket.x = rocket.targetX;
+            rocket.y = rocket.targetY;
+            showFeedback(rocket.selectedIdx === currentQuestion.correctAnswer);
         }
     } else if (gameState === "playing") {
         rocket.y = (viewH - 140) + Math.sin(Date.now() / 400) * 4;
     }
 }
 
-function showFeedback(isCorrect) {
-    gameState = "feedback"; 
-    askedCount++;
-    const char = isCorrect ? "✨" : "👽️";
-    for(let i=0; i<15; i++) {
-        effects.push({
-            x: rocket.x + 25, y: rocket.y + 25,
-            vx: (Math.random()-0.5)*12, vy: (Math.random()-0.5)*12,
-            char: char, life: 1.0
-        });
-    }
-    renderMath((isCorrect ? "✅ Richtig! " : "❌ Falsch... ") + currentQuestion.explanation, astronautSpeech);
-    astronautEmoji.textContent = ["👨‍🚀", "👩‍🚀", "🧑‍🚀"][Math.floor(Math.random() * 3)];
-    astronautFeedback.style.display = "flex";
-}
-
 function draw() {
     ctx.clearRect(0, 0, viewW, viewH);
-    ctx.fillStyle = "white"; stars.forEach(s => ctx.fillRect(s.x, s.y, s.s, s.s));
+    ctx.fillStyle = "white"; 
+    stars.forEach(s => ctx.fillRect(s.x, s.y, s.s, s.s));
+
     effects.forEach(e => {
         if(e.life > 0) {
-            ctx.globalAlpha = e.life; ctx.font = "24px Arial";
+            ctx.globalAlpha = e.life;
+            ctx.font = "30px Arial";
             ctx.fillText(e.char, e.x, e.y);
         }
     });
     ctx.globalAlpha = 1.0;
+
     if (gameState !== "finished") {
         ctx.save();
         ctx.translate(rocket.x + 25, rocket.y + 25);
@@ -199,17 +186,20 @@ function draw() {
     }
 }
 
-function gameLoop() { update(); draw(); requestAnimationFrame(gameLoop); }
+function gameLoop() {
+    update();
+    draw();
+    requestAnimationFrame(gameLoop);
+}
 
-// Event-Handling
-document.addEventListener("keydown", (e) => {
-    if (gameState === "finished") return;
-    if (e.key === "ArrowLeft" || e.key === "a") moveSelection(-1);
-    if (e.key === "ArrowRight" || e.key === "d") moveSelection(1);
-    if (e.key === "ArrowUp" || e.key === "Enter" || e.key === " ") {
-        if (gameState === "feedback") nextQuestion(); else launch();
-    }
-});
+async function loadQuestions() {
+    try {
+        const res = await fetch("question.json?v=" + Date.now());
+        let data = await res.json();
+        questions = data.sort(() => Math.random() - 0.5);
+        nextQuestion();
+    } catch (err) { questionDisplay.textContent = "Fehler!"; }
+}
 
 function moveSelection(dir) {
     if (gameState !== "playing") return;
@@ -229,9 +219,30 @@ function launch() {
     gameState = "flying";
 }
 
+// --- INITIALISIERUNG & EVENTS ---
+
+async function init() {
+    scorm.init();
+    resizeCanvas();
+    await loadQuestions();
+    createStars();
+    requestAnimationFrame(gameLoop);
+}
+
+document.addEventListener("keydown", (e) => {
+    if (gameState === "finished") return;
+    if (e.key === "ArrowLeft" || e.key === "a") moveSelection(-1);
+    if (e.key === "ArrowRight" || e.key === "d") moveSelection(1);
+    if (e.key === "ArrowUp" || e.key === "Enter" || e.key === " ") {
+        if (gameState === "feedback") nextQuestion(); 
+        else if (gameState === "playing") launch();
+    }
+});
+
 document.getElementById("leftButton").onclick = () => moveSelection(-1);
 document.getElementById("rightButton").onclick = () => moveSelection(1);
 document.getElementById("launchButton").onclick = launch;
 window.addEventListener("resize", resizeCanvas);
 
+// Jetzt erst starten
 init();
