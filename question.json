@@ -1,38 +1,26 @@
 [
-{
-"question": "Was ist log28
-log2​8?",
-"answers": ["2", "3", "4"],
-"correctAnswer": 1,
-"explanation": "Der Logarithmus log28
-log2​8 fragt: „2 hoch was ergibt 8?“ Richtig: 3, denn 23=8
-23=8."
-},
-{
-"question": "Löse 2x+3=7
-2x+3=7",
-"answers": ["x = 1", "x = 2", "x = 3"],
-"correctAnswer": 1,
-"explanation": "Subtrahiere 3: 2x=4
-2x=4. Teile durch 2: x=2
-x=2."
-},
-{
-"question": "Was ist sqrt64
-sqrt64?",
-"answers": ["7", "8", "9"],
-"correctAnswer": 1,
-"explanation": "Die Quadratwurzel von 64 ist 8, denn 82=64
-82=64."
-},
-{
-"question": "Berechne 3!
-3!",
-"answers": ["6", "18", "720"],
-"correctAnswer": 0,
-"explanation": "3!=3times2times1=6
-3!=3
-times2
-times1=6."
-}
+  {
+    "question": "Was ist $\\log_2(8)$?",
+    "answers": ["2", "3", "4"],
+    "correctAnswer": 1,
+    "explanation": "Denn $2^3 = 8$."
+  },
+  {
+    "question": "Löse $2x + 3 = 7$",
+    "answers": ["x = 1", "x = 2", "x = 3"],
+    "correctAnswer": 1,
+    "explanation": "$2x = 4 \\rightarrow x = 2$."
+  },
+  {
+    "question": "Was ist $\\sqrt{64}$?",
+    "answers": ["7", "8", "9"],
+    "correctAnswer": 1,
+    "explanation": "Denn $8 \\times 8 = 64$."
+  },
+  {
+    "question": "Berechne $3!$",
+    "answers": ["6", "18", "720"],
+    "correctAnswer": 0,
+    "explanation": "$3! = 3 \\times 2 \\times 1 = 6$."
+  }
 ]

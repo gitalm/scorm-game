@@ -1,3 +1,36 @@
-<!DOCTYPE html> <html lang="de"> <head>
-	<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><text y='50' font-size='50'>🚀</text></svg>">
-	<meta charset="utf-8"> <title>Mathe-Raketen-Spiel</title> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <link rel="stylesheet" href="katex.min.css"> <link rel="stylesheet" href="styles.css"> </head> <body> <div id="scoreDisplay" role="status" aria-live="polite">Punkte: 0</div> <div id="questionDisplay" role="status" aria-live="polite"></div> <canvas id="gameCanvas"></canvas> <div id="touchControls" aria-label="Touch-Steuerung"> <button class="touchButton" id="leftButton" aria-label="Links steuern">←</button> <button class="touchButton" id="middleButton" aria-label="Mitte wählen">↑</button> <button class="touchButton" id="rightButton" aria-label="Rechts steuern">→</button> </div> <div id="astronautFeedback" role="status" aria-live="polite"> <div id="astronautSpeech">Steuere die Rakete mit ← →, feuere mit ↑, Leertaste oder Enter. Ziel: die richtige Antwort!</div> </div> <script defer src="katex.min.js"></script> <script defer src="game.js"></script> </body> </html>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mathe-Rakete</title>
+    
+    <!-- Lokale Styles -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Lokale KaTeX Dateien (müssen im selben Ordner liegen) -->
+    <link rel="stylesheet" href="katex.min.css">
+    <script defer src="katex.min.js"></script>
+    
+    <!-- Falls KaTeX zusätzliche Fonts benötigt, sollten diese im Unterordner 'fonts' liegen -->
+</head>
+<body>
+
+    <div id="scoreDisplay">Punkte: 0</div>
+    <div id="questionDisplay">Lade Fragen...</div>
+
+    <canvas id="gameCanvas"></canvas>
+
+    <div id="astronautFeedback">
+        <div id="astronautSpeech">Hallo! Bereit für den Start?</div>
+    </div>
+
+    <div id="touchControls">
+        <button class="touchButton" id="leftButton">←</button>
+        <button class="touchButton" id="launchButton">🚀 START</button>
+        <button class="touchButton" id="rightButton">→</button>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>

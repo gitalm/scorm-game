@@ -1,4 +1,3 @@
-// Canvas und DOM-Elemente
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 const scoreDisplay = document.getElementById("scoreDisplay");
@@ -6,326 +5,208 @@ const questionDisplay = document.getElementById("questionDisplay");
 const astronautFeedback = document.getElementById("astronautFeedback");
 const astronautSpeech = document.getElementById("astronautSpeech");
 
-// Touch-Buttons
-const leftButton = document.getElementById("leftButton");
-const middleButton = document.getElementById("middleButton");
-const rightButton = document.getElementById("rightButton");
-
-// Viewport-Maße (CSS-Pixel)
-let viewW = window.innerWidth;
-let viewH = window.innerHeight;
-
-// Spielvariablen
+let viewW, viewH;
 let score = 0;
+let questions = [];
+let currentQuestion = null;
+let answers = [];
+let stars = [];
+let feedback = null;
+let gameState = "loading"; // loading, playing, flying, feedback
+
 const ROCKET_SIZE = 50;
 let rocket = {
-x: viewW / 2 - ROCKET_SIZE / 2,
-y: viewH - 100,
-width: ROCKET_SIZE,
-height: ROCKET_SIZE,
-speed: 8,
-rotation: 0,
-targetX: null,
-targetY: null,
-isFlying: false
+    x: 0, y: 0,
+    targetX: 0, targetY: 0,
+    angle: 0,
+    speed: 12,
+    selectedIdx: 1
 };
 
-let answers = [];
-let currentQuestion = null;
-let feedback = null;
-let questions = [];
-let selectedAnswerIndex = 1; // 0=links, 1=mitte, 2=rechts
+// Initialisierung
+async function init() {
+    resizeCanvas();
+    await loadQuestions();
+    createStars();
+    requestAnimationFrame(gameLoop);
+}
 
-// Hintergrundobjekte (kein Flackern)
-let stars = [];
-let ufos = [];
-
-// Fragen laden (robust, mit Log bei Fehler)
 async function loadQuestions() {
-try {
-const url = new URL("question.json", window.location.href);
-url.searchParams.set("v", Date.now()); // Cache-Busting
-const res = await fetch(url.toString(), { cache: "no-store" });
-const text = await res.text();
-
-if (!res.ok) {
-  console.error("Fehler beim Laden der Fragen:", res.status, res.statusText);
-  console.error("Antwortanfang:", text.slice(0, 200));
-  throw new Error("HTTP-Fehler " + res.status);
-}
-
-try {
-  questions = JSON.parse(text);
-} catch (e) {
-  console.error("Antwort ist kein gültiges JSON. Anfang:", text.slice(0, 200));
-  throw e;
-}
-
-placeAnswers();
-
-} catch (err) {
-console.error(err);
-showAstronautFeedback("Fragen konnten nicht geladen werden. Pruefe question.json und den Pfad.");
-}
-}
-
-// Astronaut-Feedback
-function showAstronautFeedback(text) {
-astronautSpeech.textContent = text;
-astronautFeedback.style.display = "block";
-setTimeout(() => {
-astronautFeedback.style.display = "none";
-}, 5000);
-}
-
-// Frage-Rendering: Teile zwischen ...... mit KaTeX rendern
-function escapeHtml(s) {
-return s.replace(/[&<>"']/g, c => ({ "&":"&", "<":"<", ">":">", '"':""", "'":"'" }[c]));
-}
-function renderQuestionWithKatex(str) {
-const parts = str.split("$");
-let html = "";
-for (let i = 0; i < parts.length; i++) {
-const chunk = parts[i];
-if (i % 2 === 1 && window.katex) {
-try {
-html += katex.renderToString(chunk, { throwOnError: false });
-} catch {
-html += escapeHtml(chunk);
-}
-} else {
-html += escapeHtml(chunk);
-}
-}
-questionDisplay.innerHTML = html;
-}
-
-// Zufällige Frage
-function getRandomQuestion() {
-return questions[Math.floor(Math.random() * questions.length)];
-}
-
-// Antworten platzieren und Frage anzeigen
-function placeAnswers() {
-answers = [];
-const question = getRandomQuestion();
-currentQuestion = question;
-
-renderQuestionWithKatex(question.question);
-
-const answerWidth = 140;
-const answerHeight = 44;
-const y = Math.floor(viewH / 2);
-const spacing = viewW / 4;
-
-question.answers.forEach((answer, index) => {
-answers.push({
-text: answer,
-x: spacing * (index + 0.5) - (answerWidth / 2),
-y: y,
-width: answerWidth,
-height: answerHeight,
-isCorrect: index === question.correctAnswer
-});
-});
-
-showAstronautFeedback("Tipp: Lies die Frage genau und vergleiche die Antworten.");
-}
-
-// Rakete zeichnen
-function drawRocket() {
-ctx.save();
-ctx.translate(rocket.x + rocket.width / 2, rocket.y + rocket.height / 2);
-ctx.rotate(rocket.rotation);
-ctx.font = "50px Arial";
-ctx.fillStyle = "white";
-ctx.textAlign = "center";
-ctx.textBaseline = "middle";
-ctx.fillText("🚀", 0, 0);
-ctx.restore();
-}
-
-// Astronaut als Emoji (kein Bild)
-function drawAstronaut() {
-ctx.font = "40px Arial";
-ctx.textAlign = "left";
-ctx.textBaseline = "alphabetic";
-ctx.fillStyle = "white";
-ctx.fillText("👩‍🚀", 20, viewH - 40);
-}
-
-// Antworten zeichnen
-function drawAnswers() {
-answers.forEach((answer, index) => {
-ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
-ctx.fillRect(answer.x, answer.y, answer.width, answer.height);
-
-ctx.lineWidth = 2;
-ctx.strokeStyle = selectedAnswerIndex === index ? "yellow" : "transparent";
-ctx.strokeRect(answer.x, answer.y, answer.width, answer.height);
-
-ctx.fillStyle = "black";
-ctx.font = "16px Arial";
-ctx.textAlign = "center";
-ctx.textBaseline = "middle";
-ctx.fillText(answer.text, answer.x + answer.width / 2, answer.y + answer.height / 2);
-
-});
-}
-
-// Feedback zeichnen
-function drawFeedback() {
-if (!feedback) return;
-ctx.font = "30px Arial";
-ctx.textAlign = "center";
-ctx.textBaseline = "alphabetic";
-if (feedback.type === "correct") {
-ctx.fillStyle = "gold";
-ctx.fillText("⭐", feedback.x, feedback.y);
-} else {
-ctx.fillStyle = "red";
-ctx.fillText("💥", feedback.x, feedback.y);
-}
-}
-
-// Rakete bewegen und Kollision pruefen
-function moveRocket() {
-if (!rocket.isFlying) return;
-
-const dx = rocket.targetX - rocket.x;
-const dy = rocket.targetY - rocket.y;
-const distance = Math.hypot(dx, dy);
-
-if (distance > 1) {
-rocket.x += (dx / distance) * rocket.speed;
-rocket.y += (dy / distance) * rocket.speed;
-} else {
-rocket.x = rocket.targetX;
-rocket.y = rocket.targetY;
-rocket.isFlying = false;
-
-answers.forEach((answer) => {
-  const hit =
-    rocket.x < answer.x + answer.width &&
-    rocket.x + rocket.width > answer.x &&
-    rocket.y < answer.y + answer.height &&
-    rocket.y + rocket.height > answer.y;
-
-  if (hit) {
-    if (answer.isCorrect) {
-      score++;
-      scoreDisplay.textContent = `Punkte: ${score}`;
-      feedback = { type: "correct", x: answer.x + answer.width / 2, y: answer.y };
-      showAstronautFeedback("Richtig! " + currentQuestion.explanation);
-    } else {
-      feedback = { type: "wrong", x: answer.x + answer.width / 2, y: answer.y };
-      showAstronautFeedback("Falsch. " + currentQuestion.explanation);
+    try {
+        const res = await fetch("question.json?v=" + Date.now());
+        questions = await res.json();
+        nextQuestion();
+    } catch (err) {
+        questionDisplay.textContent = "Fehler beim Laden der Fragen!";
+        console.error(err);
     }
-
-    setTimeout(() => {
-      feedback = null;
-      placeAnswers();
-      rocket.x = viewW / 2 - ROCKET_SIZE / 2;
-      rocket.y = viewH - 100;
-      rocket.rotation = 0;
-    }, 2000);
-  }
-});
-
-}
 }
 
-// Richtung setzen
-function setRocketDirection(direction) {
-if (rocket.isFlying) return;
-
-if (direction === "left" && selectedAnswerIndex > 0) {
-selectedAnswerIndex--;
-rocket.rotation = -0.5;
-} else if (direction === "right" && selectedAnswerIndex < 2) {
-selectedAnswerIndex++;
-rocket.rotation = 0.5;
-} else if (direction === "middle") {
-selectedAnswerIndex = 1;
-rocket.rotation = 0;
-}
-}
-
-// Abfeuern
-function launchRocket() {
-if (rocket.isFlying || !answers[selectedAnswerIndex]) return;
-rocket.isFlying = true;
-rocket.targetX = answers[selectedAnswerIndex].x + answers[selectedAnswerIndex].width / 2 - rocket.width / 2;
-rocket.targetY = answers[selectedAnswerIndex].y;
+function nextQuestion() {
+    if (questions.length === 0) return;
+    currentQuestion = questions[Math.floor(Math.random() * questions.length)];
+    renderMathText(currentQuestion.question, questionDisplay);
+    
+    const spacing = viewW / 3;
+    answers = currentQuestion.answers.map((text, i) => ({
+        text,
+        x: spacing * i + spacing / 2 - 60,
+        y: viewH * 0.4,
+        w: 120,
+        h: 50,
+        isCorrect: i === currentQuestion.correctAnswer
+    }));
+    
+    resetRocket();
+    gameState = "playing";
 }
 
-// Tastatursteuerung
-document.addEventListener("keydown", (e) => {
-const key = e.key.toLowerCase();
-if (e.key === "ArrowLeft" || key === "a") setRocketDirection("left");
-else if (e.key === "ArrowRight" || key === "d") setRocketDirection("right");
-else if (e.key === "ArrowUp" || e.key === " " || key === "w" || e.key === "enter") launchRocket();
-});
+function resetRocket() {
+    rocket.x = viewW / 2 - ROCKET_SIZE / 2;
+    rocket.y = viewH - 120;
+    rocket.angle = 0;
+    rocket.selectedIdx = 1;
+}
 
-// Touch-Steuerung
-leftButton.addEventListener("click", () => setRocketDirection("left"));
-middleButton.addEventListener("click", () => setRocketDirection("middle"));
-rightButton.addEventListener("click", () => setRocketDirection("right"));
-document.addEventListener("dblclick", launchRocket);
+function renderMathText(str, element) {
+    if (!window.katex) {
+        element.textContent = str;
+        return;
+    }
+    // Ersetzt $...$ durch KaTeX HTML
+    const html = str.replace(/\$(.*?)\$/g, (match, formula) => {
+        return katex.renderToString(formula, { throwOnError: false });
+    });
+    element.innerHTML = html;
+}
 
-// Canvas-Größe (HiDPI) und Hintergrundobjekte
+function createStars() {
+    stars = Array.from({ length: 150 }, () => ({
+        x: Math.random() * viewW,
+        y: Math.random() * viewH,
+        s: Math.random() * 2
+    }));
+}
+
 function resizeCanvas() {
-const dpr = window.devicePixelRatio || 1;
-viewW = window.innerWidth;
-viewH = window.innerHeight;
-
-canvas.style.width = viewW + "px";
-canvas.style.height = viewH + "px";
-canvas.width = Math.floor(viewW * dpr);
-canvas.height = Math.floor(viewH * dpr);
-ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-rocket.x = viewW / 2 - ROCKET_SIZE / 2;
-rocket.y = viewH - 100;
-
-stars = Array.from({ length: 200 }, () => ({
-x: Math.random() * viewW,
-y: Math.random() * viewH,
-size: Math.random() < 0.9 ? 1 : 2
-}));
-ufos = Array.from({ length: 5 }, () => ({
-x: Math.random() * viewW,
-y: Math.random() * (viewH - 100),
-icon: ["🛸", "👽", "👾"][Math.floor(Math.random() * 3)]
-}));
-
-if (answers.length > 0) placeAnswers();
+    viewW = window.innerWidth;
+    viewH = window.innerHeight;
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = viewW * dpr;
+    canvas.height = viewH * dpr;
+    canvas.style.width = viewW + "px";
+    canvas.style.height = viewH + "px";
+    ctx.scale(dpr, dpr);
+    if (gameState !== "loading") resetRocket();
 }
+
+// Steuerung
+function moveSelection(dir) {
+    if (gameState !== "playing") return;
+    rocket.selectedIdx = Math.max(0, Math.min(2, rocket.selectedIdx + dir));
+}
+
+function launch() {
+    if (gameState !== "playing") return;
+    const target = answers[rocket.selectedIdx];
+    rocket.targetX = target.x + target.w / 2 - ROCKET_SIZE / 2;
+    rocket.targetY = target.y + target.h;
+    gameState = "flying";
+}
+
+// Game Loop
+function update() {
+    if (gameState === "flying") {
+        const dx = rocket.targetX - rocket.x;
+        const dy = rocket.targetY - rocket.y;
+        const dist = Math.hypot(dx, dy);
+        
+        rocket.angle = Math.atan2(dy, dx) + Math.PI/2;
+
+        if (dist > 5) {
+            rocket.x += (dx / dist) * rocket.speed;
+            rocket.y += (dy / dist) * rocket.speed;
+        } else {
+            checkResult();
+        }
+    }
+}
+
+function checkResult() {
+    const correct = rocket.selectedIdx === currentQuestion.correctAnswer;
+    if (correct) {
+        score += 10;
+        feedback = { icon: "⭐", color: "gold" };
+        showAstronaut("Richtig! " + currentQuestion.explanation);
+    } else {
+        feedback = { icon: "💥", color: "red" };
+        showAstronaut("Leider falsch. " + currentQuestion.explanation);
+    }
+    scoreDisplay.textContent = `Punkte: ${score}`;
+    gameState = "feedback";
+    setTimeout(nextQuestion, 3000);
+}
+
+function showAstronaut(text) {
+    astronautSpeech.textContent = text;
+    astronautFeedback.style.display = "block";
+    setTimeout(() => astronautFeedback.style.display = "none", 4000);
+}
+
+function draw() {
+    ctx.clearRect(0, 0, viewW, viewH);
+    
+    // Hintergrund
+    ctx.fillStyle = "white";
+    stars.forEach(s => ctx.fillRect(s.x, s.y, s.s, s.s));
+
+    // Antworten
+    answers.forEach((ans, i) => {
+        ctx.fillStyle = rocket.selectedIdx === i ? "rgba(255, 255, 0, 0.3)" : "rgba(255, 255, 255, 0.1)";
+        ctx.strokeStyle = "white";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.roundRect(ans.x, ans.y, ans.w, ans.h, 10);
+        ctx.fill();
+        ctx.stroke();
+        
+        ctx.fillStyle = "white";
+        ctx.font = "bold 18px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText(ans.text, ans.x + ans.w / 2, ans.y + ans.h / 2 + 6);
+    });
+
+    // Rakete
+    ctx.save();
+    ctx.translate(rocket.x + ROCKET_SIZE/2, rocket.y + ROCKET_SIZE/2);
+    ctx.rotate(rocket.angle);
+    ctx.font = "40px Arial";
+    ctx.fillText("🚀", 0, 0);
+    ctx.restore();
+
+    // Feedback Effekt
+    if (gameState === "feedback" && feedback) {
+        ctx.font = "60px Arial";
+        ctx.fillText(feedback.icon, viewW / 2, viewH / 2);
+    }
+}
+
+function gameLoop() {
+    update();
+    draw();
+    requestAnimationFrame(gameLoop);
+}
+
+// Event Listeners
 window.addEventListener("resize", resizeCanvas);
-resizeCanvas();
+document.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowLeft") moveSelection(-1);
+    if (e.key === "ArrowRight") moveSelection(1);
+    if (e.key === "ArrowUp" || e.key === "Enter" || e.key === " ") launch();
+});
 
-// Hauptschleife
-function drawGame() {
-ctx.fillStyle = "black";
-ctx.fillRect(0, 0, viewW, viewH);
+document.getElementById("leftButton").onclick = () => moveSelection(-1);
+document.getElementById("rightButton").onclick = () => moveSelection(1);
+document.getElementById("launchButton").onclick = launch;
 
-ctx.fillStyle = "white";
-stars.forEach(s => ctx.fillRect(s.x, s.y, s.size, s.size));
-
-ctx.font = "20px Arial";
-ctx.textAlign = "left";
-ctx.textBaseline = "alphabetic";
-ufos.forEach(u => ctx.fillText(u.icon, u.x, u.y));
-
-drawAnswers();
-drawRocket();
-drawAstronaut();
-drawFeedback();
-moveRocket();
-
-requestAnimationFrame(drawGame);
-}
-
-// Start
-loadQuestions();
-drawGame();
+init();

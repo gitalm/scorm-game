@@ -1,95 +1,95 @@
 body {
-margin: 0;
-overflow: hidden;
-background-color: #000;
-font-family: Arial, sans-serif;
-touch-action: none;
+    margin: 0;
+    overflow: hidden;
+    background: radial-gradient(circle at bottom, #1b2735 0%, #090a0f 100%);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    touch-action: none;
+    color: white;
 }
 
 #gameCanvas {
-display: block;
-background-color: #000;
-width: 100vw;
-height: 100vh;
+    display: block;
 }
 
 #scoreDisplay {
-position: absolute;
-top: 10px;
-left: 10px;
-color: white;
-font-size: 24px;
-text-shadow: 0 0 5px #fff;
-z-index: 100;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 24px;
+    font-weight: bold;
+    z-index: 10;
 }
 
 #questionDisplay {
-position: absolute;
-top: 50px;
-left: 50%;
-transform: translateX(-50%);
-color: white;
-font-size: 24px;
-background-color: rgba(0, 0, 0, 0.7);
-padding: 10px;
-border-radius: 10px;
-text-shadow: 0 0 5px #fff;
-min-width: 300px;
-text-align: center;
-z-index: 100;
+    position: absolute;
+    top: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 600px;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 20px;
+    border-radius: 15px;
+    border: 1px solid rgba(255,255,255,0.2);
+    text-align: center;
+    font-size: 22px;
+    z-index: 10;
 }
 
-/* Touch-Buttons (nur auf Mobilgeräten) */
 #touchControls {
-position: absolute;
-bottom: 20px;
-left: 0;
-right: 0;
-display: flex;
-justify-content: space-around;
-z-index: 100;
-pointer-events: none; /* Container ignoriert Events, Buttons selbst reagieren */
+    position: absolute;
+    bottom: 30px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    z-index: 20;
 }
 
 .touchButton {
-width: 80px;
-height: 80px;
-border-radius: 50%;
-border: none;
-background-color: rgba(255, 255, 255, 0.3);
-color: white;
-font-size: 24px;
-pointer-events: auto;
-display: none; /* Standardmäßig ausgeblendet */
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid white;
+    color: white;
+    padding: 15px 25px;
+    font-size: 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    backdrop-filter: blur(5px);
 }
 
-.touchButton:focus {
-outline: 3px solid yellow;
+.touchButton:active {
+    background: white;
+    color: black;
+}
+
+#launchButton {
+    background: rgba(255, 69, 0, 0.6);
 }
 
 #astronautFeedback {
-position: absolute;
-bottom: 20px;
-left: 10px;
-background-color: rgba(0, 0, 0, 0.7);
-padding: 10px;
-border-radius: 10px;
-color: white;
-max-width: 300px;
-z-index: 100;
-display: none; /* Standardmäßig ausgeblendet */
+    position: absolute;
+    bottom: 120px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    color: black;
+    padding: 15px;
+    border-radius: 20px;
+    max-width: 80%;
+    display: none;
+    z-index: 30;
 }
 
-#astronautSpeech {
-font-size: 16px;
+#astronautFeedback::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 20px;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid white;
 }
 
-/* Zeige Touch-Buttons nur auf Mobilgeräten */
-@media (max-width: 768px) {
-#touchControls {
-display: flex;
-}
-.touchButton {
-display: block;
-}
-}
+/* KaTeX Anpassung */
+.katex { font-size: 1.2em; }
