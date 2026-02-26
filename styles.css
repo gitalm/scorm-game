@@ -1,91 +1,95 @@
 body {
-    margin: 0;
-    overflow: hidden;
-    background-color: #000;
-    font-family: Arial, sans-serif;
-    touch-action: none;
+margin: 0;
+overflow: hidden;
+background-color: #000;
+font-family: Arial, sans-serif;
+touch-action: none;
 }
 
 #gameCanvas {
-    display: block;
-    background-color: #000;
-    width: 100vw;
-    height: 100vh;
+display: block;
+background-color: #000;
+width: 100vw;
+height: 100vh;
 }
 
 #scoreDisplay {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    color: white;
-    font-size: 24px;
-    text-shadow: 0 0 5px #fff;
-    z-index: 100;
+position: absolute;
+top: 10px;
+left: 10px;
+color: white;
+font-size: 24px;
+text-shadow: 0 0 5px #fff;
+z-index: 100;
 }
 
 #questionDisplay {
-    position: absolute;
-    top: 50px;
-    left: 50%;
-    transform: translateX(-50%);
-    color: white;
-    font-size: 24px;
-    background-color: rgba(0, 0, 0, 0.7);
-    padding: 10px;
-    border-radius: 10px;
-    text-shadow: 0 0 5px #fff;
-    min-width: 300px;
-    text-align: center;
-    z-index: 100;
+position: absolute;
+top: 50px;
+left: 50%;
+transform: translateX(-50%);
+color: white;
+font-size: 24px;
+background-color: rgba(0, 0, 0, 0.7);
+padding: 10px;
+border-radius: 10px;
+text-shadow: 0 0 5px #fff;
+min-width: 300px;
+text-align: center;
+z-index: 100;
 }
 
 /* Touch-Buttons (nur auf Mobilgeräten) */
 #touchControls {
-    position: absolute;
-    bottom: 20px;
-    left: 0;
-    right: 0;
-    display: flex;
-    justify-content: space-around;
-    z-index: 100;
-    pointer-events: none; /* Standardmäßig unsichtbar */
+position: absolute;
+bottom: 20px;
+left: 0;
+right: 0;
+display: flex;
+justify-content: space-around;
+z-index: 100;
+pointer-events: none; /* Container ignoriert Events, Buttons selbst reagieren */
 }
 
 .touchButton {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    border: none;
-    background-color: rgba(255, 255, 255, 0.3);
-    color: white;
-    font-size: 24px;
-    pointer-events: auto;
-    display: none; /* Standardmäßig ausgeblendet */
+width: 80px;
+height: 80px;
+border-radius: 50%;
+border: none;
+background-color: rgba(255, 255, 255, 0.3);
+color: white;
+font-size: 24px;
+pointer-events: auto;
+display: none; /* Standardmäßig ausgeblendet */
+}
+
+.touchButton:focus {
+outline: 3px solid yellow;
 }
 
 #astronautFeedback {
-    position: absolute;
-    bottom: 20px;
-    left: 10px;
-    background-color: rgba(0, 0, 0, 0.7);
-    padding: 10px;
-    border-radius: 10px;
-    color: white;
-    max-width: 300px;
-    z-index: 100;
-    display: none; /* Standardmäßig ausgeblendet */
+position: absolute;
+bottom: 20px;
+left: 10px;
+background-color: rgba(0, 0, 0, 0.7);
+padding: 10px;
+border-radius: 10px;
+color: white;
+max-width: 300px;
+z-index: 100;
+display: none; /* Standardmäßig ausgeblendet */
 }
 
 #astronautSpeech {
-    font-size: 16px;
+font-size: 16px;
 }
 
 /* Zeige Touch-Buttons nur auf Mobilgeräten */
 @media (max-width: 768px) {
-    #touchControls {
-        display: flex;
-    }
-    .touchButton {
-        display: block;
-    }
+#touchControls {
+display: flex;
+}
+.touchButton {
+display: block;
+}
 }
