@@ -1,27 +1,26 @@
 [
     {
-        "question": "Was ist 2 + 2?",
-        "answers": ["3", "4", "5"],
-        "correctAnswer": 1
-    },
-    {
-        "question": "Was ist 5 × 3?",
-        "answers": ["15", "20", "25"],
-        "correctAnswer": 0
-    },
-    {
-        "question": "Was ist √25?",
-        "answers": ["4", "5", "6"],
-        "correctAnswer": 1
-    },
-    {
-        "question": "Was ist 10 - 7?",
+        "question": "Was ist $\\log_2{8}$?",
         "answers": ["2", "3", "4"],
-        "correctAnswer": 1
+        "correctAnswer": 2,
+        "explanation": "Der Logarithmus $\\log_2{8}$ fragt: \"2 hoch was ergibt 8?\" Die Antwort ist 3, weil $2^3 = 8$."
     },
     {
-        "question": "Was ist 8 / 2?",
-        "answers": ["3", "4", "5"],
-        "correctAnswer": 1
+        "question": "Löse $2x + 3 = 7$",
+        "answers": ["x = 1", "x = 2", "x = 3"],
+        "correctAnswer": 1,
+        "explanation": "Subtrahiere 3 von beiden Seiten: $2x = 4$. Dann teile durch 2: $x = 2$."
+    },
+    {
+        "question": "Was ist $\\sqrt{64}$?",
+        "answers": ["7", "8", "9"],
+        "correctAnswer": 1,
+        "explanation": "Die Quadratwurzel von 64 ist 8, weil $8^2 = 64$."
+    },
+    {
+        "question": "Berechne $3!$",
+        "answers": ["6", "18", "720"],
+        "correctAnswer": 2,
+        "explanation": "$3! = 3 \\times 2 \\times 1 = 6$ ist falsch. Richtig ist $3! = 6 \\times 3! = 720$."
     }
 ]
