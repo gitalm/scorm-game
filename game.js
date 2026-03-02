@@ -1,7 +1,7 @@
 // --- SOUND ENGINE ---
 const Sound = {
     ctx: null,
-    isMuted: false,
+    isMuted: true, // Startet jetzt stummgeschaltet
     init() { if(!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); },
     play(freq, type, duration, vol=0.1) {
         if (!this.ctx || this.isMuted) return;
@@ -32,6 +32,7 @@ const scorm = {
         if (!this.active) return;
         let percent = Math.round((score / total) * 100);
         this.api.LMSSetValue("cmi.core.score.raw", percent.toString());
+        this.api.LMSSetValue("cmi.core.score.max", "100");
         if (percent >= 66) this.api.LMSSetValue("cmi.core.lesson_status", "passed");
         else this.api.LMSSetValue("cmi.core.lesson_status", "failed");
         this.api.LMSCommit("");
@@ -51,7 +52,7 @@ let askedCount = 0, stars = [], effects = [], gameState = "start";
 
 const ROCKET_SIZE = 60;
 const EMOJI_FIX = -Math.PI / 4; 
-const ROCKET_Y_REL = 0.85; // Tiefe Position, knapp über Buttons
+const ROCKET_Y_REL = 0.85; 
 
 let rocket = { x: 0, y: 0, targetX: 0, targetY: 0, angle: EMOJI_FIX, speed: 22, selectedIdx: 1, isFlying: false };
 
