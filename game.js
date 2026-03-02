@@ -1,9 +1,10 @@
 // --- SOUND ENGINE ---
 const Sound = {
     ctx: null,
+    isMuted: false,
     init() { if(!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); },
     play(freq, type, duration, vol=0.1) {
-        if (!this.ctx) return;
+        if (!this.ctx || this.isMuted) return;
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
         osc.type = type; osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
@@ -31,7 +32,6 @@ const scorm = {
         if (!this.active) return;
         let percent = Math.round((score / total) * 100);
         this.api.LMSSetValue("cmi.core.score.raw", percent.toString());
-        this.api.LMSSetValue("cmi.core.score.max", "100");
         if (percent >= 66) this.api.LMSSetValue("cmi.core.lesson_status", "passed");
         else this.api.LMSSetValue("cmi.core.lesson_status", "failed");
         this.api.LMSCommit("");
@@ -51,7 +51,7 @@ let askedCount = 0, stars = [], effects = [], gameState = "start";
 
 const ROCKET_SIZE = 60;
 const EMOJI_FIX = -Math.PI / 4; 
-const ROCKET_Y_REL = 0.75; // Hier kannst du die Höhe zentral steuern (0.0 bis 1.0)
+const ROCKET_Y_REL = 0.85; // Tiefe Position, knapp über Buttons
 
 let rocket = { x: 0, y: 0, targetX: 0, targetY: 0, angle: EMOJI_FIX, speed: 22, selectedIdx: 1, isFlying: false };
 
@@ -68,7 +68,7 @@ function resizeCanvas() {
     ctx.scale(dpr, dpr);
     if (!rocket.isFlying && gameState !== "intro") { 
         rocket.x = viewW / 2 - ROCKET_SIZE / 2; 
-        rocket.y = viewH * ROCKET_Y_REL - 30; 
+        rocket.y = viewH * ROCKET_Y_REL - 40; 
         updateRocketAngle();
     }
 }
@@ -87,10 +87,10 @@ function startIntro() {
     rocket.x = viewW / 2 - ROCKET_SIZE / 2;
     rocket.y = viewH + 100;
     Sound.boost();
-    const targetY = viewH * ROCKET_Y_REL - 30;
+    const targetY = viewH * ROCKET_Y_REL - 40;
     const animate = () => {
         if (rocket.y > targetY) {
-            rocket.y -= 7;
+            rocket.y -= 8;
             requestAnimationFrame(animate);
         } else {
             nextQuestion();
@@ -127,7 +127,7 @@ function nextQuestion() {
         answerContainer.appendChild(div);
     });
     rocket.isFlying = false; rocket.selectedIdx = 1;
-    rocket.x = viewW / 2 - ROCKET_SIZE / 2; rocket.y = viewH * ROCKET_Y_REL - 30;
+    rocket.x = viewW / 2 - ROCKET_SIZE / 2; rocket.y = viewH * ROCKET_Y_REL - 40;
     updateRocketAngle();
     gameState = "playing";
 }
@@ -160,7 +160,7 @@ function update() {
             showFeedback(rocket.selectedIdx === currentQuestion.correctAnswer);
         }
     } else if (gameState === "playing") {
-        rocket.y = (viewH * ROCKET_Y_REL - 30) + Math.sin(Date.now() / 400) * 4;
+        rocket.y = (viewH * ROCKET_Y_REL - 40) + Math.sin(Date.now() / 400) * 4;
     }
 }
 
@@ -212,9 +212,14 @@ document.addEventListener("keydown", (e) => {
     }
 });
 
+// UI Events
 document.getElementById("startBtn").onclick = () => { Sound.init(); document.getElementById("startScreen").style.display = "none"; startIntro(); };
 document.getElementById("infoToggle").onclick = () => document.getElementById("infoOverlay").style.display = "flex";
 document.getElementById("closeInfoBtn").onclick = () => document.getElementById("infoOverlay").style.display = "none";
+document.getElementById("muteToggle").onclick = (e) => {
+    Sound.isMuted = !Sound.isMuted;
+    e.target.innerText = Sound.isMuted ? "🔇" : "🔊";
+};
 document.getElementById("leftButton").onclick = () => moveSelection(-1);
 document.getElementById("rightButton").onclick = () => moveSelection(1);
 document.getElementById("launchButton").onclick = launch;

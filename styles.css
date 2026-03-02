@@ -20,11 +20,13 @@ body {
 
 .main-btn { background: #00ffcc; color: #000; border: none; padding: 20px 60px; font-size: 26px; font-weight: bold; border-radius: 15px; cursor: pointer; }
 
-#infoToggle {
-    position: absolute; top: 15px; right: 15px; width: 35px; height: 35px;
-    background: rgba(255,255,255,0.2); border: 1px solid white;
-    border-radius: 50%; display: flex; align-items: center; justify-content: center;
-    font-weight: bold; cursor: pointer; z-index: 100;
+/* UI Oben Rechts */
+#uiTopRight { position: absolute; top: 15px; right: 15px; display: flex; gap: 10px; z-index: 100; }
+.ui-icon {
+    width: 35px; height: 35px; background: rgba(255,255,255,0.2); 
+    border: 1px solid white; border-radius: 50%; 
+    display: flex; align-items: center; justify-content: center;
+    font-weight: bold; cursor: pointer; font-size: 16px;
 }
 
 #scoreDisplay { position: absolute; top: 15px; left: 15px; font-size: 18px; color: #ffd700; z-index: 10; font-weight: bold; }
@@ -32,7 +34,7 @@ body {
 #questionDisplay {
     position: absolute; top: 70px; left: 50%; transform: translateX(-50%);
     width: 90%; max-width: 650px; background: rgba(10, 10, 20, 0.98);
-    padding: 18px; border-radius: 15px; border: 2px solid #444;
+    padding: 15px; border-radius: 15px; border: 2px solid #444;
     text-align: center; font-size: 24px; z-index: 10;
 }
 
@@ -49,11 +51,11 @@ body {
 }
 .answerBox.selected { background: rgba(255, 255, 0, 0.3); border-color: #ffff00; transform: scale(1.1); }
 
-/* Feedback-Box: Größer und oben fixiert */
+/* Feedback-Box: Oben fixiert, schmaler für Fokus */
 #astronautFeedback {
     position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-    background: #ffffff; color: #111; padding: 25px; border-radius: 0 0 20px 20px;
-    width: 100%; max-width: 700px; display: none; align-items: center; gap: 25px;
+    background: #ffffff; color: #111; padding: 20px; border-radius: 0 0 20px 20px;
+    width: 100%; max-width: 800px; display: none; align-items: center; gap: 20px;
     z-index: 1000; border-bottom: 5px solid #ffd700;
 }
 
@@ -68,10 +70,11 @@ body {
 .end-btn { background: #444; border: 2px solid #fff; color: white; padding: 15px 30px; border-radius: 12px; cursor: pointer; font-size: 20px; }
 
 @media (max-width: 600px) {
-    #questionDisplay { font-size: 19px; top: 60px; }
-    .answerBox { width: 105px; font-size: 17px; }
+    #questionDisplay { font-size: 19px; top: 60px; padding: 10px; }
+    .answerBox { width: 105px; font-size: 17px; min-height: 60px; }
     #answerContainer { top: 25%; }
     #astronautSpeech { font-size: 16px; }
+    #astronautEmoji { font-size: 35px; }
 }
 
 .katex { font-size: 1.2em; }
