@@ -9,25 +9,23 @@
     <script defer src="katex.min.js"></script>
 </head>
 <body>
+    <!-- Startbildschirm -->
     <div id="startScreen">
         <div class="menu-box">
             <h1>🚀 Mathe-Rakete</h1>
-            <div class="menu-buttons">
-                <button id="startBtn" class="main-btn">START</button>
-                <button id="infoBtn" class="sub-btn">Anleitung</button>
-            </div>
+            <button id="startBtn" class="main-btn">START</button>
         </div>
     </div>
+
+    <!-- Dezentes Info-Icon während des Spiels -->
+    <div id="infoToggle">?</div>
 
     <div id="infoOverlay" class="overlay">
         <div class="info-box">
             <h2>Anleitung</h2>
-            <ul>
-                <li><b>Ziel:</b> Triff die richtige Antwort-Box!</li>
-                <li><b>Zielen:</b> Pfeiltasten <b>← →</b> oder Buttons.</li>
-                <li><b>Feuern:</b> <b>Leertaste</b>, <b>Enter</b> oder roter Button.</li>
-            </ul>
-            <button id="closeInfoBtn">Verstanden</button>
+            <p><b>Zielen:</b> Pfeile <b>← →</b></p>
+            <p><b>Feuern:</b> <b>Leertaste</b> oder roter Button.</p>
+            <button id="closeInfoBtn">OK</button>
         </div>
     </div>
 

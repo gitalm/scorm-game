@@ -2,18 +2,19 @@
 const Sound = {
     ctx: null,
     init() { if(!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); },
-    play(freq, type, duration) {
+    play(freq, type, duration, vol=0.1) {
         if (!this.ctx) return;
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
         osc.type = type; osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
         osc.connect(gain); gain.connect(this.ctx.destination);
-        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+        gain.gain.setValueAtTime(vol, this.ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
         osc.start(); osc.stop(this.ctx.currentTime + duration);
     },
     success() { this.play(523, 'sine', 0.2); setTimeout(() => this.play(659, 'sine', 0.3), 100); },
-    error() { this.play(150, 'sawtooth', 0.4); this.play(100, 'sawtooth', 0.4); }
+    error() { this.play(150, 'sawtooth', 0.4); this.play(100, 'sawtooth', 0.4); },
+    boost() { this.play(200, 'sawtooth', 1.0, 0.05); } // Start-Sound
 };
 
 // --- SCORM ---
@@ -48,7 +49,7 @@ const astronautSpeech = document.getElementById("astronautSpeech");
 let viewW, viewH, score = 0, questions = [], currentQuestion = null;
 let askedCount = 0, stars = [], effects = [], gameState = "start"; 
 
-const ROCKET_SIZE = 55;
+const ROCKET_SIZE = 60;
 const EMOJI_FIX = -Math.PI / 4; 
 let rocket = { x: 0, y: 0, targetX: 0, targetY: 0, angle: EMOJI_FIX, speed: 22, selectedIdx: 1, isFlying: false };
 
@@ -63,10 +64,10 @@ function resizeCanvas() {
     const dpr = window.devicePixelRatio || 1;
     canvas.width = viewW * dpr; canvas.height = viewH * dpr;
     ctx.scale(dpr, dpr);
-    // Rakete mittig positionieren (ca. 65% Bildhöhe)
-    if (!rocket.isFlying) { 
+    // Rakete in die SICHERE MITTE (50% Bildhöhe)
+    if (!rocket.isFlying && gameState !== "intro") { 
         rocket.x = viewW / 2 - ROCKET_SIZE / 2; 
-        rocket.y = viewH * 0.65; 
+        rocket.y = viewH * 0.50; 
         updateRocketAngle();
     }
 }
@@ -80,6 +81,25 @@ function updateRocketAngle() {
     rocket.angle = Math.atan2(dy, dx) + Math.PI / 2 + EMOJI_FIX;
 }
 
+function startIntro() {
+    gameState = "intro";
+    rocket.x = viewW / 2 - ROCKET_SIZE / 2;
+    rocket.y = viewH + 100; // Startet außerhalb des Bildschirms
+    Sound.boost();
+    
+    // Einfache Animation: Rakete fliegt hoch
+    const targetY = viewH * 0.50;
+    const animate = () => {
+        if (rocket.y > targetY) {
+            rocket.y -= 5;
+            requestAnimationFrame(animate);
+        } else {
+            nextQuestion();
+        }
+    };
+    animate();
+}
+
 function showFeedback(isCorrect) {
     if (gameState === "feedback") return;
     gameState = "feedback"; askedCount++;
@@ -87,7 +107,7 @@ function showFeedback(isCorrect) {
     scoreDisplay.textContent = `Punkte: ${score}`;
     const char = isCorrect ? "✨" : "👽️";
     for(let i=0; i<15; i++) {
-        effects.push({ x: rocket.x + 25, y: rocket.y + 25, vx: (Math.random()-0.5)*15, vy: (Math.random()-0.5)*15, char: char, life: 1.0 });
+        effects.push({ x: rocket.x + 30, y: rocket.y + 30, vx: (Math.random()-0.5)*15, vy: (Math.random()-0.5)*15, char: char, life: 1.0 });
     }
     renderMath((isCorrect ? "✅ Richtig! " : "❌ Falsch... ") + currentQuestion.explanation, astronautSpeech);
     astronautFeedback.style.display = "flex";
@@ -98,8 +118,6 @@ function nextQuestion() {
     astronautFeedback.style.display = "none";
     effects = [];
     currentQuestion = questions[askedCount];
-    
-    // NUR die Frage anzeigen (Keine Nummerierung mehr!)
     renderMath(currentQuestion.question, questionDisplay);
     
     answerContainer.innerHTML = "";
@@ -111,7 +129,7 @@ function nextQuestion() {
         answerContainer.appendChild(div);
     });
     rocket.isFlying = false; rocket.selectedIdx = 1;
-    rocket.x = viewW / 2 - ROCKET_SIZE / 2; rocket.y = viewH * 0.65;
+    rocket.x = viewW / 2 - ROCKET_SIZE / 2; rocket.y = viewH * 0.50;
     updateRocketAngle();
     gameState = "playing";
 }
@@ -144,7 +162,7 @@ function update() {
             showFeedback(rocket.selectedIdx === currentQuestion.correctAnswer);
         }
     } else if (gameState === "playing") {
-        rocket.y = (viewH * 0.65) + Math.sin(Date.now() / 400) * 4;
+        rocket.y = (viewH * 0.50) + Math.sin(Date.now() / 400) * 4;
     }
 }
 
@@ -154,9 +172,9 @@ function draw() {
     for(let i=0; i<40; i++) { ctx.fillRect((i*97)%viewW, (i*137)%viewH, 1, 1); }
     effects.forEach(e => { if(e.life > 0) { ctx.globalAlpha = e.life; ctx.font = "30px Arial"; ctx.fillText(e.char, e.x, e.y); } });
     ctx.globalAlpha = 1.0;
-    if (!["finished", "start"].includes(gameState)) {
-        ctx.save(); ctx.translate(rocket.x + 25, rocket.y + 25); ctx.rotate(rocket.angle);
-        ctx.font = "50px Arial"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    if (!["finished", "start", "feedback"].includes(gameState) || gameState === "intro") {
+        ctx.save(); ctx.translate(rocket.x + 30, rocket.y + 30); ctx.rotate(rocket.angle);
+        ctx.font = "60px Arial"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
         ctx.fillText("🚀", 0, 0); ctx.restore();
     }
 }
@@ -188,7 +206,7 @@ function launch() {
 
 document.addEventListener("keydown", (e) => {
     if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"," "].includes(e.key)) e.preventDefault();
-    if (["finished", "start"].includes(gameState)) return;
+    if (["finished", "start", "intro"].includes(gameState)) return;
     if (e.key === "ArrowLeft" || e.key === "a") moveSelection(-1);
     if (e.key === "ArrowRight" || e.key === "d") moveSelection(1);
     if (e.key === "ArrowUp" || e.key === "Enter" || e.key === " ") {
@@ -197,8 +215,8 @@ document.addEventListener("keydown", (e) => {
 });
 
 // UI Events
-document.getElementById("startBtn").onclick = () => { Sound.init(); document.getElementById("startScreen").style.display = "none"; nextQuestion(); };
-document.getElementById("infoBtn").onclick = () => document.getElementById("infoOverlay").style.display = "flex";
+document.getElementById("startBtn").onclick = () => { Sound.init(); document.getElementById("startScreen").style.display = "none"; startIntro(); };
+document.getElementById("infoToggle").onclick = () => document.getElementById("infoOverlay").style.display = "flex";
 document.getElementById("closeInfoBtn").onclick = () => document.getElementById("infoOverlay").style.display = "none";
 document.getElementById("leftButton").onclick = () => moveSelection(-1);
 document.getElementById("rightButton").onclick = () => moveSelection(1);
