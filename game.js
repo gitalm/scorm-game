@@ -6,8 +6,7 @@ const Sound = {
         if (!this.ctx) return;
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
-        osc.type = type;
-        osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+        osc.type = type; osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
         osc.connect(gain); gain.connect(this.ctx.destination);
         gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
@@ -17,7 +16,7 @@ const Sound = {
     error() { this.play(150, 'sawtooth', 0.4); this.play(100, 'sawtooth', 0.4); }
 };
 
-// --- SCORM API ---
+// --- SCORM ---
 const scorm = {
     active: false,
     init() {
@@ -31,6 +30,7 @@ const scorm = {
         if (!this.active) return;
         let percent = Math.round((score / total) * 100);
         this.api.LMSSetValue("cmi.core.score.raw", percent.toString());
+        this.api.LMSSetValue("cmi.core.score.max", "100");
         if (percent >= 66) this.api.LMSSetValue("cmi.core.lesson_status", "passed");
         else this.api.LMSSetValue("cmi.core.lesson_status", "failed");
         this.api.LMSCommit("");
@@ -63,10 +63,10 @@ function resizeCanvas() {
     const dpr = window.devicePixelRatio || 1;
     canvas.width = viewW * dpr; canvas.height = viewH * dpr;
     ctx.scale(dpr, dpr);
-    // Rakete HÖHER positionieren (70% statt 82%), um Buttons auszuweichen
+    // Rakete mittig positionieren (ca. 65% Bildhöhe)
     if (!rocket.isFlying) { 
         rocket.x = viewW / 2 - ROCKET_SIZE / 2; 
-        rocket.y = viewH * 0.70 - 40; 
+        rocket.y = viewH * 0.65; 
         updateRocketAngle();
     }
 }
@@ -82,8 +82,7 @@ function updateRocketAngle() {
 
 function showFeedback(isCorrect) {
     if (gameState === "feedback") return;
-    gameState = "feedback"; 
-    askedCount++;
+    gameState = "feedback"; askedCount++;
     if (isCorrect) { score += 10; Sound.success(); } else { Sound.error(); }
     scoreDisplay.textContent = `Punkte: ${score}`;
     const char = isCorrect ? "✨" : "👽️";
@@ -99,7 +98,9 @@ function nextQuestion() {
     astronautFeedback.style.display = "none";
     effects = [];
     currentQuestion = questions[askedCount];
-    renderMath(`${askedCount + 1}/${questions.length}: ${currentQuestion.question}`, questionDisplay);
+    
+    // NUR die Frage anzeigen (Keine Nummerierung mehr!)
+    renderMath(currentQuestion.question, questionDisplay);
     
     answerContainer.innerHTML = "";
     currentQuestion.answers.forEach((text, i) => {
@@ -110,7 +111,7 @@ function nextQuestion() {
         answerContainer.appendChild(div);
     });
     rocket.isFlying = false; rocket.selectedIdx = 1;
-    rocket.x = viewW / 2 - ROCKET_SIZE / 2; rocket.y = viewH * 0.70 - 40;
+    rocket.x = viewW / 2 - ROCKET_SIZE / 2; rocket.y = viewH * 0.65;
     updateRocketAngle();
     gameState = "playing";
 }
@@ -120,14 +121,11 @@ function endGame() {
     answerContainer.innerHTML = ""; astronautFeedback.style.display = "none";
     const maxP = questions.length * 10;
     const perc = Math.round((score / maxP) * 100);
-    const passed = perc >= 66;
     scorm.save(score, maxP);
-
     questionDisplay.innerHTML = `
         <div class="end-screen">
             <h2>Missionsbericht</h2>
             <div class="stat-box">${perc}% Erfolg</div>
-            <p>${passed ? "Hervorragend! Die Basis ist stolz. 🚀" : "Mission abgebrochen. Mehr Training nötig! 👽️"}</p>
             <button class="end-btn" onclick="location.reload()">Neustart</button>
         </div>`;
 }
@@ -146,7 +144,7 @@ function update() {
             showFeedback(rocket.selectedIdx === currentQuestion.correctAnswer);
         }
     } else if (gameState === "playing") {
-        rocket.y = (viewH * 0.70 - 40) + Math.sin(Date.now() / 400) * 4;
+        rocket.y = (viewH * 0.65) + Math.sin(Date.now() / 400) * 4;
     }
 }
 
@@ -198,12 +196,10 @@ document.addEventListener("keydown", (e) => {
     }
 });
 
-document.getElementById("startBtn").onclick = () => {
-    Sound.init();
-    document.getElementById("startScreen").style.display = "none";
-    nextQuestion();
-};
-
+// UI Events
+document.getElementById("startBtn").onclick = () => { Sound.init(); document.getElementById("startScreen").style.display = "none"; nextQuestion(); };
+document.getElementById("infoBtn").onclick = () => document.getElementById("infoOverlay").style.display = "flex";
+document.getElementById("closeInfoBtn").onclick = () => document.getElementById("infoOverlay").style.display = "none";
 document.getElementById("leftButton").onclick = () => moveSelection(-1);
 document.getElementById("rightButton").onclick = () => moveSelection(1);
 document.getElementById("launchButton").onclick = launch;

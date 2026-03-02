@@ -9,16 +9,25 @@
     <script defer src="katex.min.js"></script>
 </head>
 <body>
-    <!-- Startbildschirm mit Anleitung -->
     <div id="startScreen">
-        <div class="info-box">
-            <h1>🚀 Mission: Bruchrechnen</h1>
-            <div class="instruction-text">
-                <p><b>Ziel:</b> Triff die richtige Antwort-Box!</p>
-                <p><b>Steuerung:</b> Nutze die Pfeiltasten <b>← →</b> oder die Buttons zum Zielen.</p>
-                <p><b>Start:</b> Drücke <b>Leertaste</b>, <b>Enter</b> oder den roten Button zum Abfeuern.</p>
+        <div class="menu-box">
+            <h1>🚀 Mathe-Rakete</h1>
+            <div class="menu-buttons">
+                <button id="startBtn" class="main-btn">START</button>
+                <button id="infoBtn" class="sub-btn">Anleitung</button>
             </div>
-            <button id="startBtn">Mission starten</button>
+        </div>
+    </div>
+
+    <div id="infoOverlay" class="overlay">
+        <div class="info-box">
+            <h2>Anleitung</h2>
+            <ul>
+                <li><b>Ziel:</b> Triff die richtige Antwort-Box!</li>
+                <li><b>Zielen:</b> Pfeiltasten <b>← →</b> oder Buttons.</li>
+                <li><b>Feuern:</b> <b>Leertaste</b>, <b>Enter</b> oder roter Button.</li>
+            </ul>
+            <button id="closeInfoBtn">Verstanden</button>
         </div>
     </div>
 
