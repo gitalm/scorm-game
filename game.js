@@ -1,7 +1,7 @@
 // --- SOUND ENGINE ---
 const Sound = {
     ctx: null,
-    isMuted: true, // Startet stumm
+    isMuted: true,
     init() { 
         if(!this.ctx) {
             this.ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -58,7 +58,7 @@ let askedCount = 0, stars = [], effects = [], gameState = "start";
 
 const ROCKET_SIZE = 60;
 const EMOJI_FIX = -Math.PI / 4; 
-const ROCKET_Y_REL = 0.85; 
+const ROCKET_Y_REL = 0.82; // Sicherer Standpunkt
 
 let rocket = { x: 0, y: 0, targetX: 0, targetY: 0, angle: EMOJI_FIX, speed: 22, selectedIdx: 1, isFlying: false };
 
@@ -130,6 +130,12 @@ function nextQuestion() {
         const div = document.createElement("div");
         div.className = "answerBox" + (i === 1 ? " selected" : "");
         div.id = "ans" + i;
+        div.onclick = () => { // Direkt-Klick Logik
+            if (gameState === "playing") {
+                moveSelectionTo(i);
+                launch();
+            }
+        };
         renderMath(text, div);
         answerContainer.appendChild(div);
     });
@@ -137,6 +143,13 @@ function nextQuestion() {
     rocket.x = viewW / 2 - ROCKET_SIZE / 2; rocket.y = viewH * ROCKET_Y_REL - 40;
     updateRocketAngle();
     gameState = "playing";
+}
+
+function moveSelectionTo(idx) {
+    document.getElementById("ans" + rocket.selectedIdx).classList.remove("selected");
+    rocket.selectedIdx = idx;
+    document.getElementById("ans" + rocket.selectedIdx).classList.add("selected");
+    updateRocketAngle();
 }
 
 function endGame() {
@@ -177,7 +190,8 @@ function draw() {
     for(let i=0; i<40; i++) { ctx.fillRect((i*97)%viewW, (i*137)%viewH, 1, 1); }
     effects.forEach(e => { if(e.life > 0) { ctx.globalAlpha = e.life; ctx.font = "30px Arial"; ctx.fillText(e.char, e.x, e.y); } });
     ctx.globalAlpha = 1.0;
-    if (!["finished", "start", "feedback"].includes(gameState) || gameState === "intro") {
+    // Rakete wird nun IMMER gezeichnet außer im Menü/Ende
+    if (!["finished", "start"].includes(gameState)) {
         ctx.save(); ctx.translate(rocket.x + 30, rocket.y + 30); ctx.rotate(rocket.angle);
         ctx.font = "60px Arial"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
         ctx.fillText("🚀", 0, 0); ctx.restore();
@@ -195,13 +209,15 @@ async function loadQuestions() {
 
 function moveSelection(dir) {
     if (gameState !== "playing") return;
-    document.getElementById("ans" + rocket.selectedIdx).classList.remove("selected");
-    rocket.selectedIdx = Math.max(0, Math.min(2, rocket.selectedIdx + dir));
-    document.getElementById("ans" + rocket.selectedIdx).classList.add("selected");
-    updateRocketAngle();
+    let nextIdx = Math.max(0, Math.min(2, rocket.selectedIdx + dir));
+    moveSelectionTo(nextIdx);
 }
 
 function launch() {
+    if (gameState === "feedback") {
+        nextQuestion();
+        return;
+    }
     if (gameState !== "playing") return;
     const rect = document.getElementById("ans" + rocket.selectedIdx).getBoundingClientRect();
     rocket.targetX = rect.left + rect.width / 2 - ROCKET_SIZE / 2;
@@ -214,24 +230,24 @@ document.addEventListener("keydown", (e) => {
     if (["finished", "start", "intro"].includes(gameState)) return;
     if (e.key === "ArrowLeft" || e.key === "a") moveSelection(-1);
     if (e.key === "ArrowRight" || e.key === "d") moveSelection(1);
-    if (e.key === "ArrowUp" || e.key === "Enter" || e.key === " ") {
-        if (gameState === "feedback") nextQuestion(); else if (gameState === "playing") launch();
-    }
+    if (e.key === "ArrowUp" || e.key === "Enter" || e.key === " ") launch();
 });
 
 // UI Events
-document.getElementById("startBtn").onclick = () => { 
-    Sound.init(); 
-    document.getElementById("startScreen").style.display = "none"; 
-    startIntro(); 
-};
+document.getElementById("startBtn").onclick = () => { Sound.init(); document.getElementById("startScreen").style.display = "none"; startIntro(); };
 document.getElementById("infoToggle").onclick = () => document.getElementById("infoOverlay").style.display = "flex";
 document.getElementById("closeInfoBtn").onclick = () => document.getElementById("infoOverlay").style.display = "none";
+
 document.getElementById("muteToggle").onclick = (e) => {
     Sound.init();
     Sound.isMuted = !Sound.isMuted;
     e.target.innerText = Sound.isMuted ? "🔇" : "🔊";
 };
+
+document.getElementById("controlsToggle").onclick = () => {
+    document.getElementById("touchControls").classList.toggle("hidden");
+};
+
 document.getElementById("leftButton").onclick = () => moveSelection(-1);
 document.getElementById("rightButton").onclick = () => moveSelection(1);
 document.getElementById("launchButton").onclick = launch;
