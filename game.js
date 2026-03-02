@@ -1,17 +1,25 @@
 // --- SOUND ENGINE ---
 const Sound = {
     ctx: null,
-    isMuted: true, // Startet jetzt stummgeschaltet
-    init() { if(!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); },
+    isMuted: true, // Standardmäßig STUMM
+    init() { 
+        if(!this.ctx) {
+            this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+            // Sicherstellen, dass der Context sofort "bereit" ist
+            if (this.ctx.state === 'suspended') this.ctx.resume();
+        }
+    },
     play(freq, type, duration, vol=0.1) {
         if (!this.ctx || this.isMuted) return;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = type; osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-        osc.connect(gain); gain.connect(this.ctx.destination);
-        gain.gain.setValueAtTime(vol, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
-        osc.start(); osc.stop(this.ctx.currentTime + duration);
+        try {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = type; osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+            osc.connect(gain); gain.connect(this.ctx.destination);
+            gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
+            osc.start(); osc.stop(this.ctx.currentTime + duration);
+        } catch(e) {}
     },
     success() { this.play(523, 'sine', 0.2); setTimeout(() => this.play(659, 'sine', 0.3), 100); },
     error() { this.play(150, 'sawtooth', 0.4); this.play(100, 'sawtooth', 0.4); },
@@ -52,7 +60,7 @@ let askedCount = 0, stars = [], effects = [], gameState = "start";
 
 const ROCKET_SIZE = 60;
 const EMOJI_FIX = -Math.PI / 4; 
-const ROCKET_Y_REL = 0.85; 
+const ROCKET_Y_REL = 0.85; // Stabil unten
 
 let rocket = { x: 0, y: 0, targetX: 0, targetY: 0, angle: EMOJI_FIX, speed: 22, selectedIdx: 1, isFlying: false };
 
@@ -214,10 +222,15 @@ document.addEventListener("keydown", (e) => {
 });
 
 // UI Events
-document.getElementById("startBtn").onclick = () => { Sound.init(); document.getElementById("startScreen").style.display = "none"; startIntro(); };
+document.getElementById("startBtn").onclick = () => { 
+    Sound.init(); 
+    document.getElementById("startScreen").style.display = "none"; 
+    startIntro(); 
+};
 document.getElementById("infoToggle").onclick = () => document.getElementById("infoOverlay").style.display = "flex";
 document.getElementById("closeInfoBtn").onclick = () => document.getElementById("infoOverlay").style.display = "none";
 document.getElementById("muteToggle").onclick = (e) => {
+    Sound.init(); // Falls noch nicht initialisiert
     Sound.isMuted = !Sound.isMuted;
     e.target.innerText = Sound.isMuted ? "🔇" : "🔊";
 };

@@ -16,7 +16,6 @@
         </div>
     </div>
 
-    <!-- UI Oben Rechts -->
     <div id="uiTopRight">
         <div id="muteToggle" class="ui-icon">🔇</div>
         <div id="infoToggle" class="ui-icon">?</div>
@@ -32,17 +31,18 @@
     </div>
 
     <div id="scoreDisplay">Punkte: 0</div>
-    <!-- Frage ganz oben -->
-    <div id="questionDisplay">Bereitmachen...</div>
+
+    <!-- Neues HUD-System für vertikales Stapeln -->
+    <div id="topHUD">
+        <div id="questionDisplay">Bereitmachen...</div>
+        <div id="astronautFeedback">
+            <div id="astronautEmoji">👩‍🚀</div>
+            <div id="astronautSpeech"></div>
+        </div>
+    </div>
 
     <canvas id="gameCanvas"></canvas>
     <div id="answerContainer"></div>
-
-    <!-- Feedback unter der Frage -->
-    <div id="astronautFeedback">
-        <div id="astronautEmoji">👩‍🚀</div>
-        <div id="astronautSpeech"></div>
-    </div>
 
     <div id="touchControls">
         <button class="touchButton" id="leftButton">←</button>
