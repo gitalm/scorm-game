@@ -17,7 +17,6 @@ body {
     padding: 30px; border-radius: 25px; border: 2px solid #ffd700;
     text-align: center; box-shadow: 0 0 50px rgba(0,0,0,0.9);
 }
-.menu-box p { color: #aaa; margin-bottom: 20px; font-size: 16px; }
 
 .main-btn { background: #00ffcc; color: #000; border: none; padding: 20px 60px; font-size: 26px; font-weight: bold; border-radius: 15px; cursor: pointer; }
 
@@ -46,27 +45,27 @@ body {
 }
 
 #astronautEmoji { font-size: 50px; }
-#astronautSpeech { font-size: 20px; flex: 1; line-height: 1.3; font-weight: bold; }
+#astronautSpeech { font-size: 22px; flex: 1; line-height: 1.3; font-weight: bold; }
 
 #questionDisplay {
     width: 90%; max-width: 750px; background: rgba(15, 15, 30, 0.98);
     padding: 20px; border-radius: 15px; border: 2px solid #555;
-    text-align: center; font-size: 28px; pointer-events: auto;
+    text-align: center; font-size: 32px; pointer-events: auto;
     box-shadow: 0 5px 20px rgba(0,0,0,0.7);
 }
 
 #answerContainer {
-    position: absolute; top: 45%; left: 0; width: 100%;
+    position: absolute; top: 48%; left: 0; width: 100%;
     display: flex; justify-content: space-evenly; 
     pointer-events: none; z-index: 20;
     padding: 0 10px; box-sizing: border-box;
 }
 
 .answerBox {
-    width: 150px; min-height: 70px; background: rgba(30, 30, 50, 1.0);
+    width: 160px; min-height: 80px; background: rgba(30, 30, 50, 1.0);
     border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 12px;
     display: flex; align-items: center; justify-content: center;
-    padding: 10px; text-align: center; font-size: 24px; color: white;
+    padding: 10px; text-align: center; font-size: 26px; color: white;
     cursor: pointer; pointer-events: auto;
 }
 .answerBox.selected { background: rgba(255, 255, 0, 0.3); border-color: #ffff00; transform: scale(1.15); }
@@ -77,11 +76,10 @@ body {
 .end-btn { background: #444; border: 2px solid #fff; color: white; padding: 15px 30px; border-radius: 12px; cursor: pointer; font-size: 20px; }
 
 @media (max-width: 600px) {
-    #questionDisplay { font-size: 20px; }
-    #astronautSpeech { font-size: 17px; }
-    #astronautEmoji { font-size: 40px; }
+    #questionDisplay { font-size: 22px; }
+    #astronautSpeech { font-size: 18px; }
     .answerBox { width: 105px; font-size: 18px; }
-    #answerContainer { top: 40%; }
+    #answerContainer { top: 42%; }
 }
 
 .katex { font-size: 1.2em; }
