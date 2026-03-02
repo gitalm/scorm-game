@@ -1,28 +1,20 @@
-// --- SOUND ENGINE (Synthetische Töne) ---
+// --- SOUND ENGINE ---
 const Sound = {
     ctx: null,
-    init() { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); },
+    init() { if(!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); },
     play(freq, type, duration) {
         if (!this.ctx) return;
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
         osc.type = type;
         osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
+        osc.connect(gain); gain.connect(this.ctx.destination);
         gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
-        osc.start();
-        osc.stop(this.ctx.currentTime + duration);
+        osc.start(); osc.stop(this.ctx.currentTime + duration);
     },
-    success() { 
-        this.play(523.25, 'sine', 0.2); // C5
-        setTimeout(() => this.play(659.25, 'sine', 0.3), 100); // E5
-    },
-    error() {
-        this.play(150, 'sawtooth', 0.4);
-        this.play(100, 'sawtooth', 0.4);
-    }
+    success() { this.play(523, 'sine', 0.2); setTimeout(() => this.play(659, 'sine', 0.3), 100); },
+    error() { this.play(150, 'sawtooth', 0.4); this.play(100, 'sawtooth', 0.4); }
 };
 
 // --- SCORM API ---
@@ -30,10 +22,7 @@ const scorm = {
     active: false,
     init() {
         this.api = (function findAPI(win) {
-            let n = 0;
-            while ((win.API == null) && (win.parent != null) && (win.parent != win)) {
-                if (n++ > 10) return null; win = win.parent;
-            }
+            let n = 0; while ((win.API == null) && (win.parent != null) && (win.parent != win)) { if (n++ > 10) return null; win = win.parent; }
             return win.API;
         })(window);
         if (this.api) { this.api.LMSInitialize(""); this.active = true; }
@@ -57,7 +46,7 @@ const astronautFeedback = document.getElementById("astronautFeedback");
 const astronautSpeech = document.getElementById("astronautSpeech");
 
 let viewW, viewH, score = 0, questions = [], currentQuestion = null;
-let askedCount = 0, stars = [], effects = [], gameState = "login", playerName = "Pilot"; 
+let askedCount = 0, stars = [], effects = [], gameState = "start"; 
 
 const ROCKET_SIZE = 55;
 const EMOJI_FIX = -Math.PI / 4; 
@@ -74,9 +63,10 @@ function resizeCanvas() {
     const dpr = window.devicePixelRatio || 1;
     canvas.width = viewW * dpr; canvas.height = viewH * dpr;
     ctx.scale(dpr, dpr);
+    // Rakete HÖHER positionieren (70% statt 82%), um Buttons auszuweichen
     if (!rocket.isFlying) { 
         rocket.x = viewW / 2 - ROCKET_SIZE / 2; 
-        rocket.y = viewH * 0.82 - 40; 
+        rocket.y = viewH * 0.70 - 40; 
         updateRocketAngle();
     }
 }
@@ -96,7 +86,6 @@ function showFeedback(isCorrect) {
     askedCount++;
     if (isCorrect) { score += 10; Sound.success(); } else { Sound.error(); }
     scoreDisplay.textContent = `Punkte: ${score}`;
-    
     const char = isCorrect ? "✨" : "👽️";
     for(let i=0; i<15; i++) {
         effects.push({ x: rocket.x + 25, y: rocket.y + 25, vx: (Math.random()-0.5)*15, vy: (Math.random()-0.5)*15, char: char, life: 1.0 });
@@ -110,7 +99,7 @@ function nextQuestion() {
     astronautFeedback.style.display = "none";
     effects = [];
     currentQuestion = questions[askedCount];
-    renderMath(currentQuestion.question, questionDisplay);
+    renderMath(`${askedCount + 1}/${questions.length}: ${currentQuestion.question}`, questionDisplay);
     
     answerContainer.innerHTML = "";
     currentQuestion.answers.forEach((text, i) => {
@@ -121,7 +110,7 @@ function nextQuestion() {
         answerContainer.appendChild(div);
     });
     rocket.isFlying = false; rocket.selectedIdx = 1;
-    rocket.x = viewW / 2 - ROCKET_SIZE / 2; rocket.y = viewH * 0.82 - 40;
+    rocket.x = viewW / 2 - ROCKET_SIZE / 2; rocket.y = viewH * 0.70 - 40;
     updateRocketAngle();
     gameState = "playing";
 }
@@ -136,12 +125,10 @@ function endGame() {
 
     questionDisplay.innerHTML = `
         <div class="end-screen">
-            <h2>Missionsbericht: ${playerName}</h2>
+            <h2>Missionsbericht</h2>
             <div class="stat-box">${perc}% Erfolg</div>
-            <p>${passed ? "Hervorragend! Die Basis ist stolz auf dich. 🚀" : "Mission abgebrochen. Mehr Training nötig! 👽️"}</p>
-            <div class="end-btn-container">
-                <button class="end-btn" onclick="location.reload()">Neustart</button>
-            </div>
+            <p>${passed ? "Hervorragend! Die Basis ist stolz. 🚀" : "Mission abgebrochen. Mehr Training nötig! 👽️"}</p>
+            <button class="end-btn" onclick="location.reload()">Neustart</button>
         </div>`;
 }
 
@@ -159,7 +146,7 @@ function update() {
             showFeedback(rocket.selectedIdx === currentQuestion.correctAnswer);
         }
     } else if (gameState === "playing") {
-        rocket.y = (viewH * 0.82 - 40) + Math.sin(Date.now() / 400) * 4;
+        rocket.y = (viewH * 0.70 - 40) + Math.sin(Date.now() / 400) * 4;
     }
 }
 
@@ -169,7 +156,7 @@ function draw() {
     for(let i=0; i<40; i++) { ctx.fillRect((i*97)%viewW, (i*137)%viewH, 1, 1); }
     effects.forEach(e => { if(e.life > 0) { ctx.globalAlpha = e.life; ctx.font = "30px Arial"; ctx.fillText(e.char, e.x, e.y); } });
     ctx.globalAlpha = 1.0;
-    if (gameState !== "finished" && gameState !== "login") {
+    if (!["finished", "start"].includes(gameState)) {
         ctx.save(); ctx.translate(rocket.x + 25, rocket.y + 25); ctx.rotate(rocket.angle);
         ctx.font = "50px Arial"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
         ctx.fillText("🚀", 0, 0); ctx.restore();
@@ -201,28 +188,19 @@ function launch() {
     rocket.isFlying = true; gameState = "flying";
 }
 
-// Tastatur-Logik mit Scroll-Schutz
 document.addEventListener("keydown", (e) => {
-    // Verhindert Scrollen bei Pfeiltasten und Leertaste
-    if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"," "].includes(e.key)) {
-        e.preventDefault();
-    }
-
-    if (gameState === "finished" || gameState === "login") return;
-    
+    if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"," "].includes(e.key)) e.preventDefault();
+    if (["finished", "start"].includes(gameState)) return;
     if (e.key === "ArrowLeft" || e.key === "a") moveSelection(-1);
     if (e.key === "ArrowRight" || e.key === "d") moveSelection(1);
-    if (e.key === "ArrowUp" || e.key === "Enter" || e.key === " " || e.key === "w") {
+    if (e.key === "ArrowUp" || e.key === "Enter" || e.key === " ") {
         if (gameState === "feedback") nextQuestion(); else if (gameState === "playing") launch();
     }
 });
 
-// Login Logik
 document.getElementById("startBtn").onclick = () => {
-    const val = document.getElementById("playerName").value;
-    if(val) playerName = val;
-    Sound.init(); // AudioContext nach User-Geste starten
-    document.getElementById("loginScreen").style.display = "none";
+    Sound.init();
+    document.getElementById("startScreen").style.display = "none";
     nextQuestion();
 };
 

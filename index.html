@@ -9,18 +9,21 @@
     <script defer src="katex.min.js"></script>
 </head>
 <body>
-    <!-- Anmeldung / Startbildschirm -->
-    <div id="loginScreen">
-        <div class="login-box">
-            <h1>🚀 Raketen-Quiz</h1>
-            <p>Willkommen Pilot! Gib deinen Namen ein:</p>
-            <input type="text" id="playerName" placeholder="Dein Name..." maxlength="15">
+    <!-- Startbildschirm mit Anleitung -->
+    <div id="startScreen">
+        <div class="info-box">
+            <h1>🚀 Mission: Bruchrechnen</h1>
+            <div class="instruction-text">
+                <p><b>Ziel:</b> Triff die richtige Antwort-Box!</p>
+                <p><b>Steuerung:</b> Nutze die Pfeiltasten <b>← →</b> oder die Buttons zum Zielen.</p>
+                <p><b>Start:</b> Drücke <b>Leertaste</b>, <b>Enter</b> oder den roten Button zum Abfeuern.</p>
+            </div>
             <button id="startBtn">Mission starten</button>
         </div>
     </div>
 
     <div id="scoreDisplay">Punkte: 0</div>
-    <div id="questionDisplay">Warte auf Freigabe...</div>
+    <div id="questionDisplay">Bereitmachen...</div>
 
     <canvas id="gameCanvas"></canvas>
     <div id="answerContainer"></div>
