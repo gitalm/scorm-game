@@ -1,11 +1,10 @@
 // --- SOUND ENGINE ---
 const Sound = {
     ctx: null,
-    isMuted: true, // Standardmäßig STUMM
+    isMuted: true, // Startet stumm
     init() { 
         if(!this.ctx) {
             this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-            // Sicherstellen, dass der Context sofort "bereit" ist
             if (this.ctx.state === 'suspended') this.ctx.resume();
         }
     },
@@ -40,7 +39,6 @@ const scorm = {
         if (!this.active) return;
         let percent = Math.round((score / total) * 100);
         this.api.LMSSetValue("cmi.core.score.raw", percent.toString());
-        this.api.LMSSetValue("cmi.core.score.max", "100");
         if (percent >= 66) this.api.LMSSetValue("cmi.core.lesson_status", "passed");
         else this.api.LMSSetValue("cmi.core.lesson_status", "failed");
         this.api.LMSCommit("");
@@ -60,7 +58,7 @@ let askedCount = 0, stars = [], effects = [], gameState = "start";
 
 const ROCKET_SIZE = 60;
 const EMOJI_FIX = -Math.PI / 4; 
-const ROCKET_Y_REL = 0.85; // Stabil unten
+const ROCKET_Y_REL = 0.85; 
 
 let rocket = { x: 0, y: 0, targetX: 0, targetY: 0, angle: EMOJI_FIX, speed: 22, selectedIdx: 1, isFlying: false };
 
@@ -230,7 +228,7 @@ document.getElementById("startBtn").onclick = () => {
 document.getElementById("infoToggle").onclick = () => document.getElementById("infoOverlay").style.display = "flex";
 document.getElementById("closeInfoBtn").onclick = () => document.getElementById("infoOverlay").style.display = "none";
 document.getElementById("muteToggle").onclick = (e) => {
-    Sound.init(); // Falls noch nicht initialisiert
+    Sound.init();
     Sound.isMuted = !Sound.isMuted;
     e.target.innerText = Sound.isMuted ? "🔇" : "🔊";
 };
