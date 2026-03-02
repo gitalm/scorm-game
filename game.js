@@ -14,7 +14,7 @@ const Sound = {
     },
     success() { this.play(523, 'sine', 0.2); setTimeout(() => this.play(659, 'sine', 0.3), 100); },
     error() { this.play(150, 'sawtooth', 0.4); this.play(100, 'sawtooth', 0.4); },
-    boost() { this.play(200, 'sawtooth', 1.0, 0.05); } // Start-Sound
+    boost() { this.play(200, 'sawtooth', 1.0, 0.05); }
 };
 
 // --- SCORM ---
@@ -51,6 +51,8 @@ let askedCount = 0, stars = [], effects = [], gameState = "start";
 
 const ROCKET_SIZE = 60;
 const EMOJI_FIX = -Math.PI / 4; 
+const ROCKET_Y_REL = 0.75; // Hier kannst du die Höhe zentral steuern (0.0 bis 1.0)
+
 let rocket = { x: 0, y: 0, targetX: 0, targetY: 0, angle: EMOJI_FIX, speed: 22, selectedIdx: 1, isFlying: false };
 
 function renderMath(text, element) {
@@ -64,10 +66,9 @@ function resizeCanvas() {
     const dpr = window.devicePixelRatio || 1;
     canvas.width = viewW * dpr; canvas.height = viewH * dpr;
     ctx.scale(dpr, dpr);
-    // Rakete in die SICHERE MITTE (50% Bildhöhe)
     if (!rocket.isFlying && gameState !== "intro") { 
         rocket.x = viewW / 2 - ROCKET_SIZE / 2; 
-        rocket.y = viewH * 0.50; 
+        rocket.y = viewH * ROCKET_Y_REL - 30; 
         updateRocketAngle();
     }
 }
@@ -84,14 +85,12 @@ function updateRocketAngle() {
 function startIntro() {
     gameState = "intro";
     rocket.x = viewW / 2 - ROCKET_SIZE / 2;
-    rocket.y = viewH + 100; // Startet außerhalb des Bildschirms
+    rocket.y = viewH + 100;
     Sound.boost();
-    
-    // Einfache Animation: Rakete fliegt hoch
-    const targetY = viewH * 0.50;
+    const targetY = viewH * ROCKET_Y_REL - 30;
     const animate = () => {
         if (rocket.y > targetY) {
-            rocket.y -= 5;
+            rocket.y -= 7;
             requestAnimationFrame(animate);
         } else {
             nextQuestion();
@@ -107,7 +106,7 @@ function showFeedback(isCorrect) {
     scoreDisplay.textContent = `Punkte: ${score}`;
     const char = isCorrect ? "✨" : "👽️";
     for(let i=0; i<15; i++) {
-        effects.push({ x: rocket.x + 30, y: rocket.y + 30, vx: (Math.random()-0.5)*15, vy: (Math.random()-0.5)*15, char: char, life: 1.0 });
+        effects.push({ x: rocket.x + 30, y: rocket.y + 30, vx: (Math.random()-0.5)*18, vy: (Math.random()-0.5)*18, char: char, life: 1.0 });
     }
     renderMath((isCorrect ? "✅ Richtig! " : "❌ Falsch... ") + currentQuestion.explanation, astronautSpeech);
     astronautFeedback.style.display = "flex";
@@ -119,7 +118,6 @@ function nextQuestion() {
     effects = [];
     currentQuestion = questions[askedCount];
     renderMath(currentQuestion.question, questionDisplay);
-    
     answerContainer.innerHTML = "";
     currentQuestion.answers.forEach((text, i) => {
         const div = document.createElement("div");
@@ -129,7 +127,7 @@ function nextQuestion() {
         answerContainer.appendChild(div);
     });
     rocket.isFlying = false; rocket.selectedIdx = 1;
-    rocket.x = viewW / 2 - ROCKET_SIZE / 2; rocket.y = viewH * 0.50;
+    rocket.x = viewW / 2 - ROCKET_SIZE / 2; rocket.y = viewH * ROCKET_Y_REL - 30;
     updateRocketAngle();
     gameState = "playing";
 }
@@ -162,7 +160,7 @@ function update() {
             showFeedback(rocket.selectedIdx === currentQuestion.correctAnswer);
         }
     } else if (gameState === "playing") {
-        rocket.y = (viewH * 0.50) + Math.sin(Date.now() / 400) * 4;
+        rocket.y = (viewH * ROCKET_Y_REL - 30) + Math.sin(Date.now() / 400) * 4;
     }
 }
 
@@ -214,7 +212,6 @@ document.addEventListener("keydown", (e) => {
     }
 });
 
-// UI Events
 document.getElementById("startBtn").onclick = () => { Sound.init(); document.getElementById("startScreen").style.display = "none"; startIntro(); };
 document.getElementById("infoToggle").onclick = () => document.getElementById("infoOverlay").style.display = "flex";
 document.getElementById("closeInfoBtn").onclick = () => document.getElementById("infoOverlay").style.display = "none";
