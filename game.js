@@ -54,10 +54,10 @@ const astronautFeedback = document.getElementById("astronautFeedback");
 const astronautSpeech = document.getElementById("astronautSpeech");
 
 let viewW, viewH, score = 0, questions = [], currentQuestion = null;
-let askedCount = 0, stars = [], effects = [], gameState = "start"; 
+let askedCount = 0, effects = [], gameState = "start"; 
 
 const ROCKET_SIZE = 60;
-const EMOJI_FIX = -Math.PI / 4; 
+const EMOJI_FIX = -Math.PI / 4; // Damit das Emoji 🚀 gerade steht
 const ROCKET_Y_REL = 0.88; 
 
 let rocket = { x: 0, y: 0, targetX: 0, targetY: 0, angle: EMOJI_FIX, speed: 22, selectedIdx: 1, isFlying: false };
@@ -73,14 +73,15 @@ function resizeCanvas() {
     const dpr = window.devicePixelRatio || 1;
     canvas.width = viewW * dpr; canvas.height = viewH * dpr;
     ctx.scale(dpr, dpr);
-    resetRocketPos();
+    if (!rocket.isFlying && gameState !== "intro") resetRocketPos();
 }
 
+// Setzt Rakete in die Mitte und lässt sie nach oben zeigen
 function resetRocketPos() {
     rocket.x = viewW / 2 - ROCKET_SIZE / 2; 
     rocket.y = viewH * ROCKET_Y_REL - 40; 
+    rocket.angle = EMOJI_FIX; // Nach OBEN zeigen
     rocket.isFlying = false;
-    updateRocketAngle();
 }
 
 function updateRocketAngle() {
@@ -96,6 +97,7 @@ function startIntro() {
     gameState = "intro";
     rocket.x = viewW / 2 - ROCKET_SIZE / 2;
     rocket.y = viewH + 100;
+    rocket.angle = EMOJI_FIX;
     Sound.boost();
     const targetY = viewH * ROCKET_Y_REL - 40;
     const animate = () => {
@@ -117,7 +119,7 @@ function showFeedback(isCorrect) {
     for(let i=0; i<15; i++) {
         effects.push({ x: rocket.x + 30, y: rocket.y + 30, vx: (Math.random()-0.5)*18, vy: (Math.random()-0.5)*18, char: char, life: 1.0 });
     }
-    renderMath((isCorrect ? "✅ Richtig! " : "❌ Falsch... ") + currentQuestion.explanation + " <br><small>(Klicken zum Fortfahren)</small>", astronautSpeech);
+    renderMath((isCorrect ? "✅ Richtig! " : "❌ Falsch... ") + currentQuestion.explanation + " <br><small>(Tippen oder Taste zum Fortfahren)</small>", astronautSpeech);
     astronautFeedback.style.display = "flex";
 }
 
@@ -130,28 +132,30 @@ function nextQuestion() {
     answerContainer.innerHTML = "";
     currentQuestion.answers.forEach((text, i) => {
         const div = document.createElement("div");
-        div.className = "answerBox" + (i === 1 ? " selected" : "");
+        div.className = "answerBox";
         div.id = "ans" + i;
-        div.onclick = () => { if (gameState === "playing") selectAndLaunch(i); };
+        div.onclick = (e) => { 
+            e.stopPropagation(); // Verhindert globales Klick-Event
+            if (gameState === "playing") selectAndLaunch(i); 
+        };
         renderMath(text, div);
         answerContainer.appendChild(div);
     });
     resetRocketPos();
-    rocket.selectedIdx = 1;
     gameState = "playing";
 }
 
 function selectAndLaunch(idx) {
     if (gameState !== "playing") return;
-    gameState = "flying"; // Sperrt weitere Klicks sofort
+    gameState = "flying"; 
     
     // UI Update
     document.querySelectorAll(".answerBox").forEach(b => b.classList.remove("selected"));
     document.getElementById("ans" + idx).classList.add("selected");
     rocket.selectedIdx = idx;
-    updateRocketAngle();
     
-    // Ziel festlegen
+    // Winkel berechnen und Flug starten
+    updateRocketAngle();
     const rect = document.getElementById("ans" + idx).getBoundingClientRect();
     rocket.targetX = rect.left + rect.width / 2 - ROCKET_SIZE / 2;
     rocket.targetY = rect.top + rect.height;
@@ -212,11 +216,20 @@ async function loadQuestions() {
     } catch (err) { questionDisplay.textContent = "Ladefehler!"; }
 }
 
-astronautFeedback.onclick = () => { if (gameState === "feedback") nextQuestion(); };
+// Globales Klick-Event für "Überall Klicken zum Weiter"
+window.addEventListener("click", () => {
+    if (gameState === "feedback") nextQuestion();
+});
 
+// Globales Key-Event für "Jede Taste zum Weiter" oder Steuerung
 document.addEventListener("keydown", (e) => {
     if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"," "].includes(e.key)) e.preventDefault();
-    if (gameState === "feedback" && (e.key === "Enter" || e.key === " ")) { nextQuestion(); return; }
+    
+    if (gameState === "feedback") {
+        nextQuestion();
+        return;
+    }
+    
     if (gameState !== "playing") return;
     
     if (e.key === "ArrowLeft") selectAndLaunch(0);
@@ -224,12 +237,18 @@ document.addEventListener("keydown", (e) => {
     if (e.key === "ArrowUp" || e.key === "Enter" || e.key === " ") selectAndLaunch(1);
 });
 
-document.getElementById("startBtn").onclick = () => { Sound.init(); document.getElementById("startScreen").style.display = "none"; startIntro(); };
-document.getElementById("infoToggle").onclick = () => document.getElementById("infoOverlay").style.display = "flex";
-document.getElementById("closeInfoBtn").onclick = () => document.getElementById("infoOverlay").style.display = "none";
-document.getElementById("muteToggle").onclick = (e) => { Sound.init(); Sound.isMuted = !Sound.isMuted; e.target.innerText = Sound.isMuted ? "🔇" : "🔊"; };
-window.addEventListener("resize", resizeCanvas);
+document.getElementById("startBtn").onclick = (e) => { 
+    e.stopPropagation(); Sound.init(); 
+    document.getElementById("startScreen").style.display = "none"; startIntro(); 
+};
+document.getElementById("infoToggle").onclick = (e) => { e.stopPropagation(); document.getElementById("infoOverlay").style.display = "flex"; };
+document.getElementById("closeInfoBtn").onclick = (e) => { e.stopPropagation(); document.getElementById("infoOverlay").style.display = "none"; };
+document.getElementById("muteToggle").onclick = (e) => {
+    e.stopPropagation(); Sound.init(); Sound.isMuted = !Sound.isMuted;
+    e.target.innerText = Sound.isMuted ? "🔇" : "🔊";
+};
 
+window.addEventListener("resize", resizeCanvas);
 scorm.init();
 resizeCanvas();
 loadQuestions();

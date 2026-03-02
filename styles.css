@@ -22,10 +22,10 @@ body {
 
 #uiTopRight { position: absolute; top: 15px; right: 15px; display: flex; gap: 10px; z-index: 2100; }
 .ui-icon {
-    width: 40px; height: 40px; background: rgba(255,255,255,0.2); 
+    width: 42px; height: 42px; background: rgba(255,255,255,0.2); 
     border: 1px solid white; border-radius: 50%; 
     display: flex; align-items: center; justify-content: center;
-    font-weight: bold; cursor: pointer; font-size: 20px;
+    font-weight: bold; cursor: pointer; font-size: 22px;
 }
 
 #scoreDisplay { position: absolute; top: 15px; left: 15px; font-size: 20px; color: #ffd700; z-index: 10; font-weight: bold; }
@@ -40,8 +40,8 @@ body {
     width: 92%; max-width: 750px; background: #ffffff; color: #111; 
     padding: 18px; border-radius: 18px; border: 4px solid #ffd700;
     display: none; align-items: center; gap: 20px;
-    pointer-events: auto; box-shadow: 0 10px 35px rgba(0,0,0,0.6);
-    margin-bottom: 12px; cursor: pointer;
+    box-shadow: 0 10px 35px rgba(0,0,0,0.6);
+    margin-bottom: 12px;
 }
 
 #astronautEmoji { font-size: 50px; }
@@ -50,7 +50,7 @@ body {
 #questionDisplay {
     width: 90%; max-width: 750px; background: rgba(15, 15, 30, 0.98);
     padding: 20px; border-radius: 15px; border: 2px solid #555;
-    text-align: center; font-size: 32px; pointer-events: auto;
+    text-align: center; font-size: 32px;
     box-shadow: 0 5px 20px rgba(0,0,0,0.7);
 }
 
