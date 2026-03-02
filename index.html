@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ByLKI Raketen-Quiz</title>
     <link rel="stylesheet" href="styles.css">
-    <!-- KaTeX für Formeln -->
+    <!-- Lokale KaTeX Dateien im Root-Ordner -->
     <link rel="stylesheet" href="katex.min.css">
     <script defer src="katex.min.js"></script>
 </head>
@@ -15,14 +15,16 @@
 
     <canvas id="gameCanvas"></canvas>
     
-    <!-- Hier erscheinen die flexiblen Antworten (Mathe, Bilder, Text) -->
+    <!-- Container für die flexiblen Antworten (Mathe, Bilder, Text) -->
     <div id="answerContainer"></div>
 
+    <!-- Astronauten Feedback Sprechblase -->
     <div id="astronautFeedback">
         <div id="astronautEmoji">👩‍🚀</div>
         <div id="astronautSpeech"></div>
     </div>
 
+    <!-- Steuerung für Touch-Geräte -->
     <div id="touchControls">
         <button class="touchButton" id="leftButton">←</button>
         <button class="touchButton" id="launchButton">🚀 START</button>

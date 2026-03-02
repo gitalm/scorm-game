@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<manifest identifier="MatheRakete_v1" version="1.0"
+<manifest identifier="RaketenQuiz_1" version="1.0"
           xmlns="http://www.imsproject.org/xsd/imscp_rootv1p1p2"
           xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_rootv1p2"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -11,9 +11,9 @@
   </metadata>
   <organizations default="org_1">
     <organization identifier="org_1">
-      <title>Mathe Rakete</title>
+      <title>ByLKI Raketen Quiz</title>
       <item identifier="item_1" identifierref="res_1">
-        <title>Raketenstart</title>
+        <title>Start</title>
       </item>
     </organization>
   </organizations>

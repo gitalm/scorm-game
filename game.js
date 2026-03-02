@@ -41,8 +41,6 @@ const ROCKET_SIZE = 55;
 const EMOJI_FIX = -Math.PI / 4; 
 let rocket = { x: 0, y: 0, targetX: 0, targetY: 0, angle: EMOJI_FIX, speed: 20, selectedIdx: 1, isFlying: false };
 
-// --- LOGIK ---
-
 function renderMath(text, element) {
     if (window.katex) {
         element.innerHTML = text.replace(/\$(.*?)\$/g, (m, f) => katex.renderToString(f, { throwOnError: false }));
@@ -54,7 +52,12 @@ function resizeCanvas() {
     const dpr = window.devicePixelRatio || 1;
     canvas.width = viewW * dpr; canvas.height = viewH * dpr;
     ctx.scale(dpr, dpr);
-    if (!rocket.isFlying) { rocket.x = viewW / 2 - ROCKET_SIZE / 2; rocket.y = viewH - 140; }
+    // Rakete positionieren (ca. 80% Höhe)
+    if (!rocket.isFlying) { 
+        rocket.x = viewW / 2 - ROCKET_SIZE / 2; 
+        rocket.y = viewH * 0.82 - 40; 
+        updateRocketAngle();
+    }
 }
 
 function updateRocketAngle() {
@@ -98,7 +101,8 @@ function nextQuestion() {
         answerContainer.appendChild(div);
     });
     rocket.isFlying = false; rocket.selectedIdx = 1;
-    rocket.x = viewW / 2 - ROCKET_SIZE / 2; rocket.y = viewH - 140;
+    rocket.x = viewW / 2 - ROCKET_SIZE / 2; 
+    rocket.y = viewH * 0.82 - 40;
     updateRocketAngle();
     gameState = "playing";
 }
@@ -107,12 +111,9 @@ function endGame() {
     gameState = "finished";
     answerContainer.innerHTML = ""; 
     astronautFeedback.style.display = "none";
-    
     const maxP = questions.length * 10;
     const perc = Math.round((score / maxP) * 100);
     const passed = perc >= 66;
-    
-    // SCORM Übertragung findet JETZT statt
     scorm.save(score, maxP);
 
     questionDisplay.innerHTML = `
@@ -128,15 +129,14 @@ function endGame() {
 }
 
 function restartGame() {
-    score = 0;
-    askedCount = 0;
+    score = 0; askedCount = 0;
     scoreDisplay.textContent = `Punkte: ${score}`;
-    loadQuestions(); // Lädt JSON neu und mischt Fragen
+    loadQuestions();
 }
 
 function exitGame() {
     scorm.terminate();
-    alert("Du kannst dieses Fenster jetzt schließen. Deine Ergebnisse wurden gespeichert.");
+    alert("Ergebnisse wurden gespeichert. Du kannst das Fenster jetzt schließen.");
 }
 
 function update() {
@@ -153,7 +153,7 @@ function update() {
             showFeedback(rocket.selectedIdx === currentQuestion.correctAnswer);
         }
     } else if (gameState === "playing") {
-        rocket.y = (viewH - 140) + Math.sin(Date.now() / 400) * 4;
+        rocket.y = (viewH * 0.82 - 40) + Math.sin(Date.now() / 400) * 4;
     }
 }
 
@@ -192,7 +192,7 @@ function launch() {
     if (gameState !== "playing") return;
     const rect = document.getElementById("ans" + rocket.selectedIdx).getBoundingClientRect();
     rocket.targetX = rect.left + rect.width / 2 - ROCKET_SIZE / 2;
-    rocket.targetY = rect.top + rect.height / 2;
+    rocket.targetY = rect.top + rect.height; // Zur Unterkante fliegen
     rocket.isFlying = true; gameState = "flying";
 }
 
