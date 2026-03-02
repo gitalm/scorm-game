@@ -17,6 +17,7 @@ body {
     padding: 30px; border-radius: 25px; border: 2px solid #ffd700;
     text-align: center; box-shadow: 0 0 50px rgba(0,0,0,0.9);
 }
+.menu-box p { color: #aaa; margin-bottom: 20px; font-size: 16px; }
 
 .main-btn { background: #00ffcc; color: #000; border: none; padding: 20px 60px; font-size: 26px; font-weight: bold; border-radius: 15px; cursor: pointer; }
 
@@ -41,7 +42,7 @@ body {
     padding: 18px; border-radius: 18px; border: 4px solid #ffd700;
     display: none; align-items: center; gap: 20px;
     pointer-events: auto; box-shadow: 0 10px 35px rgba(0,0,0,0.6);
-    margin-bottom: 12px;
+    margin-bottom: 12px; cursor: pointer;
 }
 
 #astronautEmoji { font-size: 50px; }
@@ -55,7 +56,7 @@ body {
 }
 
 #answerContainer {
-    position: absolute; top: 42%; left: 0; width: 100%;
+    position: absolute; top: 45%; left: 0; width: 100%;
     display: flex; justify-content: space-evenly; 
     pointer-events: none; z-index: 20;
     padding: 0 10px; box-sizing: border-box;
@@ -66,22 +67,11 @@ body {
     border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 12px;
     display: flex; align-items: center; justify-content: center;
     padding: 10px; text-align: center; font-size: 24px; color: white;
-    cursor: pointer; pointer-events: auto; /* Klickbar machen! */
+    cursor: pointer; pointer-events: auto;
 }
 .answerBox.selected { background: rgba(255, 255, 0, 0.3); border-color: #ffff00; transform: scale(1.15); }
 
-#touchControls { 
-    position: absolute; bottom: 15px; width: 100%; display: flex; 
-    justify-content: center; gap: 20px; z-index: 2500; 
-    transition: transform 0.3s;
-}
-#touchControls.hidden { transform: translateY(150%); }
-
-.touchButton { background: rgba(255, 255, 255, 0.15); border: 2px solid white; color: white; padding: 15px; border-radius: 12px; min-width: 75px; font-size: 24px; cursor: pointer; }
-#launchButton { background: #ff4757; padding: 15px 50px; font-weight: bold; }
-
-/* Canvas über allem außer Overlays */
-#gameCanvas { z-index: 5; pointer-events: none; }
+#gameCanvas { position: absolute; top: 0; left: 0; z-index: 5; pointer-events: none; }
 
 .stat-box { font-size: 38px; color: #00ffcc; font-weight: bold; margin: 15px 0; }
 .end-btn { background: #444; border: 2px solid #fff; color: white; padding: 15px 30px; border-radius: 12px; cursor: pointer; font-size: 20px; }
@@ -89,8 +79,9 @@ body {
 @media (max-width: 600px) {
     #questionDisplay { font-size: 20px; }
     #astronautSpeech { font-size: 17px; }
-    .answerBox { width: 100px; font-size: 18px; }
-    #answerContainer { top: 38%; }
+    #astronautEmoji { font-size: 40px; }
+    .answerBox { width: 105px; font-size: 18px; }
+    #answerContainer { top: 40%; }
 }
 
 .katex { font-size: 1.2em; }

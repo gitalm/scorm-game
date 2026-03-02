@@ -12,13 +12,13 @@
     <div id="startScreen">
         <div class="menu-box">
             <h1>🚀 Mathe-Rakete</h1>
+            <p>Tippe die richtige Antwort an,<br>um die Rakete zu starten!</p>
             <button id="startBtn" class="main-btn">START</button>
         </div>
     </div>
 
     <!-- UI Oben Rechts -->
     <div id="uiTopRight">
-        <div id="controlsToggle" class="ui-icon" title="Steuerung an/aus">🎮</div>
         <div id="muteToggle" class="ui-icon">🔇</div>
         <div id="infoToggle" class="ui-icon">?</div>
     </div>
@@ -26,8 +26,8 @@
     <div id="infoOverlay" class="overlay">
         <div class="info-box">
             <h2>Anleitung</h2>
-            <p><b>Zielen:</b> Pfeile <b>← →</b> oder <b>Antwortbox anklicken</b>.</p>
-            <p><b>Feuern:</b> <b>Leertaste</b> oder roter Button.</p>
+            <p><b>Zielen & Feuern:</b> Tippe einfach auf die richtige Antwortbox.</p>
+            <p><b>Weiter:</b> Tippe nach der Auflösung auf die Sprechblase.</p>
             <button id="closeInfoBtn">OK</button>
         </div>
     </div>
@@ -35,7 +35,7 @@
     <div id="scoreDisplay">Punkte: 0</div>
 
     <div id="topHUD">
-        <div id="astronautFeedback">
+        <div id="astronautFeedback" title="Tippen zum Fortfahren">
             <div id="astronautEmoji">👩‍🚀</div>
             <div id="astronautSpeech"></div>
         </div>
@@ -44,12 +44,6 @@
 
     <canvas id="gameCanvas"></canvas>
     <div id="answerContainer"></div>
-
-    <div id="touchControls">
-        <button class="touchButton" id="leftButton">←</button>
-        <button class="touchButton" id="launchButton">🚀 START</button>
-        <button class="touchButton" id="rightButton">→</button>
-    </div>
 
     <script src="game.js"></script>
 </body>
