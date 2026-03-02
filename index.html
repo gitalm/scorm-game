@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>ByLKI Raketen-Quiz</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="katex.min.css">
@@ -12,7 +12,7 @@
     <div id="startScreen">
         <div class="menu-box">
             <h1>🚀 Mathe-Rakete</h1>
-            <p>Wähle die richtige Antwort aus,<br>um die Rakete zu starten!</p>
+            <p>Wähle eine Antwort aus!</p>
             <button id="startBtn" class="main-btn">START</button>
         </div>
     </div>
@@ -22,15 +22,6 @@
         <div id="infoToggle" class="ui-icon">?</div>
     </div>
 
-    <div id="infoOverlay" class="overlay">
-        <div class="info-box">
-            <h2>Anleitung</h2>
-            <p><b>Start:</b> Klicke direkt auf eine Antwortbox.</p>
-            <p><b>Weiter:</b> Nach der Auflösung klicke irgendwo hin.</p>
-            <button id="closeInfoBtn">OK</button>
-        </div>
-    </div>
-
     <div id="scoreDisplay">Punkte: 0</div>
 
     <div id="topHUD">
@@ -38,11 +29,22 @@
             <div id="astronautEmoji">👩‍🚀</div>
             <div id="astronautSpeech"></div>
         </div>
-        <div id="questionDisplay">Lade Mission...</div>
+        <div id="questionDisplay">Lade...</div>
     </div>
 
+    <!-- Die Rakete fliegt hier drin -->
     <canvas id="gameCanvas"></canvas>
+    
     <div id="answerContainer"></div>
+
+    <div id="infoOverlay" class="overlay">
+        <div class="info-box">
+            <h2>Anleitung</h2>
+            <p>Tippe direkt auf eine Antwort.</p>
+            <p>Tippe danach irgendwohin für die nächste Frage.</p>
+            <button id="closeInfoBtn">OK</button>
+        </div>
+    </div>
 
     <script src="game.js"></script>
 </body>

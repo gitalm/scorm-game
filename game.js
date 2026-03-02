@@ -1,211 +1,162 @@
-// --- SOUND ENGINE ---
 const Sound = {
     ctx: null, isMuted: true,
-    init() { if(!this.ctx) { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); if (this.ctx.state === 'suspended') this.ctx.resume(); } },
-    play(freq, type, duration, vol=0.1) {
-        if (!this.ctx || this.isMuted) return;
-        try {
-            const osc = this.ctx.createOscillator(); const gain = this.ctx.createGain();
-            osc.type = type; osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-            osc.connect(gain); gain.connect(this.ctx.destination);
-            gain.gain.setValueAtTime(vol, this.ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
-            osc.start(); osc.stop(this.ctx.currentTime + duration);
-        } catch(e) {}
-    },
-    success() { this.play(523, 'sine', 0.2); setTimeout(() => this.play(659, 'sine', 0.3), 100); },
-    error() { this.play(150, 'sawtooth', 0.4); this.play(100, 'sawtooth', 0.4); },
-    boost() { this.play(200, 'sawtooth', 1.0, 0.05); }
-};
-
-// --- SCORM ---
-const scorm = {
-    active: false,
-    init() {
-        this.api = (function findAPI(win) {
-            let n = 0; while ((win.API == null) && (win.parent != null) && (win.parent != win)) { if (n++ > 10) return null; win = win.parent; }
-            return win.API;
-        })(window);
-        if (this.api) { this.api.LMSInitialize(""); this.active = true; }
-    },
-    save(score, total) {
-        if (!this.active) return;
-        let percent = Math.round((score / total) * 100);
-        this.api.LMSSetValue("cmi.core.score.raw", percent.toString());
-        this.api.LMSCommit("");
+    init() { if(!this.ctx) this.ctx = new (AudioContext || webkitAudioContext)(); },
+    play(f, t, d) {
+        if(!this.ctx || this.isMuted) return;
+        let o = this.ctx.createOscillator(), g = this.ctx.createGain();
+        o.type = t; o.frequency.setValueAtTime(f, this.ctx.currentTime);
+        o.connect(g); g.connect(this.ctx.destination);
+        g.gain.setValueAtTime(0.1, this.ctx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + d);
+        o.start(); o.stop(this.ctx.currentTime + d);
     }
 };
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 const answerContainer = document.getElementById("answerContainer");
-const scoreDisplay = document.getElementById("scoreDisplay");
 const questionDisplay = document.getElementById("questionDisplay");
 const astronautFeedback = document.getElementById("astronautFeedback");
 const astronautSpeech = document.getElementById("astronautSpeech");
 
-let viewW, viewH, score = 0, questions = [], currentQuestion = null;
-let askedCount = 0, effects = [], gameState = "start"; 
+let viewW, viewH, questions = [], curQ = null, asked = 0, score = 0, effects = [], gameState = "start";
+const ROCKET_SIZE = 60;
+const EMOJI_FIX = -Math.PI / 4; // Korrektur für 🚀 (zeigt standardmäßig nach 45 Grad)
+let rocket = { x: 0, y: 0, targetX: 0, targetY: 0, angle: EMOJI_FIX, speed: 18 };
 
-const ROCKET_SIZE = 50;
-const EMOJI_FIX = -Math.PI / 4; 
-const ROCKET_Y_REL = 0.75; // Rakete etwas höher für Mobile-Sicherheit
-
-let rocket = { x: 0, y: 0, targetX: 0, targetY: 0, angle: EMOJI_FIX, speed: 20, selectedIdx: 1, isFlying: false };
-
-function renderMath(text, element) {
-    if (window.katex) element.innerHTML = text.replace(/\$(.*?)\$/g, (m, f) => katex.renderToString(f, { throwOnError: false }));
-    else element.innerHTML = text;
-}
-
-function resizeCanvas() {
+function resize() {
     viewW = window.innerWidth; viewH = window.innerHeight;
     canvas.width = viewW; canvas.height = viewH;
-    if (!rocket.isFlying && gameState !== "intro") resetRocketPos();
+    if(gameState === "playing") resetRocket();
 }
 
-function resetRocketPos() {
-    rocket.x = viewW / 2 - ROCKET_SIZE / 2; 
-    rocket.y = viewH * ROCKET_Y_REL; 
-    rocket.angle = EMOJI_FIX;
-    rocket.isFlying = false;
-}
-
-function updateRocketAngle() {
-    const targetEl = document.getElementById("ans" + rocket.selectedIdx);
-    if (!targetEl) return;
-    const rect = targetEl.getBoundingClientRect();
-    const dx = (rect.left + rect.width / 2) - (rocket.x + ROCKET_SIZE / 2);
-    const dy = (rect.top + rect.height / 2) - (rocket.y + ROCKET_SIZE / 2);
-    rocket.angle = Math.atan2(dy, dx) + Math.PI / 2 + EMOJI_FIX;
-}
-
-function startIntro() {
-    gameState = "intro";
+function resetRocket() {
     rocket.x = viewW / 2 - ROCKET_SIZE / 2;
-    rocket.y = viewH + 50;
-    Sound.boost();
-    const targetY = viewH * ROCKET_Y_REL;
-    const animate = () => {
-        if (rocket.y > targetY) {
-            rocket.y -= 6;
-            requestAnimationFrame(animate);
-        } else {
-            nextQuestion();
-        }
-    };
-    animate();
-}
-
-function showFeedback(isCorrect) {
-    gameState = "feedback"; askedCount++;
-    if (isCorrect) { score += 10; Sound.success(); } else { Sound.error(); }
-    scoreDisplay.textContent = `Punkte: ${score}`;
-    const char = isCorrect ? "✨" : "👽️";
-    for(let i=0; i<12; i++) {
-        effects.push({ x: rocket.x + 25, y: rocket.y + 25, vx: (Math.random()-0.5)*15, vy: (Math.random()-0.5)*15, char: char, life: 1.0 });
-    }
-    renderMath((isCorrect ? "✅ Richtig! " : "❌ Falsch... ") + currentQuestion.explanation + " <br><small>(Tippen zum Fortfahren)</small>", astronautSpeech);
-    astronautFeedback.style.display = "flex";
+    rocket.y = viewH * 0.65; // Zentral positioniert für Mobile-Sicherheit
+    rocket.angle = EMOJI_FIX; // SENKRECHT NACH OBEN
 }
 
 function nextQuestion() {
-    if (askedCount >= questions.length) { endGame(); return; }
+    if(asked >= questions.length) { finish(); return; }
     astronautFeedback.style.display = "none";
-    effects = [];
-    currentQuestion = questions[askedCount];
-    renderMath(currentQuestion.question, questionDisplay);
+    curQ = questions[asked];
+    asked++;
+    
+    // Mathe-Rendering
+    if(window.katex) questionDisplay.innerHTML = curQ.question.replace(/\$(.*?)\$/g, (m, f) => katex.renderToString(f));
+    else questionDisplay.innerText = curQ.question;
+
     answerContainer.innerHTML = "";
-    currentQuestion.answers.forEach((text, i) => {
-        const div = document.createElement("div");
+    curQ.answers.forEach((ans, i) => {
+        let div = document.createElement("div");
         div.className = "answerBox";
-        div.id = "ans" + i;
-        div.onclick = (e) => { e.stopPropagation(); if (gameState === "playing") selectAndLaunch(i); };
-        renderMath(text, div);
+        if(window.katex) div.innerHTML = ans.replace(/\$(.*?)\$/g, (m, f) => katex.renderToString(f));
+        else div.innerText = ans;
+        div.onclick = () => { if(gameState === "playing") launch(i); };
         answerContainer.appendChild(div);
     });
-    resetRocketPos();
+
+    resetRocket();
     gameState = "playing";
 }
 
-function selectAndLaunch(idx) {
-    if (gameState !== "playing") return;
-    gameState = "flying"; 
-    document.querySelectorAll(".answerBox").forEach(b => b.classList.remove("selected"));
-    document.getElementById("ans" + idx).classList.add("selected");
-    rocket.selectedIdx = idx;
-    updateRocketAngle();
-    const rect = document.getElementById("ans" + idx).getBoundingClientRect();
+function launch(idx) {
+    gameState = "flying";
+    let boxes = document.querySelectorAll(".answerBox");
+    boxes[idx].classList.add("selected");
+    let rect = boxes[idx].getBoundingClientRect();
+    
     rocket.targetX = rect.left + rect.width / 2 - ROCKET_SIZE / 2;
     rocket.targetY = rect.top + rect.height / 2;
-    rocket.isFlying = true;
+    
+    // Winkel zum Ziel berechnen
+    let dx = rocket.targetX - rocket.x, dy = rocket.targetY - rocket.y;
+    rocket.angle = Math.atan2(dy, dx) + Math.PI / 2 + EMOJI_FIX;
 }
 
-function endGame() {
-    gameState = "finished";
-    answerContainer.innerHTML = ""; astronautFeedback.style.display = "none";
-    const maxP = questions.length * 10;
-    const perc = Math.round((score / maxP) * 100);
-    scorm.save(score, maxP);
-    questionDisplay.innerHTML = `<div class="end-screen"><h2>Missionsbericht</h2><div class="stat-box">${perc}% Erfolg</div><button class="end-btn" onclick="location.reload()">Neustart</button></div>`;
+function showResult(isCorrect) {
+    gameState = "feedback";
+    if(isCorrect) { score += 10; Sound.play(500, "sine", 0.3); } else Sound.play(150, "sawtooth", 0.4);
+    document.getElementById("scoreDisplay").innerText = "Punkte: " + score;
+    
+    astronautFeedback.style.display = "flex";
+    let txt = (isCorrect ? "✅ Richtig! " : "❌ Falsch... ") + curQ.explanation;
+    if(window.katex) astronautSpeech.innerHTML = txt.replace(/\$(.*?)\$/g, (m, f) => katex.renderToString(f));
+    else astronautSpeech.innerText = txt;
 }
 
-function update() {
-    effects.forEach(e => { e.x += e.vx; e.y += e.vy; e.life -= 0.02; });
-    if (gameState === "flying") {
-        const dx = rocket.targetX - rocket.x;
-        const dy = rocket.targetY - rocket.y;
-        const dist = Math.hypot(dx, dy);
-        if (dist > rocket.speed) {
-            rocket.x += (dx / dist) * rocket.speed;
-            rocket.y += (dy / dist) * rocket.speed;
-        } else {
-            rocket.x = rocket.targetX; rocket.y = rocket.targetY;
-            showFeedback(rocket.selectedIdx === currentQuestion.correctAnswer);
-        }
-    } else if (gameState === "playing") {
-        rocket.y = (viewH * ROCKET_Y_REL) + Math.sin(Date.now() / 400) * 4;
-    }
+function finish() {
+    gameState = "end";
+    questionDisplay.innerHTML = `<h2>Mission Ende!</h2><p>Erfolg: ${Math.round((score/(questions.length*10))*100)}%</p><button class="main-btn" onclick="location.reload()">Neustart</button>`;
+    answerContainer.innerHTML = "";
 }
 
-function draw() {
+function loop() {
     ctx.clearRect(0, 0, viewW, viewH);
-    ctx.fillStyle = "white"; 
-    for(let i=0; i<30; i++) { ctx.fillRect((i*117)%viewW, (i*157)%viewH, 1, 1); }
-    effects.forEach(e => { if(e.life > 0) { ctx.globalAlpha = e.life; ctx.font = "24px Arial"; ctx.fillText(e.char, e.x, e.y); } });
-    ctx.globalAlpha = 1.0;
-    if (!["finished", "start"].includes(gameState)) {
-        ctx.save(); ctx.translate(rocket.x + 25, rocket.y + 25); ctx.rotate(rocket.angle);
-        ctx.font = "50px Arial"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-        ctx.fillText("🚀", 0, 0); ctx.restore();
+    // Sterne
+    ctx.fillStyle = "white";
+    for(let i=0; i<30; i++) ctx.fillRect((i*137)%viewW, (i*243)%viewH, 1, 1);
+
+    if(gameState === "flying") {
+        let dx = rocket.targetX - rocket.x, dy = rocket.targetY - rocket.y, dist = Math.hypot(dx, dy);
+        if(dist > 10) {
+            rocket.x += (dx/dist) * rocket.speed;
+            rocket.y += (dy/dist) * rocket.speed;
+        } else {
+            showResult(curQ.answers.indexOf(curQ.answers[curQ.correctAnswer]) === Array.from(document.querySelectorAll(".answerBox")).findIndex(b => b.classList.contains("selected")));
+            // Korrekte Index-Prüfung
+            let win = Array.from(document.querySelectorAll(".answerBox")).findIndex(b => b.classList.contains("selected")) === curQ.correctAnswer;
+            showResult(win);
+        }
     }
+
+    if(gameState !== "start" && gameState !== "end") {
+        ctx.save();
+        ctx.translate(rocket.x + ROCKET_SIZE/2, rocket.y + ROCKET_SIZE/2);
+        ctx.rotate(rocket.angle);
+        ctx.font = ROCKET_SIZE + "px serif";
+        ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        ctx.fillText("🚀", 0, 0);
+        ctx.restore();
+    }
+    requestAnimationFrame(loop);
 }
 
-function gameLoop() { update(); draw(); requestAnimationFrame(gameLoop); }
-
-async function loadQuestions() {
-    try {
-        const res = await fetch("question.json?v=" + Date.now());
-        questions = (await res.json()).sort(() => Math.random() - 0.5);
-    } catch (err) { questionDisplay.textContent = "Ladefehler!"; }
+// GLOBAL INPUTS (Der "Überall-Klick" & Cursor-Fix)
+function globalProgress() {
+    if(gameState === "feedback") nextQuestion();
 }
 
-window.addEventListener("click", () => { if (gameState === "feedback") nextQuestion(); });
-document.addEventListener("keydown", (e) => {
-    if (gameState === "feedback") { nextQuestion(); return; }
-    if (gameState !== "playing") return;
-    if (e.key === "ArrowLeft") selectAndLaunch(0);
-    if (e.key === "ArrowRight") selectAndLaunch(2);
-    if (e.key === "ArrowUp" || e.key === "Enter" || e.key === " ") selectAndLaunch(1);
+window.addEventListener("pointerdown", (e) => {
+    // Falls wir auf ein UI-Icon klicken, nicht weitergehen
+    if(e.target.closest(".ui-icon") || e.target.closest(".main-btn") || e.target.closest(".answerBox")) return;
+    globalProgress();
 });
 
-document.getElementById("startBtn").onclick = (e) => { e.stopPropagation(); Sound.init(); document.getElementById("startScreen").style.display = "none"; startIntro(); };
-document.getElementById("infoToggle").onclick = (e) => { e.stopPropagation(); document.getElementById("infoOverlay").style.display = "flex"; };
-document.getElementById("closeInfoBtn").onclick = (e) => { e.stopPropagation(); document.getElementById("infoOverlay").style.display = "none"; };
-document.getElementById("muteToggle").onclick = (e) => { e.stopPropagation(); Sound.init(); Sound.isMuted = !Sound.isMuted; e.target.innerText = Sound.isMuted ? "🔇" : "🔊"; };
+window.addEventListener("keydown", (e) => {
+    if(gameState === "feedback") { nextQuestion(); return; }
+    if(gameState === "playing") {
+        if(e.key === "ArrowLeft") launch(0);
+        if(e.key === "ArrowUp" || e.key === " ") launch(1);
+        if(e.key === "ArrowRight") launch(2);
+    }
+});
 
-window.addEventListener("resize", resizeCanvas);
-scorm.init();
-resizeCanvas();
-loadQuestions();
-gameLoop();
+// START
+document.getElementById("startBtn").onclick = () => {
+    Sound.init(); gameState = "playing";
+    document.getElementById("startScreen").style.display = "none";
+    fetch("question.json").then(r => r.json()).then(data => {
+        questions = data.sort(() => Math.random() - 0.5);
+        nextQuestion();
+    });
+};
+
+document.getElementById("muteToggle").onclick = (e) => {
+    Sound.init(); Sound.isMuted = !Sound.isMuted;
+    e.target.innerText = Sound.isMuted ? "🔇" : "🔊";
+};
+
+window.addEventListener("resize", resize);
+resize();
+loop();
