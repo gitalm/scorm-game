@@ -1,3 +1,30 @@
+// --- SOUND ENGINE (Synthetische Töne) ---
+const Sound = {
+    ctx: null,
+    init() { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); },
+    play(freq, type, duration) {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
+        osc.start();
+        osc.stop(this.ctx.currentTime + duration);
+    },
+    success() { 
+        this.play(523.25, 'sine', 0.2); // C5
+        setTimeout(() => this.play(659.25, 'sine', 0.3), 100); // E5
+    },
+    error() {
+        this.play(150, 'sawtooth', 0.4);
+        this.play(100, 'sawtooth', 0.4);
+    }
+};
+
 // --- SCORM API ---
 const scorm = {
     active: false,
@@ -15,13 +42,9 @@ const scorm = {
         if (!this.active) return;
         let percent = Math.round((score / total) * 100);
         this.api.LMSSetValue("cmi.core.score.raw", percent.toString());
-        this.api.LMSSetValue("cmi.core.score.max", "100");
         if (percent >= 66) this.api.LMSSetValue("cmi.core.lesson_status", "passed");
         else this.api.LMSSetValue("cmi.core.lesson_status", "failed");
         this.api.LMSCommit("");
-    },
-    terminate() {
-        if (this.active) this.api.LMSFinish("");
     }
 };
 
@@ -32,14 +55,13 @@ const scoreDisplay = document.getElementById("scoreDisplay");
 const questionDisplay = document.getElementById("questionDisplay");
 const astronautFeedback = document.getElementById("astronautFeedback");
 const astronautSpeech = document.getElementById("astronautSpeech");
-const astronautEmoji = document.getElementById("astronautEmoji");
 
 let viewW, viewH, score = 0, questions = [], currentQuestion = null;
-let askedCount = 0, stars = [], effects = [], gameState = "loading"; 
+let askedCount = 0, stars = [], effects = [], gameState = "login", playerName = "Pilot"; 
 
 const ROCKET_SIZE = 55;
 const EMOJI_FIX = -Math.PI / 4; 
-let rocket = { x: 0, y: 0, targetX: 0, targetY: 0, angle: EMOJI_FIX, speed: 20, selectedIdx: 1, isFlying: false };
+let rocket = { x: 0, y: 0, targetX: 0, targetY: 0, angle: EMOJI_FIX, speed: 22, selectedIdx: 1, isFlying: false };
 
 function renderMath(text, element) {
     if (window.katex) {
@@ -52,7 +74,6 @@ function resizeCanvas() {
     const dpr = window.devicePixelRatio || 1;
     canvas.width = viewW * dpr; canvas.height = viewH * dpr;
     ctx.scale(dpr, dpr);
-    // Rakete positionieren (ca. 80% Höhe)
     if (!rocket.isFlying) { 
         rocket.x = viewW / 2 - ROCKET_SIZE / 2; 
         rocket.y = viewH * 0.82 - 40; 
@@ -73,7 +94,7 @@ function showFeedback(isCorrect) {
     if (gameState === "feedback") return;
     gameState = "feedback"; 
     askedCount++;
-    if (isCorrect) score += 10;
+    if (isCorrect) { score += 10; Sound.success(); } else { Sound.error(); }
     scoreDisplay.textContent = `Punkte: ${score}`;
     
     const char = isCorrect ? "✨" : "👽️";
@@ -81,7 +102,6 @@ function showFeedback(isCorrect) {
         effects.push({ x: rocket.x + 25, y: rocket.y + 25, vx: (Math.random()-0.5)*15, vy: (Math.random()-0.5)*15, char: char, life: 1.0 });
     }
     renderMath((isCorrect ? "✅ Richtig! " : "❌ Falsch... ") + currentQuestion.explanation, astronautSpeech);
-    astronautEmoji.textContent = ["👨‍🚀", "👩‍🚀", "🧑‍🚀"][Math.floor(Math.random() * 3)];
     astronautFeedback.style.display = "flex";
 }
 
@@ -101,16 +121,14 @@ function nextQuestion() {
         answerContainer.appendChild(div);
     });
     rocket.isFlying = false; rocket.selectedIdx = 1;
-    rocket.x = viewW / 2 - ROCKET_SIZE / 2; 
-    rocket.y = viewH * 0.82 - 40;
+    rocket.x = viewW / 2 - ROCKET_SIZE / 2; rocket.y = viewH * 0.82 - 40;
     updateRocketAngle();
     gameState = "playing";
 }
 
 function endGame() {
     gameState = "finished";
-    answerContainer.innerHTML = ""; 
-    astronautFeedback.style.display = "none";
+    answerContainer.innerHTML = ""; astronautFeedback.style.display = "none";
     const maxP = questions.length * 10;
     const perc = Math.round((score / maxP) * 100);
     const passed = perc >= 66;
@@ -118,25 +136,13 @@ function endGame() {
 
     questionDisplay.innerHTML = `
         <div class="end-screen">
-            <h2>Missionsbericht</h2>
+            <h2>Missionsbericht: ${playerName}</h2>
             <div class="stat-box">${perc}% Erfolg</div>
-            <p>${passed ? "Hervorragend! Die Basis ist stolz auf dich. 🚀" : "Mission abgebrochen. Wir brauchen mehr Training! 👽️"}</p>
+            <p>${passed ? "Hervorragend! Die Basis ist stolz auf dich. 🚀" : "Mission abgebrochen. Mehr Training nötig! 👽️"}</p>
             <div class="end-btn-container">
-                <button class="end-btn btn-restart" onclick="restartGame()">Neustart</button>
-                <button class="end-btn" onclick="exitGame()">Beenden</button>
+                <button class="end-btn" onclick="location.reload()">Neustart</button>
             </div>
         </div>`;
-}
-
-function restartGame() {
-    score = 0; askedCount = 0;
-    scoreDisplay.textContent = `Punkte: ${score}`;
-    loadQuestions();
-}
-
-function exitGame() {
-    scorm.terminate();
-    alert("Ergebnisse wurden gespeichert. Du kannst das Fenster jetzt schließen.");
 }
 
 function update() {
@@ -163,7 +169,7 @@ function draw() {
     for(let i=0; i<40; i++) { ctx.fillRect((i*97)%viewW, (i*137)%viewH, 1, 1); }
     effects.forEach(e => { if(e.life > 0) { ctx.globalAlpha = e.life; ctx.font = "30px Arial"; ctx.fillText(e.char, e.x, e.y); } });
     ctx.globalAlpha = 1.0;
-    if (gameState !== "finished") {
+    if (gameState !== "finished" && gameState !== "login") {
         ctx.save(); ctx.translate(rocket.x + 25, rocket.y + 25); ctx.rotate(rocket.angle);
         ctx.font = "50px Arial"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
         ctx.fillText("🚀", 0, 0); ctx.restore();
@@ -176,7 +182,6 @@ async function loadQuestions() {
     try {
         const res = await fetch("question.json?v=" + Date.now());
         questions = (await res.json()).sort(() => Math.random() - 0.5);
-        nextQuestion();
     } catch (err) { questionDisplay.textContent = "Ladefehler!"; }
 }
 
@@ -192,18 +197,34 @@ function launch() {
     if (gameState !== "playing") return;
     const rect = document.getElementById("ans" + rocket.selectedIdx).getBoundingClientRect();
     rocket.targetX = rect.left + rect.width / 2 - ROCKET_SIZE / 2;
-    rocket.targetY = rect.top + rect.height; // Zur Unterkante fliegen
+    rocket.targetY = rect.top + rect.height;
     rocket.isFlying = true; gameState = "flying";
 }
 
+// Tastatur-Logik mit Scroll-Schutz
 document.addEventListener("keydown", (e) => {
-    if (gameState === "finished") return;
+    // Verhindert Scrollen bei Pfeiltasten und Leertaste
+    if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"," "].includes(e.key)) {
+        e.preventDefault();
+    }
+
+    if (gameState === "finished" || gameState === "login") return;
+    
     if (e.key === "ArrowLeft" || e.key === "a") moveSelection(-1);
     if (e.key === "ArrowRight" || e.key === "d") moveSelection(1);
-    if (e.key === "ArrowUp" || e.key === "Enter" || e.key === " ") {
+    if (e.key === "ArrowUp" || e.key === "Enter" || e.key === " " || e.key === "w") {
         if (gameState === "feedback") nextQuestion(); else if (gameState === "playing") launch();
     }
 });
+
+// Login Logik
+document.getElementById("startBtn").onclick = () => {
+    const val = document.getElementById("playerName").value;
+    if(val) playerName = val;
+    Sound.init(); // AudioContext nach User-Geste starten
+    document.getElementById("loginScreen").style.display = "none";
+    nextQuestion();
+};
 
 document.getElementById("leftButton").onclick = () => moveSelection(-1);
 document.getElementById("rightButton").onclick = () => moveSelection(1);

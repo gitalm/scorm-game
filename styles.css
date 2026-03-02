@@ -2,92 +2,76 @@ body {
     margin: 0; overflow: hidden;
     background-color: #030308;
     font-family: 'Segoe UI', Tahoma, sans-serif; touch-action: none; color: white;
+    user-select: none; /* Verhindert Textmarkierung beim Spielen */
 }
 
-#scoreDisplay { position: absolute; top: 20px; left: 20px; font-size: 20px; color: #ffd700; z-index: 10; font-weight: bold; }
+/* LOGIN SCREEN */
+#loginScreen {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: radial-gradient(circle, #1b2735 0%, #090a0f 100%);
+    display: flex; align-items: center; justify-content: center; z-index: 2000;
+}
+.login-box {
+    background: rgba(10, 10, 20, 0.95);
+    padding: 30px; border-radius: 20px; border: 2px solid #ffd700;
+    text-align: center; box-shadow: 0 0 50px rgba(255, 215, 0, 0.2);
+    width: 85%; max-width: 400px;
+}
+.login-box h1 { color: #ffd700; margin-bottom: 20px; }
+#playerName {
+    width: 100%; padding: 12px; margin: 20px 0; border-radius: 8px; border: none;
+    font-size: 18px; text-align: center; box-sizing: border-box;
+}
+#startBtn {
+    background: #00ffcc; color: #000; border: none; padding: 15px 30px;
+    font-size: 18px; font-weight: bold; border-radius: 10px; cursor: pointer;
+}
+
+#scoreDisplay { position: absolute; top: 15px; left: 15px; font-size: 18px; color: #ffd700; z-index: 10; font-weight: bold; }
 
 #questionDisplay {
-    position: absolute; top: 80px; left: 50%; transform: translateX(-50%);
-    width: 90%; max-width: 600px; 
-    background: rgba(10, 10, 20, 0.95); /* Weniger Transparenz */
-    padding: 20px; border-radius: 15px; border: 2px solid #444;
-    text-align: center; font-size: 26px; z-index: 10;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    position: absolute; top: 60px; left: 50%; transform: translateX(-50%);
+    width: 92%; max-width: 600px; background: rgba(10, 10, 20, 0.95);
+    padding: 15px; border-radius: 12px; border: 2px solid #444;
+    text-align: center; font-size: 22px; z-index: 10;
 }
 
 #answerContainer {
-    position: absolute; top: 38%; left: 0; width: 100%;
-    display: flex; justify-content: space-around; pointer-events: none; z-index: 20;
+    position: absolute; top: 32%; left: 0; width: 100%;
+    display: flex; justify-content: center; gap: 10px; pointer-events: none; z-index: 20;
+    padding: 0 10px; box-sizing: border-box;
 }
 
 .answerBox {
-    width: 150px; min-height: 70px;
-    background: rgba(30, 30, 50, 0.95);
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    border-radius: 12px;
+    flex: 1; max-width: 160px; min-height: 65px; background: rgba(30, 30, 50, 0.95);
+    border: 2px solid rgba(255, 255, 255, 0.2); border-radius: 10px;
     display: flex; align-items: center; justify-content: center;
-    padding: 10px; text-align: center; transition: all 0.2s;
-    font-size: 22px; color: white;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    padding: 8px; text-align: center; font-size: 20px; color: white;
 }
 
-.answerBox.selected {
-    background: rgba(255, 255, 0, 0.3);
-    border-color: #ffff00;
-    transform: scale(1.1);
-    box-shadow: 0 0 25px rgba(255, 255, 0, 0.4);
-}
-
-/* ENDSCREEN */
-.end-screen {
-    line-height: 1.6;
-}
-.end-screen h2 { color: #ffd700; margin-top: 0; }
-.stat-box { font-size: 32px; margin: 15px 0; color: #00ffcc; }
+.answerBox.selected { background: rgba(255, 255, 0, 0.3); border-color: #ffff00; transform: scale(1.08); }
 
 #astronautFeedback {
-    position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
-    background: #ffffff; color: #111; padding: 18px; border-radius: 15px;
-    width: 90%; max-width: 580px; display: none; align-items: center; gap: 20px;
-    z-index: 1000; box-shadow: 0 10px 40px rgba(0,0,0,0.7);
-    border: 3px solid #ffd700;
+    position: absolute; top: 5px; left: 50%; transform: translateX(-50%);
+    background: #ffffff; color: #111; padding: 15px; border-radius: 12px;
+    width: 94%; max-width: 580px; display: none; align-items: center; gap: 15px;
+    z-index: 1000; border: 3px solid #ffd700; box-shadow: 0 10px 40px rgba(0,0,0,0.7);
 }
 
-#astronautEmoji { font-size: 50px; }
-#astronautSpeech { font-size: 17px; flex: 1; font-weight: 500; }
+#astronautEmoji { font-size: 40px; }
+#astronautSpeech { font-size: 15px; flex: 1; line-height: 1.4; font-weight: 500; }
 
-#touchControls { position: absolute; bottom: 20px; width: 100%; display: flex; justify-content: center; gap: 20px; z-index: 10; }
-.touchButton { background: rgba(255, 255, 255, 0.15); border: 2px solid white; color: white; padding: 18px; border-radius: 12px; min-width: 80px; font-size: 20px; }
-#launchButton { background: #ff4757; padding: 18px 50px; font-weight: bold; border-color: #ff6b81; }
+#touchControls { position: absolute; bottom: 20px; width: 100%; display: flex; justify-content: center; gap: 15px; z-index: 10; }
+.touchButton { background: rgba(255, 255, 255, 0.15); border: 2px solid white; color: white; padding: 15px; border-radius: 10px; min-width: 65px; font-size: 20px; cursor: pointer; }
+#launchButton { background: #ff4757; padding: 15px 40px; font-weight: bold; }
 
-.katex { font-size: 1.2em; }
+.end-screen h2 { color: #ffd700; margin-bottom: 10px; }
+.stat-box { font-size: 32px; color: #00ffcc; font-weight: bold; margin: 10px 0; }
+.end-btn-container { margin-top: 15px; display: flex; justify-content: center; gap: 10px; }
+.end-btn { background: #444; border: 2px solid #fff; color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; pointer-events: auto; }
 
-/* Buttons im Missionsbericht */
-.end-btn-container {
-    margin-top: 20px;
-    display: flex;
-    justify-content: center;
-    gap: 15px;
+@media (max-width: 480px) {
+    #questionDisplay { font-size: 18px; top: 50px; }
+    .answerBox { font-size: 16px; min-height: 55px; }
+    #answerContainer { top: 28%; }
 }
-
-.end-btn {
-    background: #444;
-    border: 2px solid #fff;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
-    transition: all 0.2s;
-    pointer-events: auto; /* Wichtig, da Container sonst Klicks blockt */
-}
-
-.end-btn:hover {
-    background: #fff;
-    color: #000;
-}
-
-.btn-restart { border-color: #00ffcc; color: #00ffcc; }
-.btn-restart:hover { background: #00ffcc; color: #000; }
-

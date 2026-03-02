@@ -5,26 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ByLKI Raketen-Quiz</title>
     <link rel="stylesheet" href="styles.css">
-    <!-- Lokale KaTeX Dateien im Root-Ordner -->
     <link rel="stylesheet" href="katex.min.css">
     <script defer src="katex.min.js"></script>
 </head>
 <body>
+    <!-- Anmeldung / Startbildschirm -->
+    <div id="loginScreen">
+        <div class="login-box">
+            <h1>🚀 Raketen-Quiz</h1>
+            <p>Willkommen Pilot! Gib deinen Namen ein:</p>
+            <input type="text" id="playerName" placeholder="Dein Name..." maxlength="15">
+            <button id="startBtn">Mission starten</button>
+        </div>
+    </div>
+
     <div id="scoreDisplay">Punkte: 0</div>
-    <div id="questionDisplay">Lade Mission...</div>
+    <div id="questionDisplay">Warte auf Freigabe...</div>
 
     <canvas id="gameCanvas"></canvas>
-    
-    <!-- Container für die flexiblen Antworten (Mathe, Bilder, Text) -->
     <div id="answerContainer"></div>
 
-    <!-- Astronauten Feedback Sprechblase -->
     <div id="astronautFeedback">
         <div id="astronautEmoji">👩‍🚀</div>
         <div id="astronautSpeech"></div>
     </div>
 
-    <!-- Steuerung für Touch-Geräte -->
     <div id="touchControls">
         <button class="touchButton" id="leftButton">←</button>
         <button class="touchButton" id="launchButton">🚀 START</button>
