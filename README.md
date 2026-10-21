@@ -1,113 +1,227 @@
-# 🚀 Raketen-Quiz  
-## Anleitung für Lehrkräfte und Erstellung eigener Fragen
+# 🚀 Learnrocket – Raketen-Quiz
 
-Ein interaktives, gamifiziertes Lernspiel auf HTML5-Basis für den Einsatz im Unterricht und in Lernmanagementsystemen wie **Moodle** oder **mebis**.
+Ein interaktives Schulquiz für Mathematik, Physik und weitere Fächer. Die Lernenden wählen auf der Startseite einen Fragensatz aus und fliegen mit einer Rakete zur richtigen Antwort.
 
-Die Lernenden steuern eine Rakete durch den Weltraum und wählen die richtige Antwort aus. Das Quiz kann für **Mathematik, Physik, Sprachen und weitere Fächer** verwendet werden.
-
----
-
-## 🌟 Funktionen
-
-- **Gamification:** Eine Rakete fliegt zur ausgewählten Antwort.
-- **Mathematik und Physik:** Unterstützung für Formeln durch **KaTeX**.
-- **SCORM 1.2:** Übertragung des Ergebnisses an Moodle oder mebis.
-- **Bestehensgrenze:** Standardmäßig gilt das Quiz ab 66 % als bestanden.
-- **Zufällige Fragen:** Die Reihenfolge der Fragen kann zufällig festgelegt werden.
-- **Mehrere Fragensätze:** Unterschiedliche JSON-Dateien können über die URL geladen werden.
-- **Responsive Design:** Geeignet für Computer, Tablets und Smartphones.
-- **Tastatursteuerung:** Nutzung der Pfeiltasten und der Leertaste am Computer.
-- **Touchsteuerung:** Auswahl der Antworten durch Antippen.
+Das Quiz kann online über GitHub Pages oder als **SCORM-1.2-Paket** in Moodle beziehungsweise mebis verwendet werden.
 
 ---
 
-## 📂 Dateistruktur
+# Für Nutzerinnen und Nutzer
 
-Eine mögliche Dateistruktur sieht so aus:
+## Voraussetzungen unter Linux
+
+Für die Skripte werden benötigt:
+
+- Bash
+- `zip`
+- `jq`
+
+Installation unter Ubuntu oder Debian:
+
+```bash
+sudo apt update
+sudo apt install zip jq
+```
+
+---
+
+## Projektstruktur
+
+Die wichtigsten Dateien und Ordner:
 
 ```text
-raketen-quiz/
+learnrocket/
 ├── index.html
 ├── game.js
 ├── styles.css
-├── question/
-│   ├── mathe.json
-│   ├── physik.json
-│   └── geschichte.json
-├── imsmanifest.xml
 ├── katex.min.js
 ├── katex.min.css
-└── fonts/
+├── imsmanifest.xml
+├── question/
+│   ├── sets.json
+│   ├── mathe.json
+│   ├── physik.json
+│   └── rot1.json
+├── update-question-sets.sh
+└── make-scorm.sh
 ```
-
-### Wichtige Dateien
-
-| Datei oder Ordner | Funktion |
-|---|---|
-| `index.html` | Grundgerüst des Spiels |
-| `game.js` | Spiellogik und SCORM-Anbindung |
-| `styles.css` | Gestaltung des Spiels |
-| `question/` | Ordner mit den Fragensätzen |
-| `mathe.json` | Fragen für Mathematik |
-| `physik.json` | Fragen für Physik |
-| `imsmanifest.xml` | Steuerdatei für SCORM |
-| `katex.min.js` | Darstellung mathematischer Formeln |
-| `katex.min.css` | Gestaltung der KaTeX-Formeln |
-| `fonts/` | Schriftarten für KaTeX |
 
 ---
 
-## 🧩 Mehrere Fragensätze verwenden
+## Neues Fragenset hinzufügen
 
-In der JavaScript-Datei wird festgelegt, welche Fragensätze zur Verfügung stehen:
+Lege eine neue JSON-Datei in den Ordner `question/`.
 
-```js
-const questionSets = {
-    mathe: "question/mathe.json",
-    physik: "question/physik.json",
-    geschichte: "question/geschichte.json"
-};
-```
-
-Ein Fragensatz kann anschließend über die URL geladen werden:
+Beispiel:
 
 ```text
-index.html?set=mathe
+question/elektrizitaet.json
 ```
 
-```text
-index.html?set=physik
+Danach aktualisierst du automatisch die Liste:
+
+```bash
+./update-question-sets.sh
 ```
 
-```text
-index.html?set=geschichte
+Das Skript:
+
+- durchsucht den Ordner `question/`,
+- findet neue JSON-Dateien,
+- ergänzt fehlende Einträge in `sets.json`,
+- lässt vorhandene Titel unverändert,
+- erstellt eine Sicherungskopie von `sets.json`.
+
+Falls das Skript noch nicht ausführbar ist:
+
+```bash
+chmod +x update-question-sets.sh
 ```
 
-Wenn kein Fragensatz angegeben wird, wird automatisch der Standard-Fragensatz geladen, zum Beispiel:
+Ausführen kannst du es anschließend mit:
 
-```js
-const setName = params.get("set") || "mathe";
+```bash
+./update-question-sets.sh
 ```
 
-Nicht erlaubte oder unbekannte Namen werden auf den Standard-Fragensatz zurückgesetzt.
+Alternativ:
+
+```bash
+bash update-question-sets.sh
+```
+
+**Nicht verwenden:**
+
+```bash
+sh update-question-sets.sh
+```
+
+Das Skript verwendet Bash-Funktionen und benötigt daher Bash.
 
 ---
 
-## 📝 Aufbau einer JSON-Datei
+## SCORM-Paket erzeugen
 
-Jede JSON-Datei enthält eine Liste mit Fragen. Jede Frage benötigt diese vier Felder:
+Nachdem du neue oder geänderte Fragen hinzugefügt hast:
+
+```bash
+./update-question-sets.sh
+./make-scorm.sh
+```
+
+Das Build-Skript erstellt ein ZIP-Paket, das in Moodle oder mebis hochgeladen werden kann.
+
+Das Paket liegt anschließend beispielsweise hier:
+
+```text
+scorm-build/raketen-quiz-scorm.zip
+```
+
+Falls `make-scorm.sh` noch nicht ausführbar ist:
+
+```bash
+chmod +x make-scorm.sh
+```
+
+---
+
+## SCORM-Paket in Moodle oder mebis hochladen
+
+- Öffne deinen Kurs.
+- Aktiviere den Bearbeitungsmodus.
+- Wähle **Aktivität oder Material hinzufügen**.
+- Wähle **Lernpaket (SCORM)**.
+- Lade die erzeugte ZIP-Datei hoch.
+- Speichere die Aktivität.
+- Teste das Quiz vollständig.
+
+Das Quiz überträgt:
+
+- die erreichte Punktzahl,
+- die Maximalpunktzahl,
+- den Lernstatus,
+- den Status `passed` oder `failed`.
+
+Standardmäßig gilt das Quiz ab **66 %** als bestanden.
+
+---
+
+## Online-Version testen
+
+Die Online-Version kann beispielsweise über GitHub Pages geöffnet werden:
+
+```text
+https://DEIN-ACCOUNT.github.io/DEIN-PROJEKT/
+```
+
+Die Fragensätze werden aus dieser Datei geladen:
+
+```text
+question/sets.json
+```
+
+Die Datei muss online erreichbar sein unter:
+
+```text
+https://DEIN-ACCOUNT.github.io/DEIN-PROJEKT/question/sets.json
+```
+
+---
+
+# Allgemeine Erklärung
+
+## Auswahl der Fragensätze
+
+Das Dropdown-Menü in `index.html` bleibt leer:
+
+```html
+<select id="questionSet"></select>
+```
+
+Die verfügbaren Fragensätze werden beim Laden automatisch aus `question/sets.json` erzeugt.
+
+Beispiel:
+
+```json
+{
+    "mathe": {
+        "title": "Mathematik 🍕",
+        "file": "question/mathe.json"
+    },
+    "physik": {
+        "title": "Physik 🚴‍♀️",
+        "file": "question/physik.json"
+    },
+    "rot1": {
+        "title": "Drehbewegungen 🌀",
+        "file": "question/rot1.json"
+    }
+}
+```
+
+Die Angabe besteht aus:
+
+- einer eindeutigen ID,
+- einem sichtbaren Titel,
+- dem Pfad zur JSON-Datei.
+
+---
+
+## Aufbau eines Fragensets
+
+Eine JSON-Datei enthält ein Array mit Fragen:
 
 ```json
 [
     {
         "question": "Berechne: $12 + (-7)$",
         "answers": [
-            "5",
-            "-5",
-            "19"
+            "$5$",
+            "$-5$",
+            "$19$"
         ],
         "correctAnswer": 0,
-        "explanation": "12 - 7 = 5. Das Ergebnis lautet daher 5."
+        "explanation": "$12 - 7 = 5$."
     }
 ]
 ```
@@ -118,12 +232,10 @@ Jede JSON-Datei enthält eine Liste mit Fragen. Jede Frage benötigt diese vier 
 |---|---|
 | `question` | Frage oder Aufgabe |
 | `answers` | Genau drei Antwortmöglichkeiten |
-| `correctAnswer` | Position der richtigen Antwort |
-| `explanation` | Kurze Erklärung zur Lösung |
+| `correctAnswer` | Index der richtigen Antwort |
+| `explanation` | Erklärung nach der Antwort |
 
-### Werte für `correctAnswer`
-
-Der Index beginnt bei `0`:
+### Werte von `correctAnswer`
 
 ```text
 0 = erste Antwort
@@ -146,377 +258,309 @@ Beispiel:
 }
 ```
 
-Die richtige Antwort ist hier die zweite Antwort. Deshalb lautet der Wert:
+---
 
-```json
-"correctAnswer": 1
-```
+## Empfehlungen für gute Fragen
 
-### Hinweise
-
-- Jede Frage muss genau drei Antworten enthalten.
-- Genau eine Antwort darf richtig sein.
-- Die Reihenfolge der Antworten kann manuell verändert werden.
-- Nach einer Änderung der Reihenfolge muss auch `correctAnswer` angepasst werden.
-- Die Datei muss gültiges JSON enthalten.
-- Zwischen den Objekten müssen Kommas stehen, nach dem letzten Objekt jedoch nicht.
+- Formuliere die Fragen kurz.
+- Verwende möglichst Formeln, Symbole, Einheiten und kurze Berechnungen.
+- Vermeide lange Sachtexte.
+- Erstelle genau drei Antworten.
+- Verwende genau eine richtige Antwort.
+- Nutze plausible typische Fehler als falsche Antworten.
+- Verteile die richtige Antwort auf unterschiedliche Positionen.
+- Prüfe Zahlenwerte, Einheiten und Formelumstellungen.
 
 ---
 
-## 📐 Mathematische Formeln mit KaTeX
+## Mathematische Formeln
 
-Mathematische Formeln werden zwischen Dollarzeichen geschrieben:
+Formeln werden zwischen Dollarzeichen geschrieben:
 
 ```json
-{
-    "question": "Berechne: $2 \\cdot 3 + 4$",
-    "answers": [
-        "$10$",
-        "$14$",
-        "$12$"
-    ],
-    "correctAnswer": 0,
-    "explanation": "$2 \\cdot 3 + 4 = 10$."
-}
+"question": "Berechne: $2 \\cdot 3 + 4$"
 ```
 
-### Wichtig bei LaTeX in JSON
-
-In JSON müssen Backslashes doppelt geschrieben werden:
+Bei LaTeX in JSON müssen Backslashes doppelt geschrieben werden:
 
 ```json
 "$\\frac{1}{2}$"
 ```
 
-Nicht korrekt wäre:
+Beispiele:
 
 ```json
-"$\frac{1}{2}$"
-```
-
-Weitere Beispiele:
-
-```json
-"$x^2$"
-```
-
-```json
-"$\\sqrt{25}$"
-```
-
-```json
-"$\\frac{3}{4}$"
+"$a_z = \\frac{v^2}{r}$"
 ```
 
 ```json
 "$F = m \\cdot a$"
 ```
 
----
-
-## 🤖 Prompt zur Erstellung neuer Fragen
-
-Den folgenden Prompt kannst du in einem KI-Assistenten verwenden. Im Hilfsbereich kannst du zusätzlich den passenden **Lehrplan** und geeignete **inhaltliche Links** hinterlegen.
-
-```text
-Du erstellst fachlich korrekte Quizfragen für ein digitales Schulquiz.
-
-## Grundlage
-
-Orientiere dich vorrangig an:
-
-- dem im Hilfsbereich hinterlegten Lehrplan,
-- den im Hilfsbereich angegebenen fachlichen Links,
-- dem angegebenen Fach,
-- der angegebenen Klassenstufe,
-- dem gewünschten Thema,
-- dem gewünschten Schwierigkeitsgrad.
-
-Verwende keine Inhalte, die über den angegebenen Lehrplan oder die bereitgestellten Materialien hinausgehen, sofern dies nicht ausdrücklich gewünscht ist.
-
-Wenn Lehrplan und Links unterschiedliche oder widersprüchliche Angaben enthalten, orientiere dich am Lehrplan und weise auf die Abweichung nur hin, wenn sie für die fachliche Richtigkeit wichtig ist.
-
-## Angaben
-
-Fach: [Mathematik oder Physik]
-
-Klassenstufe: [z. B. 7]
-
-Thema: [z. B. Rechnen mit ganzen Zahlen oder Kräfte]
-
-Unterthema: [optional]
-
-Schwierigkeitsgrad: [leicht, mittel oder schwer]
-
-Anzahl der Fragen: [Anzahl]
-
-Fragentyp: [Berechnung, Verständnisfrage, Anwendung oder gemischt]
-
-Weitere Vorgaben: [optional]
-
-## Anforderungen an die Fragen
-
-- Erstelle genau die angegebene Anzahl an Fragen.
-- Die Fragen müssen zur Klassenstufe passen.
-- Formuliere jede Frage eindeutig und verständlich.
-- Erstelle pro Frage genau drei Antwortmöglichkeiten.
-- Genau eine Antwort darf richtig sein.
-- Die falschen Antworten sollen typische Fehler abbilden.
-- Die richtige Antwort darf nicht immer an derselben Position stehen.
-- Verteile die richtigen Antworten möglichst gleichmäßig auf die Positionen 0, 1 und 2.
-- Verwende keine Antworten wie „Alle Antworten sind richtig“.
-- Prüfe bei Rechenaufgaben jeden Rechenschritt.
-- Prüfe bei Physikaufgaben Größen, Einheiten, Vorzeichen und Formeln.
-- Verwende nur geeignete Begriffe und Verfahren für die angegebene Klassenstufe.
-- Gib zu jeder Frage eine kurze und verständliche Erklärung.
-- Verwende mathematische Formeln zwischen Dollarzeichen.
-- Schreibe in JSON-LaTeX alle Backslashes doppelt. Beispiel:
-  "$\\frac{1}{2}$"
-
-## Ausgabeformat
-
-Gib ausschließlich gültiges JSON aus.
-
-Verwende keine Überschrift, keinen Markdown-Codeblock und keine zusätzlichen Erklärungen außerhalb des JSON.
-
-Das JSON muss genau dieses Format haben:
-
-[
-    {
-        "question": "Frage oder Aufgabe",
-        "answers": [
-            "Antwort 1",
-            "Antwort 2",
-            "Antwort 3"
-        ],
-        "correctAnswer": 0,
-        "explanation": "Kurze Erklärung der richtigen Lösung."
-    }
-]
-
-## Bedeutung von correctAnswer
-
-- 0 bedeutet: Die erste Antwort ist richtig.
-- 1 bedeutet: Die zweite Antwort ist richtig.
-- 2 bedeutet: Die dritte Antwort ist richtig.
-
-## Prüfung vor der Ausgabe
-
-Prüfe vor der Ausgabe:
-
-- Ist jede Frage fachlich korrekt?
-- Passt jede Frage zum Lehrplan und zur Klassenstufe?
-- Gibt es genau drei Antworten?
-- Ist genau eine Antwort richtig?
-- Stimmt correctAnswer mit der richtigen Antwort überein?
-- Sind die richtigen Antworten unterschiedlich positioniert?
-- Sind alle Formeln gültige LaTeX-Formeln?
-- Sind die Backslashes im JSON korrekt verdoppelt?
-- Ist das Ergebnis gültiges JSON?
-```
-
-### Beispiel für eine konkrete Eingabe
-
-```text
-Erstelle 10 Fragen für Mathematik, Klassenstufe 7.
-
-Thema: Rechnen mit ganzen Zahlen
-
-Unterthemen:
-- Addition und Subtraktion
-- Multiplikation und Division
-- Rechenregeln
-
-Schwierigkeitsgrad: leicht bis mittel
-
-Fragentyp: gemischt
-
-Orientiere dich am hinterlegten Lehrplan. Gib ausschließlich gültiges JSON im vorgegebenen Format aus.
-```
-
-Für Physik:
-
-```text
-Erstelle 10 Fragen für Physik, Klassenstufe 8.
-
-Thema: Kräfte
-
-Unterthemen:
-- Kraftwirkungen
-- Kraftpfeile
-- Einheit Newton
-- Gewichtskraft
-
-Schwierigkeitsgrad: mittel
-
-Fragentyp: Verständnisfragen und einfache Berechnungen
-
-Nutze ausschließlich Inhalte, die durch den hinterlegten Lehrplan und die angegebenen Links abgedeckt sind. Gib ausschließlich gültiges JSON aus.
+```json
+"$\\sqrt{25}$"
 ```
 
 ---
 
-## 📦 Als SCORM-Paket für Moodle oder mebis verpacken
+# Technische Details
 
-### Dateien vorbereiten
+## `game.js`
 
-Stelle sicher, dass alle benötigten Dateien vorhanden sind:
+Die JavaScript-Datei übernimmt:
 
-- `index.html`
-- `game.js`
-- `styles.css`
-- der Ordner `question/`
-- `imsmanifest.xml`
-- KaTeX-Dateien
-- der Ordner `fonts/`
+- Laden von `question/sets.json`,
+- Erstellen des Dropdown-Menüs,
+- Laden des ausgewählten Fragensatzes,
+- zufällige Reihenfolge der Fragen,
+- Darstellung von KaTeX-Formeln,
+- Steuerung der Rakete,
+- Auswertung der Antworten,
+- Berechnung der Punktzahl,
+- SCORM-Kommunikation.
 
-### ZIP-Datei erstellen
-
-Markiere alle Dateien und Ordner und erstelle daraus eine ZIP-Datei.
-
-Unter Windows:
-
-- Alle Dateien markieren.
-- Rechtsklick auf die Auswahl.
-- **Senden an → ZIP-komprimierter Ordner**
-
-Unter macOS:
-
-- Alle Dateien markieren.
-- Rechtsklick.
-- **Objekte komprimieren**
-
-### Wichtig
-
-Die Datei `imsmanifest.xml` muss direkt auf der obersten Ebene der ZIP-Datei liegen:
-
-```text
-richtig:
-quiz.zip
-├── imsmanifest.xml
-├── index.html
-└── game.js
-```
-
-Nicht korrekt:
-
-```text
-quiz.zip
-└── raketen-quiz/
-    ├── imsmanifest.xml
-    ├── index.html
-    └── game.js
-```
-
-### In Moodle oder mebis hochladen
-
-- Öffne deinen Kurs.
-- Aktiviere den Bearbeitungsmodus.
-- Wähle **Aktivität oder Material hinzufügen**.
-- Wähle **Lernpaket (SCORM)**.
-- Lade die ZIP-Datei hoch.
-- Speichere die Aktivität.
-
----
-
-## 🎯 Bestehensgrenze anpassen
-
-Standardmäßig gilt das Quiz ab 66 % als bestanden. Die entsprechende Stelle findest du in `game.js`:
+Die Fragensätze werden nicht mehr fest in `game.js` eingetragen. Stattdessen wird die Liste dynamisch geladen:
 
 ```js
-if (percent >= 66) {
-    this.api.LMSSetValue(
-        "cmi.core.lesson_status",
-        "passed"
-    );
-}
+fetch("question/sets.json")
 ```
 
-Beispiel für eine Bestehensgrenze von 50 %:
-
-```js
-if (percent >= 50) {
-    this.api.LMSSetValue(
-        "cmi.core.lesson_status",
-        "passed"
-    );
-}
-```
+Dadurch reicht es aus, neue JSON-Dateien in den Ordner `question/` zu legen und anschließend das Aktualisierungsskript auszuführen.
 
 ---
 
-## ⚠️ Fehlerbehebung
+## `update-question-sets.sh`
 
-### Formeln werden nicht richtig angezeigt
+Das Skript durchsucht ausschließlich den Ordner:
 
-Prüfe:
+```text
+question/
+```
 
-- Sind `katex.min.js` und `katex.min.css` eingebunden?
-- Ist der Ordner `fonts/` vorhanden?
-- Werden Backslashes in der JSON-Datei doppelt geschrieben?
-- Stehen die Formeln zwischen Dollarzeichen?
+Es berücksichtigt JSON-Dateien direkt in diesem Ordner. Unterordner werden nicht durchsucht.
+
+Die Datei
+
+```text
+question/sets.json
+```
+
+wird dabei als Verwaltungsdatei ignoriert und nicht selbst als Fragensatz aufgenommen.
+
+Vor jeder Änderung wird eine Sicherung erstellt:
+
+```text
+question/sets.json.bak-YYYYMMDD-HHMMSS
+```
 
 Beispiel:
+
+```text
+question/sets.json.bak-20261021-162200
+```
+
+Vorhandene Einträge bleiben erhalten. Neue JSON-Dateien erhalten automatisch einen Titel aus ihrem Dateinamen.
+
+Beispiel:
+
+```text
+question/elektrizitaet.json
+```
+
+wird automatisch eingetragen als:
 
 ```json
-"question": "Berechne $\\frac{2}{3} + \\frac{1}{3}$."
+"elektrizitaet": {
+    "title": "Elektrizitaet",
+    "file": "question/elektrizitaet.json"
+}
 ```
 
-### Die richtige Antwort wird nicht erkannt
+Individuelle Titel können anschließend direkt in `sets.json` angepasst werden.
 
-Prüfe den Wert von `correctAnswer`:
+---
+
+## `make-scorm.sh`
+
+Das Build-Skript erstellt aus dem Projekt ein SCORM-1.2-Paket.
+
+Es kopiert unter anderem:
+
+- `index.html`,
+- `game.js`,
+- `styles.css`,
+- KaTeX-Dateien,
+- `question/sets.json`,
+- alle JSON-Fragensätze,
+- den Ordner `fonts/`, falls vorhanden.
+
+Außerdem erzeugt es eine passende `imsmanifest.xml`.
+
+Die Datei `imsmanifest.xml` liegt anschließend direkt im Stammverzeichnis der ZIP-Datei:
 
 ```text
-0 = erste Antwort
-1 = zweite Antwort
-2 = dritte Antwort
+raketen-quiz-scorm.zip
+├── imsmanifest.xml
+├── index.html
+├── game.js
+├── styles.css
+└── question/
+    ├── sets.json
+    ├── mathe.json
+    └── physik.json
 ```
 
-### Eine JSON-Datei wird nicht geladen
+---
 
-Prüfe:
+## SCORM 1.2
 
-- Ist der Pfad korrekt?
-- Existiert der Ordner `question/`?
-- Stimmt der Name in `questionSets`?
-- Wird das Quiz über einen Webserver oder Moodle geöffnet?
+Das Spiel verwendet die SCORM-1.2-API.
 
-Beispiel:
+Beim Start wird der Status gesetzt:
+
+```text
+incomplete
+```
+
+Während des Spiels wird die Punktzahl übertragen. Am Ende wird der Status gesetzt:
+
+```text
+passed
+```
+
+oder:
+
+```text
+failed
+```
+
+Die Bestehensgrenze liegt standardmäßig bei:
+
+```text
+66 %
+```
+
+In `game.js` wird sie beispielsweise so verwendet:
 
 ```js
-const questionSets = {
-    mathe: "question/mathe.json",
-    physik: "question/physik.json"
-};
+SCORM.finish(score, maxScore, 0.66);
 ```
 
-Das Quiz sollte lokal nicht direkt per Doppelklick auf `index.html` geöffnet werden, da Browser das Laden von JSON-Dateien aus Sicherheitsgründen blockieren können. Verwende zum Testen beispielsweise einen lokalen Webserver oder lade das Paket in Moodle beziehungsweise mebis hoch.
+Eine Bestehensgrenze von 50 % würde so aussehen:
 
-### SCORM funktioniert nicht
+```js
+SCORM.finish(score, maxScore, 0.50);
+```
+
+---
+
+## SCORM-Manifest
+
+Ein Fragensatz muss im SCORM-Paket enthalten und im Manifest aufgeführt sein:
+
+```xml
+<file href="question/sets.json"/>
+<file href="question/mathe.json"/>
+<file href="question/physik.json"/>
+```
+
+Wenn `make-scorm.sh` das Manifest automatisch erstellt, müssen diese Einträge nicht von Hand gepflegt werden.
+
+---
+
+## Lokales Testen
+
+Beim direkten Öffnen von `index.html` per Doppelklick kann der Browser das Laden von JSON-Dateien blockieren.
+
+Nicht ideal:
+
+```text
+file:///home/name/learnrocket/index.html
+```
+
+Besser ist ein lokaler Webserver, zum Beispiel mit PHP:
+
+```bash
+php -S localhost:8000
+```
+
+Danach im Browser öffnen:
+
+```text
+http://localhost:8000
+```
+
+Alternativ kann das Projekt direkt über GitHub Pages oder als SCORM-Paket in Moodle getestet werden.
+
+---
+
+## Fehlerbehebung
+
+### Dropdown ist leer
+
+Prüfe, ob diese Datei existiert:
+
+```text
+question/sets.json
+```
+
+Teste sie direkt im Browser:
+
+```text
+https://DEIN-ACCOUNT.github.io/DEIN-PROJEKT/question/sets.json
+```
+
+Führe anschließend aus:
+
+```bash
+./update-question-sets.sh
+```
+
+### Neue Fragen erscheinen nicht online
 
 Prüfe:
 
-- Liegt `imsmanifest.xml` direkt im Stammverzeichnis der ZIP-Datei?
-- Wurde die gesamte ZIP-Datei hochgeladen?
-- Sind alle Dateipfade korrekt?
-- Ist die SCORM-Version in der Manifest-Datei korrekt angegeben?
+- Wurde die JSON-Datei zu GitHub hochgeladen?
+- Wurde `sets.json` aktualisiert?
+- Stimmt die Groß- und Kleinschreibung?
+- Wurde der Browsercache geleert?
+- Wurde die richtige Version des SCORM-Pakets hochgeladen?
+
+### SCORM lädt alte Fragen
+
+Erstelle das Paket neu:
+
+```bash
+./update-question-sets.sh
+./make-scorm.sh
+```
+
+Lade anschließend eine neue ZIP-Datei in Moodle hoch, zum Beispiel:
+
+```text
+raketen-quiz-scorm-v2.zip
+```
+
+### Punktzahl wird nicht übertragen
+
+Prüfe:
+
+- Wird das Quiz tatsächlich als SCORM-Aktivität geöffnet?
+- Liegt `imsmanifest.xml` direkt im ZIP-Stammverzeichnis?
+- Enthält `game.js` die SCORM-Funktionen?
+- Wird das Quiz bis zum Ende durchgeführt?
+- Unterstützt das verwendete LMS SCORM 1.2?
 
 ---
 
-## ✅ Checkliste vor dem Einsatz
+## Kurzablauf
 
-- [ ] `index.html` funktioniert.
-- [ ] `game.js` ist eingebunden.
-- [ ] Die JSON-Datei ist gültig.
-- [ ] Jede Frage enthält drei Antworten.
-- [ ] `correctAnswer` verweist auf die richtige Antwort.
-- [ ] Die Antworten sind nicht immer gleich angeordnet.
-- [ ] Die Formeln werden korrekt angezeigt.
-- [ ] Alle Fragensätze liegen im Ordner `question/`.
-- [ ] Die URL lädt den gewünschten Fragensatz.
-- [ ] `imsmanifest.xml` liegt direkt im ZIP-Stammverzeichnis.
-- [ ] Das SCORM-Paket wurde in Moodle oder mebis getestet.
+Ein neues Fragenset wird so eingebunden:
 
----
+```bash
+cp neues-thema.json question/
+./update-question-sets.sh
+./make-scorm.sh
+```
 
-*Entwickelt für den Einsatz im schulischen Unterricht. Das Projekt kann für Mathematik, Physik und weitere Fächer angepasst werden.*
+Danach liegt das fertige SCORM-Paket im Build-Ordner und kann in Moodle oder mebis hochgeladen werden.
