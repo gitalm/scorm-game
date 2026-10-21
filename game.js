@@ -130,7 +130,7 @@ const SCORM = {
 
 const Sound = {
     ctx: null,
-    isMuted: true,
+    isMuted: false,
 
     init() {
         if (!this.ctx) {
