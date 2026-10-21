@@ -45,7 +45,7 @@
             <file href="question/mathe.json"/>
             <file href="question/physik.json"/>
             <file href="question/rot1.json"/>
-            <file href="question/geschichte.json"/>
+            <file href="question/sets.json"/>
         </resource>
     </resources>
 </manifest>
