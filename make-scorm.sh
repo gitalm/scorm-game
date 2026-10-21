@@ -96,18 +96,32 @@ echo "Kopiere Projektdateien ..."
 # Gesamten Projektordner in den temporären Ordner kopieren
 cp -R "$PROJECT_DIR"/. "$TEMP_DIR"/
 
-# Alte ZIP-Dateien und das Erstellskript aus dem Export entfernen
+# Alte ZIP-Dateien aus dem Export entfernen
 find "$TEMP_DIR" \
     -maxdepth 1 \
     -type f \
     -name "*.zip" \
     -delete
 
+# Erstellskript aus dem SCORM-Paket entfernen
 rm -f "$TEMP_DIR/make-scorm.sh"
 
 # Ausgewählte Datei als default.json einsetzen
 cp "$SOURCE_FILE" \
    "$TEMP_DIR/question/default.json"
+
+# Dateiname ohne .json als Titel verwenden
+SET_TITLE="${SELECTED_FILE%.json}"
+
+# Im SCORM-Export nur den ausgewählten Fragensatz anzeigen
+cat > "$TEMP_DIR/question/sets.json" <<EOF
+{
+    "default": {
+        "title": "$SET_TITLE",
+        "file": "question/default.json"
+    }
+}
+EOF
 
 # Vorhandene Zieldatei überschreiben
 rm -f "$OUTPUT_ZIP"
@@ -117,7 +131,7 @@ echo "Erstelle SCORM-Paket ..."
 (
     cd "$TEMP_DIR"
 
-    # imsmanifest.xml liegt dadurch direkt im ZIP-Hauptverzeichnis.
+    # imsmanifest.xml liegt direkt im ZIP-Hauptverzeichnis.
     zip -qr "$OUTPUT_ZIP" .
 )
 
