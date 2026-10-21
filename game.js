@@ -4,8 +4,16 @@ const Sound = {
 
     init() {
         if (!this.ctx) {
-            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            const AudioContext =
+                window.AudioContext || window.webkitAudioContext;
+
+            if (!AudioContext) return;
+
             this.ctx = new AudioContext();
+        }
+
+        if (this.ctx.state === "suspended") {
+            this.ctx.resume();
         }
     },
 
@@ -36,20 +44,42 @@ const Sound = {
 };
 
 
+// --------------------------------------------------
 // HTML-Elemente
+// --------------------------------------------------
+
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
-const answerContainer = document.getElementById("answerContainer");
-const questionDisplay = document.getElementById("questionDisplay");
-const astronautFeedback = document.getElementById("astronautFeedback");
-const astronautSpeech = document.getElementById("astronautSpeech");
-const scoreDisplay = document.getElementById("scoreDisplay");
+const startScreen = document.getElementById("startScreen");
+const startBtn = document.getElementById("startBtn");
+const questionSetSelect = document.getElementById("questionSet");
+
+const answerContainer =
+    document.getElementById("answerContainer");
+
+const questionDisplay =
+    document.getElementById("questionDisplay");
+
+const astronautFeedback =
+    document.getElementById("astronautFeedback");
+
+const astronautSpeech =
+    document.getElementById("astronautSpeech");
+
+const scoreDisplay =
+    document.getElementById("scoreDisplay");
+
+const muteToggle =
+    document.getElementById("muteToggle");
 
 
+// --------------------------------------------------
 // Spielvariablen
-let viewW;
-let viewH;
+// --------------------------------------------------
+
+let viewW = 0;
+let viewH = 0;
 
 let questions = [];
 let curQ = null;
@@ -62,7 +92,7 @@ let gameState = "start";
 const ROCKET_SIZE = 60;
 const EMOJI_FIX = -Math.PI / 4;
 
-let rocket = {
+const rocket = {
     x: 0,
     y: 0,
     targetX: 0,
@@ -72,15 +102,68 @@ let rocket = {
 };
 
 
-// Fragensätze
+// --------------------------------------------------
+// Verfügbare Fragensätze
+// --------------------------------------------------
+
 const questionSets = {
     mathe: "question/mathe.json",
     physik: "question/physik.json",
+    rot1: "question/rot1.json",
     geschichte: "question/geschichte.json"
 };
 
 
-// Fenstergröße anpassen
+// --------------------------------------------------
+// Hilfsfunktionen
+// --------------------------------------------------
+
+function renderLatex(text) {
+    if (!window.katex || typeof text !== "string") {
+        return text;
+    }
+
+    return text.replace(
+        /\$(.*?)\$/g,
+        (match, formula) => {
+            try {
+                return katex.renderToString(formula, {
+                    throwOnError: false
+                });
+            } catch (error) {
+                console.error("KaTeX-Fehler:", error);
+                return match;
+            }
+        }
+    );
+}
+
+
+function showQuestionText(element, text) {
+    if (window.katex) {
+        element.innerHTML = renderLatex(text);
+    } else {
+        element.innerText = text;
+    }
+}
+
+
+function resetGame() {
+    asked = 0;
+    score = 0;
+    selectedAnswer = -1;
+    curQ = null;
+
+    scoreDisplay.innerText = "Punkte: 0";
+    astronautFeedback.style.display = "none";
+    answerContainer.innerHTML = "";
+}
+
+
+// --------------------------------------------------
+// Fenstergröße und Rakete
+// --------------------------------------------------
+
 function resize() {
     viewW = window.innerWidth;
     viewH = window.innerHeight;
@@ -88,13 +171,15 @@ function resize() {
     canvas.width = viewW;
     canvas.height = viewH;
 
-    if (gameState === "playing") {
+    if (
+        gameState === "playing" ||
+        gameState === "flying"
+    ) {
         resetRocket();
     }
 }
 
 
-// Rakete zurücksetzen
 function resetRocket() {
     rocket.x = viewW / 2 - ROCKET_SIZE / 2;
     rocket.y = viewH * 0.65;
@@ -102,7 +187,10 @@ function resetRocket() {
 }
 
 
-// Nächste Frage anzeigen
+// --------------------------------------------------
+// Frage anzeigen
+// --------------------------------------------------
+
 function nextQuestion() {
     if (asked >= questions.length) {
         finish();
@@ -115,36 +203,26 @@ function nextQuestion() {
     asked++;
     selectedAnswer = -1;
 
-    // Frage mit optionalem KaTeX rendern
-    if (window.katex) {
-        questionDisplay.innerHTML = curQ.question.replace(
-            /\$(.*?)\$/g,
-            (match, formula) => katex.renderToString(formula)
-        );
-    } else {
-        questionDisplay.innerText = curQ.question;
-    }
+    showQuestionText(
+        questionDisplay,
+        curQ.question
+    );
 
     answerContainer.innerHTML = "";
 
     curQ.answers.forEach((answer, index) => {
         const answerBox = document.createElement("div");
+
         answerBox.className = "answerBox";
+        answerBox.dataset.index = index;
 
-        if (window.katex) {
-            answerBox.innerHTML = answer.replace(
-                /\$(.*?)\$/g,
-                (match, formula) => katex.renderToString(formula)
-            );
-        } else {
-            answerBox.innerText = answer;
-        }
+        showQuestionText(answerBox, answer);
 
-        answerBox.onclick = () => {
+        answerBox.addEventListener("click", () => {
             if (gameState === "playing") {
                 launch(index);
             }
-        };
+        });
 
         answerContainer.appendChild(answerBox);
     });
@@ -154,17 +232,25 @@ function nextQuestion() {
 }
 
 
-// Rakete zur ausgewählten Antwort starten
+// --------------------------------------------------
+// Rakete starten
+// --------------------------------------------------
+
 function launch(index) {
     if (gameState !== "playing") return;
+
+    const answerBoxes =
+        document.querySelectorAll(".answerBox");
+
+    if (!answerBoxes[index]) return;
 
     gameState = "flying";
     selectedAnswer = index;
 
-    const answerBoxes = document.querySelectorAll(".answerBox");
     answerBoxes[index].classList.add("selected");
 
-    const rect = answerBoxes[index].getBoundingClientRect();
+    const rect =
+        answerBoxes[index].getBoundingClientRect();
 
     rocket.targetX =
         rect.left + rect.width / 2 - ROCKET_SIZE / 2;
@@ -176,11 +262,16 @@ function launch(index) {
     const dy = rocket.targetY - rocket.y;
 
     rocket.angle =
-        Math.atan2(dy, dx) + Math.PI / 2 + EMOJI_FIX;
+        Math.atan2(dy, dx) +
+        Math.PI / 2 +
+        EMOJI_FIX;
 }
 
 
+// --------------------------------------------------
 // Ergebnis anzeigen
+// --------------------------------------------------
+
 function showResult(isCorrect) {
     gameState = "feedback";
 
@@ -195,47 +286,134 @@ function showResult(isCorrect) {
 
     astronautFeedback.style.display = "flex";
 
-    const text =
+    const feedbackText =
         (isCorrect ? "✅ Richtig! " : "❌ Falsch... ") +
         curQ.explanation;
 
-    if (window.katex) {
-        astronautSpeech.innerHTML = text.replace(
-            /\$(.*?)\$/g,
-            (match, formula) => katex.renderToString(formula)
-        );
-    } else {
-        astronautSpeech.innerText = text;
-    }
+    showQuestionText(
+        astronautSpeech,
+        feedbackText
+    );
 }
 
 
+// --------------------------------------------------
 // Spiel beenden
+// --------------------------------------------------
+
 function finish() {
     gameState = "end";
 
     const percentage =
         questions.length > 0
-            ? Math.round((score / (questions.length * 10)) * 100)
+            ? Math.round(
+                (score / (questions.length * 10)) * 100
+            )
             : 0;
 
     questionDisplay.innerHTML = `
         <h2>Mission Ende!</h2>
         <p>Erfolg: ${percentage}%</p>
-        <button class="main-btn" onclick="location.reload()">
+        <button class="main-btn" id="restartBtn">
             Neustart
         </button>
     `;
 
     answerContainer.innerHTML = "";
+
+    const restartBtn =
+        document.getElementById("restartBtn");
+
+    restartBtn.addEventListener("click", () => {
+        location.reload();
+    });
 }
 
 
-// Animationsschleife
+// --------------------------------------------------
+// Fragensatz laden
+// --------------------------------------------------
+
+async function loadQuestions(questionFile) {
+    const response = await fetch(questionFile);
+
+    if (!response.ok) {
+        throw new Error(
+            `Datei konnte nicht geladen werden: ${response.status}`
+        );
+    }
+
+    const data = await response.json();
+
+    if (!Array.isArray(data) || data.length === 0) {
+        throw new Error(
+            "Der Fragensatz ist leer oder ungültig."
+        );
+    }
+
+    return data;
+}
+
+
+async function startGame() {
+    Sound.init();
+
+    const setName = questionSetSelect.value;
+    const questionFile = questionSets[setName];
+
+    console.log("Ausgewählter Fragensatz:", setName);
+    console.log("Geladene Datei:", questionFile);
+
+    if (!questionFile) {
+        questionDisplay.innerText =
+            "Dieser Fragensatz wurde nicht gefunden.";
+        return;
+    }
+
+    startBtn.disabled = true;
+    startBtn.innerText = "LÄDT ...";
+
+    try {
+        const data = await loadQuestions(questionFile);
+
+        questions = data.sort(
+            () => Math.random() - 0.5
+        );
+
+        resetGame();
+
+        startScreen.style.display = "none";
+        gameState = "playing";
+
+        nextQuestion();
+    } catch (error) {
+        console.error(error);
+
+        gameState = "start";
+        startScreen.style.display = "flex";
+
+        questionDisplay.innerHTML = `
+            <p>Die Fragen konnten nicht geladen werden.</p>
+            <p>
+                Überprüfte Datei:
+                <strong>${questionFile}</strong>
+            </p>
+        `;
+    } finally {
+        startBtn.disabled = false;
+        startBtn.innerText = "START";
+    }
+}
+
+
+// --------------------------------------------------
+// Animation
+// --------------------------------------------------
+
 function loop() {
     ctx.clearRect(0, 0, viewW, viewH);
 
-    // Sterne zeichnen
+    // Sterne
     ctx.fillStyle = "white";
 
     for (let i = 0; i < 30; i++) {
@@ -254,11 +432,12 @@ function loop() {
         const distance = Math.hypot(dx, dy);
 
         if (distance > 10) {
-            rocket.x += (dx / distance) * rocket.speed;
-            rocket.y += (dy / distance) * rocket.speed;
+            rocket.x +=
+                (dx / distance) * rocket.speed;
+
+            rocket.y +=
+                (dy / distance) * rocket.speed;
         } else {
-            // correctAnswer muss der nullbasierte Index sein:
-            // 0 = erste Antwort, 1 = zweite Antwort usw.
             const isCorrect =
                 selectedAnswer === curQ.correctAnswer;
 
@@ -267,7 +446,10 @@ function loop() {
     }
 
     // Rakete zeichnen
-    if (gameState !== "start" && gameState !== "end") {
+    if (
+        gameState !== "start" &&
+        gameState !== "end"
+    ) {
         ctx.save();
 
         ctx.translate(
@@ -290,7 +472,10 @@ function loop() {
 }
 
 
-// Zum nächsten Schritt wechseln
+// --------------------------------------------------
+// Eingaben
+// --------------------------------------------------
+
 function globalProgress() {
     if (gameState === "feedback") {
         nextQuestion();
@@ -298,12 +483,13 @@ function globalProgress() {
 }
 
 
-// Klick außerhalb der Bedienelemente
-window.addEventListener("pointerdown", (event) => {
+window.addEventListener("pointerdown", event => {
     if (
         event.target.closest(".ui-icon") ||
         event.target.closest(".main-btn") ||
-        event.target.closest(".answerBox")
+        event.target.closest(".answerBox") ||
+        event.target.closest("select") ||
+        event.target.closest("label")
     ) {
         return;
     }
@@ -312,8 +498,7 @@ window.addEventListener("pointerdown", (event) => {
 });
 
 
-// Tastatursteuerung
-window.addEventListener("keydown", (event) => {
+window.addEventListener("keydown", event => {
     if (gameState === "feedback") {
         nextQuestion();
         return;
@@ -325,7 +510,10 @@ window.addEventListener("keydown", (event) => {
         launch(0);
     }
 
-    if (event.key === "ArrowUp" || event.key === " ") {
+    if (
+        event.key === "ArrowUp" ||
+        event.key === " "
+    ) {
         launch(1);
     }
 
@@ -335,74 +523,27 @@ window.addEventListener("keydown", (event) => {
 });
 
 
-// Start-Button
-document.getElementById("startBtn").onclick = () => {
-    Sound.init();
+// --------------------------------------------------
+// Buttons
+// --------------------------------------------------
 
-    const select = document.getElementById("questionSet");
-    const setName = select.value;
-    const questionFile = questionSets[setName];
-
-    if (!questionFile) {
-        questionDisplay.innerText =
-            "Dieser Fragensatz wurde nicht gefunden.";
-        return;
-    }
-
-    gameState = "playing";
-    document.getElementById("startScreen").style.display = "none";
-
-    fetch(questionFile)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(
-                    `Fragensatz konnte nicht geladen werden: ${response.status}`
-                );
-            }
-
-            return response.json();
-        })
-        .then(data => {
-            if (!Array.isArray(data) || data.length === 0) {
-                throw new Error(
-                    "Der Fragensatz ist leer oder ungültig."
-                );
-            }
-
-            questions = data.sort(() => Math.random() - 0.5);
-            nextQuestion();
-        })
-        .catch(error => {
-            console.error(error);
-
-            // Startbildschirm wieder anzeigen
-            document.getElementById("startScreen").style.display = "flex";
-            gameState = "start";
-
-            questionDisplay.innerHTML = `
-                <p>Die Fragen konnten nicht geladen werden.</p>
-                <p>
-                    Überprüfte Datei:
-                    <strong>${questionFile}</strong>
-                </p>
-            `;
-        });
-};
+startBtn.addEventListener("click", startGame);
 
 
-// Ton ein- und ausschalten
-document.getElementById("muteToggle").onclick = (event) => {
+muteToggle.addEventListener("click", event => {
     Sound.init();
 
     Sound.isMuted = !Sound.isMuted;
-    event.target.innerText = Sound.isMuted ? "🔇" : "🔊";
-};
+    event.currentTarget.innerText =
+        Sound.isMuted ? "🔇" : "🔊";
+});
 
 
-// Ereignisse
+// --------------------------------------------------
+// Initialisierung
+// --------------------------------------------------
+
 window.addEventListener("resize", resize);
 
-
-// Initialisierung
 resize();
 loop();
