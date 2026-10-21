@@ -339,17 +339,21 @@ window.addEventListener("keydown", (event) => {
 document.getElementById("startBtn").onclick = () => {
     Sound.init();
 
+    const select = document.getElementById("questionSet");
+    const setName = select.value;
+    const questionFile = questionSets[setName];
+
+    if (!questionFile) {
+        questionDisplay.innerText =
+            "Dieser Fragensatz wurde nicht gefunden.";
+        return;
+    }
+
     gameState = "playing";
     document.getElementById("startScreen").style.display = "none";
 
-    const params = new URLSearchParams(window.location.search);
-    const setName = params.get("set") || "mathe";
-
-    const questionFile =
-        questionSets[setName] || questionSets.mathe;
-
     fetch(questionFile)
-        .then((response) => {
+        .then(response => {
             if (!response.ok) {
                 throw new Error(
                     `Fragensatz konnte nicht geladen werden: ${response.status}`
@@ -358,24 +362,28 @@ document.getElementById("startBtn").onclick = () => {
 
             return response.json();
         })
-        .then((data) => {
+        .then(data => {
             if (!Array.isArray(data) || data.length === 0) {
-                throw new Error("Der Fragensatz ist leer oder ungültig.");
+                throw new Error(
+                    "Der Fragensatz ist leer oder ungültig."
+                );
             }
 
             questions = data.sort(() => Math.random() - 0.5);
             nextQuestion();
         })
-        .catch((error) => {
+        .catch(error => {
             console.error(error);
 
+            // Startbildschirm wieder anzeigen
+            document.getElementById("startScreen").style.display = "flex";
+            gameState = "start";
+
             questionDisplay.innerHTML = `
+                <p>Die Fragen konnten nicht geladen werden.</p>
                 <p>
-                    Die Fragen konnten nicht geladen werden.
-                </p>
-                <p>
-                    Bitte überprüfe den Fragensatz
-                    <strong>${questionFile}</strong>.
+                    Überprüfte Datei:
+                    <strong>${questionFile}</strong>
                 </p>
             `;
         });
