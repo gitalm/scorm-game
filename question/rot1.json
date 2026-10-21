@@ -1,102 +1,142 @@
 [
   {
-    "question": "Welche Größe beschreibt die Bahngeschwindigkeit?",
+    "question": "Was bedeutet $a_r$?",
     "answers": [
-      "$v$",
-      "$r$",
-      "$a_z$"
+      "Radialbeschleunigung",
+      "Radius",
+      "Winkelgeschwindigkeit"
     ],
     "correctAnswer": 0,
-    "explanation": "Die Bahngeschwindigkeit wird mit $v$ angegeben."
+    "explanation": "$a_r$ bezeichnet die Radial- oder Zentripetalbeschleunigung."
   },
   {
-    "question": "Welche Formel gilt für die Zentripetalbeschleunigung?",
+    "question": "Welche Formel gilt für $a_r$?",
     "answers": [
-      "$a_z = v \\cdot r$",
-      "$a_z = \\frac{v^2}{r}$",
-      "$a_z = \\frac{r}{v^2}$"
+      "$a_r = v \\cdot r$",
+      "$a_r = \\frac{v^2}{r}$",
+      "$a_r = \\frac{r}{v^2}$"
     ],
     "correctAnswer": 1,
-    "explanation": "Die Zentripetalbeschleunigung berechnet sich mit $a_z = \\frac{v^2}{r}$."
+    "explanation": "Für die Radialbeschleunigung gilt $a_r = \\frac{v^2}{r}$."
   },
   {
-    "question": "Wie lautet $v$ aus $a_z = \\frac{v^2}{r}$?",
+    "question": "Forme $a_r = \\frac{v^2}{r}$ nach $v$ um.",
     "answers": [
-      "$v = \\sqrt{a_z \\cdot r}$",
-      "$v = a_z \\cdot r^2$",
-      "$v = \\frac{a_z}{r}$"
+      "$v = \\sqrt{a_r r}$",
+      "$v = a_r r$",
+      "$v = \\frac{a_r}{r}$"
     ],
     "correctAnswer": 0,
-    "explanation": "Umgestellt ergibt sich $v^2 = a_z \\cdot r$ und damit $v = \\sqrt{a_z \\cdot r}$."
+    "explanation": "Aus $v^2 = a_r r$ folgt $v = \\sqrt{a_r r}$."
   },
   {
-    "question": "Wie lautet $r$ aus $a_z = \\frac{v^2}{r}$?",
+    "question": "Forme $a_r = \\frac{v^2}{r}$ nach $r$ um.",
     "answers": [
-      "$r = \\frac{v}{a_z^2}$",
-      "$r = a_z \\cdot v^2$",
-      "$r = \\frac{v^2}{a_z}$"
+      "$r = a_r v^2$",
+      "$r = \\frac{a_r}{v^2}$",
+      "$r = \\frac{v^2}{a_r}$"
     ],
     "correctAnswer": 2,
-    "explanation": "Nach $r$ umgestellt lautet die Formel $r = \\frac{v^2}{a_z}$."
+    "explanation": "Durch Umstellen erhält man $r = \\frac{v^2}{a_r}$."
   },
   {
-    "question": "Wie verändert sich $a_z$, wenn $v$ größer wird?",
+    "question": "Wie verändert sich $a_r$, wenn $v$ steigt?",
     "answers": [
-      "$a_z$ wird kleiner.",
-      "$a_z$ wird größer.",
-      "$a_z$ bleibt gleich."
+      "$a_r \\downarrow$",
+      "$a_r \\uparrow$",
+      "$a_r = \\text{konst.}$"
     ],
     "correctAnswer": 1,
-    "explanation": "Da $a_z$ proportional zu $v^2$ ist, nimmt $a_z$ bei größerem $v$ zu."
+    "explanation": "Nach $a_r = \\frac{v^2}{r}$ steigt $a_r$ mit $v^2$."
   },
   {
-    "question": "Wie verändert sich $a_z$, wenn $r$ größer wird?",
+    "question": "Wie verändert sich $a_r$ bei größerem $r$?",
     "answers": [
-      "$a_z$ wird kleiner.",
-      "$a_z$ wird größer.",
-      "$a_z$ bleibt gleich."
+      "$a_r \\uparrow$",
+      "$a_r \\downarrow$",
+      "$a_r = 0$"
+    ],
+    "correctAnswer": 1,
+    "explanation": "Bei konstantem $v$ gilt: $r \\uparrow \\Rightarrow a_r \\downarrow$."
+  },
+  {
+    "question": "Welche Größe bezeichnet $\\omega$?",
+    "answers": [
+      "Winkelgeschwindigkeit",
+      "Bahnradius",
+      "Bahngeschwindigkeit"
     ],
     "correctAnswer": 0,
-    "explanation": "Da $r$ im Nenner steht, wird $a_z$ bei größerem Radius kleiner."
+    "explanation": "$\\omega$ ist das Symbol für die Winkelgeschwindigkeit."
   },
   {
-    "question": "Gegeben: $v = 4\\,\\text{m/s}$ und $r = 2\\,\\text{m}$. Berechne $a_z$.",
+    "question": "Welche Formel gilt für die Winkelgeschwindigkeit?",
     "answers": [
-      "$2\\,\\text{m/s}^2$",
-      "$4\\,\\text{m/s}^2$",
-      "$8\\,\\text{m/s}^2$"
+      "$\\omega = 2\\pi T$",
+      "$\\omega = \\frac{2\\pi}{T}$",
+      "$\\omega = \\frac{T}{2\\pi}$"
+    ],
+    "correctAnswer": 1,
+    "explanation": "Für eine gleichförmige Kreisbewegung gilt $\\omega = \\frac{2\\pi}{T}$."
+  },
+  {
+    "question": "Wie lautet die Beziehung zwischen $v$, $\\omega$ und $r$?",
+    "answers": [
+      "$v = \\omega r$",
+      "$v = \\frac{\\omega}{r}$",
+      "$v = \\omega + r$"
+    ],
+    "correctAnswer": 0,
+    "explanation": "Die Bahngeschwindigkeit berechnet sich mit $v = \\omega r$."
+  },
+  {
+    "question": "Forme $v = \\omega r$ nach $\\omega$ um.",
+    "answers": [
+      "$\\omega = v r$",
+      "$\\omega = \\frac{r}{v}$",
+      "$\\omega = \\frac{v}{r}$"
     ],
     "correctAnswer": 2,
-    "explanation": "$a_z = \\frac{v^2}{r} = \\frac{4^2}{2} = 8\\,\\text{m/s}^2$."
+    "explanation": "Durch Division durch $r$ erhält man $\\omega = \\frac{v}{r}$."
   },
   {
-    "question": "Welche Formel gilt für $v$?",
+    "question": "Welche Formel gilt für $a_r$ mit $\\omega$ und $r$?",
     "answers": [
-      "$v = \\frac{2\\pi r}{T}$",
-      "$v = 2\\pi r \\cdot T$",
-      "$v = \\frac{T}{2\\pi r}$"
-    ],
-    "correctAnswer": 0,
-    "explanation": "Die Geschwindigkeit ist Strecke geteilt durch Zeit: $v = \\frac{2\\pi r}{T}$."
-  },
-  {
-    "question": "Wie lautet $T$ aus $v = \\frac{2\\pi r}{T}$?",
-    "answers": [
-      "$T = \\frac{2\\pi r}{v}$",
-      "$T = \\frac{v}{2\\pi r}$",
-      "$T = 2\\pi r \\cdot v$"
-    ],
-    "correctAnswer": 0,
-    "explanation": "Nach $T$ umgestellt ergibt sich $T = \\frac{2\\pi r}{v}$."
-  },
-  {
-    "question": "Welche Formel beschreibt den Kreisumfang?",
-    "answers": [
-      "$U = \\pi r$",
-      "$U = 2\\pi r$",
-      "$U = r^2$"
+      "$a_r = \\omega r$",
+      "$a_r = \\omega^2 r$",
+      "$a_r = \\frac{r}{\\omega^2}$"
     ],
     "correctAnswer": 1,
-    "explanation": "Der Kreisumfang lautet $U = 2\\pi r$."
+    "explanation": "Mit $v = \\omega r$ folgt $a_r = \\frac{v^2}{r} = \\omega^2 r$."
+  },
+  {
+    "question": "Wie verändert sich $a_r$, wenn $\\omega$ steigt?",
+    "answers": [
+      "$a_r \\uparrow$",
+      "$a_r \\downarrow$",
+      "$a_r = \\text{konst.}$"
+    ],
+    "correctAnswer": 0,
+    "explanation": "Da $a_r = \\omega^2 r$ gilt, steigt $a_r$ mit $\\omega^2$."
+  },
+  {
+    "question": "Welche Einheit hat $\\omega$?",
+    "answers": [
+      "$\\text{m/s}$",
+      "$\\text{rad/s}$",
+      "$\\text{m/s}^2$"
+    ],
+    "correctAnswer": 1,
+    "explanation": "Die Einheit der Winkelgeschwindigkeit ist Radiant pro Sekunde: $\\text{rad/s}$."
+  },
+  {
+    "question": "Welche Aussage gilt bei konstanter Winkelgeschwindigkeit?",
+    "answers": [
+      "$\\omega = \\text{konst.}$",
+      "$v = 0$",
+      "$r = 0$"
+    ],
+    "correctAnswer": 0,
+    "explanation": "Bei einer gleichförmigen Kreisbewegung bleibt die Winkelgeschwindigkeit konstant: $\\omega = \\text{konst.}$."
   }
 ]
