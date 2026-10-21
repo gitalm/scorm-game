@@ -1,18 +1,22 @@
 {
-    "mathe": {
-        "title": "Mathematik 🍕",
-        "file": "question/mathe.json"
-    },    
-    "default": {
-        "title": "Standard",
-        "file": "question/default.json"
-    },
-    "physik": {
-        "title": "Physik 🚴‍♀️",
-        "file": "question/physik.json"
-    },
-    "rot1": {
-        "title": "Drehbewegungen 🌀",
-        "file": "question/rot1.json"
-    }
+  "mathe": {
+    "title": "Mathematik 🍕",
+    "file": "question/mathe.json"
+  },
+  "default": {
+    "title": "Standard",
+    "file": "question/default.json"
+  },
+  "physik": {
+    "title": "Physik 🚴‍♀️",
+    "file": "question/physik.json"
+  },
+  "rot1": {
+    "title": "Drehbewegungen 🌀",
+    "file": "question/rot1.json"
+  },
+  "teiler": {
+    "title": "Teiler",
+    "file": "question/teiler.json"
+  }
 }

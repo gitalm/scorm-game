@@ -2,188 +2,120 @@
 
 set -euo pipefail
 
-# ==================================================
-# Neues JSON-Fragenset hinzufügen
-# - kopiert eine JSON-Datei nach question/
-# - ergänzt den Eintrag in question/sets.json
-# - erstellt vorher eine Sicherung von sets.json
-# ==================================================
-
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 QUESTION_DIR="$PROJECT_DIR/question"
 SETS_FILE="$QUESTION_DIR/sets.json"
 
 if [[ ! -d "$QUESTION_DIR" ]]; then
-    echo "Fehler: Der Ordner question wurde nicht gefunden."
+    echo "Fehler: Der Ordner question/ wurde nicht gefunden."
     exit 1
 fi
 
+if ! command -v jq >/dev/null 2>&1; then
+    echo "Fehler: jq ist nicht installiert."
+    echo "Installation:"
+    echo "  sudo apt install jq"
+    exit 1
+fi
+
+# sets.json anlegen, falls noch nicht vorhanden
 if [[ ! -f "$SETS_FILE" ]]; then
-    echo "Fehler: question/sets.json wurde nicht gefunden."
+    echo "{}" > "$SETS_FILE"
+fi
+
+# sets.json auf gültiges JSON prüfen
+if ! jq empty "$SETS_FILE" >/dev/null 2>&1; then
+    echo "Fehler: $SETS_FILE enthält ungültiges JSON."
     exit 1
 fi
 
-echo
-echo "=========================================="
-echo " Neues Fragenset hinzufügen"
-echo "=========================================="
-echo
-
-read -r -p "Pfad zur JSON-Datei: " SOURCE_FILE
-
-if [[ -z "$SOURCE_FILE" ]]; then
-    echo "Fehler: Es wurde keine Datei angegeben."
+if [[ "$(jq -r 'type' "$SETS_FILE")" != "object" ]]; then
+    echo "Fehler: sets.json muss ein JSON-Objekt enthalten."
     exit 1
 fi
-
-if [[ "$SOURCE_FILE" != /* ]]; then
-    SOURCE_FILE="$PROJECT_DIR/$SOURCE_FILE"
-fi
-
-if [[ ! -f "$SOURCE_FILE" ]]; then
-    echo "Fehler: Datei nicht gefunden:"
-    echo "  $SOURCE_FILE"
-    exit 1
-fi
-
-if [[ "${SOURCE_FILE##*.}" != "json" ]]; then
-    echo "Fehler: Die Datei muss die Endung .json besitzen."
-    exit 1
-fi
-
-# Dateiname ohne Endung als Vorschlag verwenden
-SOURCE_NAME="$(basename "$SOURCE_FILE")"
-DEFAULT_ID="${SOURCE_NAME%.json}"
-
-read -r -p "ID [$DEFAULT_ID]: " SET_ID
-
-if [[ -z "$SET_ID" ]]; then
-    SET_ID="$DEFAULT_ID"
-fi
-
-# Nur einfache, sichere IDs erlauben
-if [[ ! "$SET_ID" =~ ^[A-Za-z0-9_-]+$ ]]; then
-    echo "Fehler: Die ID darf nur Buchstaben, Zahlen, _ und - enthalten."
-    exit 1
-fi
-
-read -r -p "Titel des Fragensets [$SET_ID]: " SET_TITLE
-
-if [[ -z "$SET_TITLE" ]]; then
-    SET_TITLE="$SET_ID"
-fi
-
-TARGET_FILE="$QUESTION_DIR/$SET_ID.json"
-QUESTION_PATH="question/$SET_ID.json"
-
-if [[ -f "$TARGET_FILE" ]]; then
-    echo
-    echo "Die Datei existiert bereits:"
-    echo "  $TARGET_FILE"
-
-    read -r -p "Überschreiben? [j/N]: " OVERWRITE
-
-    if [[ ! "$OVERWRITE" =~ ^[JjYy]$ ]]; then
-        echo "Vorgang abgebrochen."
-        exit 0
-    fi
-fi
-
-# Prüfen, ob die JSON-Datei gültig ist
-if ! python3 - "$SOURCE_FILE" <<'PY'
-import json
-import sys
-
-filename = sys.argv[1]
-
-try:
-    with open(filename, "r", encoding="utf-8") as file:
-        data = json.load(file)
-
-    if not isinstance(data, list) or len(data) == 0:
-        raise ValueError(
-            "Die Datei muss ein nicht-leeres JSON-Array enthalten."
-        )
-
-except Exception as error:
-    print(f"Ungültige JSON-Datei: {error}")
-    sys.exit(1)
-PY
-then
-    exit 1
-fi
-
-# Prüfen, ob die ID bereits in sets.json vorhanden ist
-if ! python3 - "$SETS_FILE" "$SET_ID" <<'PY'
-import json
-import sys
-
-sets_file = sys.argv[1]
-set_id = sys.argv[2]
-
-with open(sets_file, "r", encoding="utf-8") as file:
-    data = json.load(file)
-
-if set_id in data:
-    print(f"Die ID '{set_id}' ist bereits in sets.json vorhanden.")
-    sys.exit(1)
-PY
-then
-    read -r -p "Trotzdem fortfahren? [j/N]: " CONTINUE
-
-    if [[ ! "$CONTINUE" =~ ^[JjYy]$ ]]; then
-        echo "Vorgang abgebrochen."
-        exit 0
-    fi
-fi
-
-# JSON-Datei kopieren
-cp "$SOURCE_FILE" "$TARGET_FILE"
 
 # Sicherung erstellen
 BACKUP_FILE="$SETS_FILE.bak-$(date +%Y%m%d-%H%M%S)"
 cp "$SETS_FILE" "$BACKUP_FILE"
 
-# sets.json mit Python sicher aktualisieren
-python3 - "$SETS_FILE" "$SET_ID" "$SET_TITLE" "$QUESTION_PATH" <<'PY'
-import json
-import sys
+TEMP_FILE="$(mktemp)"
+cp "$SETS_FILE" "$TEMP_FILE"
 
-sets_file = sys.argv[1]
-set_id = sys.argv[2]
-set_title = sys.argv[3]
-question_path = sys.argv[4]
+FOUND=0
+ADDED=0
 
-with open(sets_file, "r", encoding="utf-8") as file:
-    data = json.load(file)
+# Nur JSON-Dateien direkt im Ordner question/ durchsuchen
+shopt -s nullglob
 
-if not isinstance(data, dict):
-    raise ValueError("sets.json muss ein JSON-Objekt enthalten.")
+for JSON_FILE in "$QUESTION_DIR"/*.json; do
+    FILE_NAME="$(basename "$JSON_FILE")"
 
-data[set_id] = {
-    "title": set_title,
-    "file": question_path
-}
+    # sets.json ist kein Fragensatz
+    if [[ "$FILE_NAME" == "sets.json" ]]; then
+        continue
+    fi
 
-with open(sets_file, "w", encoding="utf-8") as file:
-    json.dump(data, file, ensure_ascii=False, indent=4)
-    file.write("\n")
-PY
+    FOUND=$((FOUND + 1))
+
+    SET_ID="${FILE_NAME%.json}"
+    QUESTION_PATH="question/$FILE_NAME"
+
+    # Prüfen, ob der Eintrag bereits vorhanden ist
+    EXISTING_ENTRY="$(
+        jq -r --arg id "$SET_ID" '
+            has($id)
+        ' "$TEMP_FILE"
+    )"
+
+    if [[ "$EXISTING_ENTRY" == "true" ]]; then
+        echo "Bereits vorhanden: $FILE_NAME"
+        continue
+    fi
+
+    # Automatischen Titel erzeugen
+    SET_TITLE="$SET_ID"
+    SET_TITLE="${SET_TITLE//_/ }"
+    SET_TITLE="${SET_TITLE//-/ }"
+
+    # Ersten Buchstaben großschreiben
+    SET_TITLE="$(printf '%s' "$SET_TITLE" | sed 's/^./\U&/')"
+
+    NEXT_TEMP="$(mktemp)"
+
+    jq \
+        --arg id "$SET_ID" \
+        --arg title "$SET_TITLE" \
+        --arg file "$QUESTION_PATH" \
+        '.[$id] = {
+            title: $title,
+            file: $file
+        }' \
+        "$TEMP_FILE" > "$NEXT_TEMP"
+
+    mv "$NEXT_TEMP" "$TEMP_FILE"
+
+    echo "Ergänzt: $FILE_NAME"
+    ADDED=$((ADDED + 1))
+done
+
+shopt -u nullglob
+
+# Aktualisierte sets.json übernehmen
+mv "$TEMP_FILE" "$SETS_FILE"
 
 echo
 echo "=========================================="
-echo " Fragenset erfolgreich hinzugefügt"
+echo " sets.json aktualisiert"
 echo "=========================================="
 echo
-echo "JSON-Datei:"
-echo "  $TARGET_FILE"
+echo "Gefundene JSON-Dateien: $FOUND"
+echo "Neue Einträge:          $ADDED"
+echo "Sicherung:              $BACKUP_FILE"
 echo
-echo "Eintrag in sets.json:"
-echo "  \"$SET_ID\": {"
-echo "      \"title\": \"$SET_TITLE\","
-echo "      \"file\": \"$QUESTION_PATH\""
-echo "  }"
+echo "Aktuelle Fragensätze:"
 echo
-echo "Sicherung:"
-echo "  $BACKUP_FILE"
-echo
+
+jq -r '
+    to_entries[] |
+    "  - \(.key): \(.value.title) -> \(.value.file)"
+' "$SETS_FILE"
