@@ -7,7 +7,7 @@
       "$r$"
     ],
     "correctAnswer": 0,
-    "explanation": "Die Bedingung lautet $v=\\text{konst.}$. Der Radius steigt, deshalb sinkt $a_r$."
+    "explanation": "Die Geschwindigkeit bleibt konstant: $v=\\text{konst.}$. Gleichzeitig sinkt $a_r$."
   },
   {
     "question": "Gegeben ist $a_r=\\frac{v^2}{r}$. Was gilt bei $v=\\text{konst.}$ und $r\\uparrow$?",
@@ -17,7 +17,7 @@
       "$a_r=\\text{konst.}$"
     ],
     "correctAnswer": 1,
-    "explanation": "Bei konstanter Geschwindigkeit ist $a_r$ umgekehrt proportional zu $r$."
+    "explanation": "Bei konstantem $v$ ist $a_r$ umgekehrt proportional zu $r$: $r\\uparrow\\Rightarrow a_r\\downarrow$."
   },
   {
     "question": "Gegeben ist $a_r=\\frac{v^2}{r}$. Was gilt bei $r=\\text{konst.}$ und $v\\uparrow$?",
@@ -27,7 +27,7 @@
       "$a_r\\uparrow$"
     ],
     "correctAnswer": 2,
-    "explanation": "Bei konstantem Radius steigt $a_r$ mit dem Quadrat der Geschwindigkeit."
+    "explanation": "Bei konstantem Radius steigt $a_r$ mit dem Quadrat der Geschwindigkeit: $v\\uparrow\\Rightarrow a_r\\uparrow$."
   },
   {
     "question": "Gegeben ist $a_r=\\frac{v^2}{r}$. Wie verändert sich $a_r$ bei $v\\to 2v$ und $r=\\text{konst.}$?",
@@ -37,7 +37,7 @@
       "$a_r\\to \\frac{1}{2}a_r$"
     ],
     "correctAnswer": 1,
-    "explanation": "Wegen $a_r\\sim v^2$ vervierfacht sich $a_r$ bei doppelter Geschwindigkeit."
+    "explanation": "Da $a_r\\sim v^2$ gilt, führt $v\\to 2v$ zu $a_r\\to 4a_r$."
   },
   {
     "question": "Gegeben ist $a_r=\\frac{v^2}{r}$. Wie verändert sich $a_r$ bei $r\\to 2r$ und $v=\\text{konst.}$?",
@@ -47,10 +47,10 @@
       "$a_r\\to \\frac{1}{2}a_r$"
     ],
     "correctAnswer": 2,
-    "explanation": "Bei konstanter Geschwindigkeit ist $a_r\\sim\\frac{1}{r}$. Ein doppelter Radius halbiert $a_r$."
+    "explanation": "Bei konstantem $v$ gilt $a_r\\sim\\frac{1}{r}$. Ein doppelter Radius halbiert $a_r$."
   },
   {
-    "question": "Forme $a_r=\\frac{v^2}{r}$ nach $v$ um.",
+    "question": "Gegeben ist $a_r=\\frac{v^2}{r}$. Forme die Gleichung nach $v$ um.",
     "answers": [
       "$v=\\sqrt{a_r r}$",
       "$v=\\frac{a_r}{r}$",
@@ -60,14 +60,14 @@
     "explanation": "Aus $a_r r=v^2$ folgt durch Wurzelziehen $v=\\sqrt{a_r r}$."
   },
   {
-    "question": "Forme $a_r=\\frac{v^2}{r}$ nach $r$ um.",
+    "question": "Gegeben ist $a_r=\\frac{v^2}{r}$. Forme die Gleichung nach $r$ um.",
     "answers": [
       "$r=a_r v^2$",
       "$r=\\frac{v^2}{a_r}$",
       "$r=\\frac{a_r}{v^2}$"
     ],
     "correctAnswer": 1,
-    "explanation": "Multiplizieren mit $r$ und Teilen durch $a_r$ ergibt $r=\\frac{v^2}{a_r}$."
+    "explanation": "Aus $a_r r=v^2$ folgt durch Division durch $a_r$: $r=\\frac{v^2}{a_r}$."
   },
   {
     "question": "Gegeben ist $v=\\omega r$. Forme die Gleichung nach $\\omega$ um.",
@@ -97,7 +97,7 @@
       "$\\omega=\\text{konst.}$"
     ],
     "correctAnswer": 1,
-    "explanation": "Die Winkelgeschwindigkeit ist umgekehrt proportional zur Umlaufzeit: $\\omega\\sim\\frac{1}{T}$."
+    "explanation": "Nach $\\omega=\\frac{2\\pi}{T}$ gilt: $T\\uparrow\\Rightarrow\\omega\\downarrow$."
   },
   {
     "question": "Gegeben ist $\\omega=\\frac{2\\pi}{T}$. Was gilt bei $T\\to 2T$?",
@@ -107,7 +107,7 @@
       "$\\omega\\to \\frac{1}{2}\\omega$"
     ],
     "correctAnswer": 2,
-    "explanation": "Eine doppelte Umlaufzeit führt zu einer halb so großen Winkelgeschwindigkeit."
+    "explanation": "Nach $\\omega=\\frac{2\\pi}{T}$ führt $T\\to 2T$ zu $\\omega\\to\\frac{1}{2}\\omega$."
   },
   {
     "question": "Gegeben ist $v=\\omega r$. Was gilt bei $\\omega=\\text{konst.}$ und $r\\uparrow$?",
@@ -117,7 +117,7 @@
       "$v=\\text{konst.}$"
     ],
     "correctAnswer": 0,
-    "explanation": "Bei konstanter Winkelgeschwindigkeit steigt die Bahngeschwindigkeit proportional zum Radius."
+    "explanation": "Nach $v=\\omega r$ gilt bei konstantem $\\omega$: $r\\uparrow\\Rightarrow v\\uparrow$."
   },
   {
     "question": "Gegeben ist $v=\\omega r$. Was gilt bei $v=\\text{konst.}$ und $r\\uparrow$?",
@@ -137,7 +137,17 @@
       "$a_r=\\omega^2r$"
     ],
     "correctAnswer": 2,
-    "explanation": "Einsetzen von $v=\\omega r$ ergibt $a_r=\\frac{(\\omega r)^2}{r}=\\omega^2r$."
+    "explanation": "Einsetzen von $v=\\omega r$ in $a_r=\\frac{v^2}{r}$ ergibt $a_r=\\omega^2r$."
+  },
+  {
+    "question": "Gegeben ist $a_r=\\omega^2r$. Was gilt bei $r=\\text{konst.}$ und $\\omega\\uparrow$?",
+    "answers": [
+      "$a_r\\uparrow$",
+      "$a_r\\downarrow$",
+      "$a_r=\\text{konst.}$"
+    ],
+    "correctAnswer": 0,
+    "explanation": "Bei konstantem Radius gilt $a_r\\sim\\omega^2$. Steigt $\\omega$, steigt auch $a_r$."
   },
   {
     "question": "Gegeben ist $a_r=\\omega^2r$. Was gilt bei $r=\\text{konst.}$ und $\\omega\\to 2\\omega$?",
@@ -147,7 +157,7 @@
       "$a_r\\to \\frac{1}{2}a_r$"
     ],
     "correctAnswer": 1,
-    "explanation": "Da $a_r$ proportional zu $\\omega^2$ ist, vervierfacht sich $a_r$."
+    "explanation": "Da $a_r\\sim\\omega^2$ gilt, führt $\\omega\\to 2\\omega$ zu $a_r\\to 4a_r$."
   },
   {
     "question": "Welche Einheit gehört zu $\\omega$ in $v=\\omega r$?",
@@ -157,7 +167,7 @@
       "$\\text{m/s}^2$"
     ],
     "correctAnswer": 1,
-    "explanation": "Die Winkelgeschwindigkeit $\\omega$ wird in Radiant pro Sekunde angegeben: $\\text{rad/s}$."
+    "explanation": "Aus $\\omega=\\frac{v}{r}$ folgt die Einheit $\\frac{\\text{m/s}}{\\text{m}}=\\text{s}^{-1}$, meist angegeben als $\\text{rad/s}$."
   },
   {
     "question": "Welche Einheit gehört zu $a_r$ in $a_r=\\frac{v^2}{r}$?",
@@ -167,6 +177,6 @@
       "$\\text{s}^{-1}$"
     ],
     "correctAnswer": 0,
-    "explanation": "Aus $\\frac{(\\text{m/s})^2}{\\text{m}}$ folgt die Einheit $\\text{m/s}^2$."
+    "explanation": "Aus $a_r=\\frac{v^2}{r}$ folgt $\\frac{(\\text{m/s})^2}{\\text{m}}=\\text{m/s}^2$."
   }
 ]
