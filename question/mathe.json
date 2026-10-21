@@ -1,342 +1,182 @@
 [
-    {
-        "question": "Berechne: 12 + (-7) = ?",
-        "answers": [
-            "5",
-            "-5",
-            "19"
-        ],
-        "correctAnswer": 0,
-        "explanation": "Wenn du eine positive Zahl und eine negative Zahl addierst, subtrahierst du den Betrag der negativen Zahl von der positiven Zahl: 12 - 7 = 5."
-    },
-    {
-        "question": "Berechne: (-8) + 15 = ?",
-        "answers": [
-            "7",
-            "-7",
-            "23"
-        ],
-        "correctAnswer": 0,
-        "explanation": "Addiere die positive Zahl und subtrahiere den Betrag der negativen Zahl: 15 - 8 = 7."
-    },
-    {
-        "question": "Berechne: (-3) + (-9) = ?",
-        "answers": [
-            "-12",
-            "6",
-            "12"
-        ],
-        "correctAnswer": 0,
-        "explanation": "Wenn du zwei negative Zahlen addierst, addierst du ihre Beträge und behältst das negative Vorzeichen: 3 + 9 = 12, also -12."
-    },
-    {
-        "question": "Berechne: 20 - 13 = ?",
-        "answers": [
-            "7",
-            "-7",
-            "33"
-        ],
-        "correctAnswer": 0,
-        "explanation": "Subtrahiere die kleinere Zahl von der größeren Zahl: 20 - 13 = 7."
-    },
-    {
-        "question": "Berechne: (-14) - (-6) = ?",
-        "answers": [
-            "-8",
-            "-20",
-            "8"
-        ],
-        "correctAnswer": 0,
-        "explanation": "Subtrahierst du eine negative Zahl, addierst du ihren Betrag: -14 + 6 = -8."
-    },
-    {
-        "question": "Berechne: 7 - (-4) = ?",
-        "answers": [
-            "11",
-            "-11",
-            "3"
-        ],
-        "correctAnswer": 0,
-        "explanation": "Subtrahierst du eine negative Zahl, addierst du ihren Betrag: 7 + 4 = 11."
-    },
-    {
-        "question": "Berechne: (-5) - 8 = ?",
-        "answers": [
-            "-13",
-            "13",
-            "3"
-        ],
-        "correctAnswer": 0,
-        "explanation": "Subtrahierst du eine positive Zahl von einer negativen Zahl, addierst du ihre Beträge und behältst das negative Vorzeichen: 5 + 8 = 13, also -13."
-    },
-    {
-        "question": "Berechne: 17 + (-17) = ?",
-        "answers": [
-            "0",
-            "34",
-            "-34"
-        ],
-        "correctAnswer": 0,
-        "explanation": "Eine Zahl und ihr Negatives addiert ergeben immer 0."
-    },
-    {
-        "question": "Berechne: (-22) + 10 = ?",
-        "answers": [
-            "-12",
-            "12",
-            "32"
-        ],
-        "correctAnswer": 0,
-        "explanation": "Addierst du eine positive Zahl zu einer negativen Zahl, subtrahierst du den Betrag der positiven Zahl von der negativen Zahl: 22 - 10 = 12, also -12."
-    },
-    {
-        "question": "Berechne: 9 - 15 = ?",
-        "answers": [
-            "-6",
-            "6",
-            "24"
-        ],
-        "correctAnswer": 0,
-        "explanation": "Subtrahierst du eine größere Zahl von einer kleineren, ist das Ergebnis negativ: 9 - 15 = -6."
-    },
-    {
-        "question": "Berechne: (-3) + 18 = ?",
-        "answers": [
-            "15",
-            "-15",
-            "21"
-        ],
-        "correctAnswer": 0,
-        "explanation": "Addierst du eine positive Zahl zu einer negativen Zahl, subtrahierst du den Betrag der negativen Zahl von der positiven Zahl: 18 - 3 = 15."
-    },
-    {
-        "question": "Berechne: 25 - (-12) = ?",
-        "answers": [
-            "37",
-            "-37",
-            "13"
-        ],
-        "correctAnswer": 0,
-        "explanation": "Subtrahierst du eine negative Zahl, addierst du ihren Betrag: 25 + 12 = 37."
-    },
-    {
-        "question": "Berechne: (-19) + (-19) = ?",
-        "answers": [
-            "-38",
-            "0",
-            "38"
-        ],
-        "correctAnswer": 0,
-        "explanation": "Addierst du zwei negative Zahlen, addierst du ihre Beträge und behältst das negative Vorzeichen: 19 + 19 = 38, also -38."
-    },
-    {
-        "question": "Berechne: 11 - 23 = ?",
-        "answers": [
-            "-12",
-            "12",
-            "34"
-        ],
-        "correctAnswer": 0,
-        "explanation": "Subtrahierst du eine größere Zahl von einer kleineren, ist das Ergebnis negativ: 11 - 23 = -12."
-    },
-    {
-        "question": "Berechne: (-7) - (-7) = ?",
-        "answers": [
-            "0",
-            "-14",
-            "14"
-        ],
-        "correctAnswer": 0,
-        "explanation": "Subtrahierst du eine negative Zahl, addierst du ihren Betrag: -7 + 7 = 0."
-    },
-    {
-        "question": "Berechne: 30 + (-17) = ?",
-        "answers": [
-            "13",
-            "-13",
-            "47"
-        ],
-        "correctAnswer": 0,
-        "explanation": "Addierst du eine positive Zahl und eine negative Zahl, subtrahierst du den Betrag der negativen Zahl von der positiven Zahl: 30 - 17 = 13."
-    },
-    {
-        "question": "Berechne: (-24) + 19 = ?",
-        "answers": [
-            "-5",
-            "5",
-            "43"
-        ],
-        "correctAnswer": 0,
-        "explanation": "Addierst du eine positive Zahl zu einer negativen Zahl, subtrahierst du den Betrag der negativen Zahl von der positiven Zahl: 24 - 19 = 5, also -5."
-    },
-    {
-        "question": "Berechne: 42 - 50 = ?",
-        "answers": [
-            "-8",
-            "8",
-            "92"
-        ],
-        "correctAnswer": 0,
-        "explanation": "Subtrahierst du eine größere Zahl von einer kleineren, ist das Ergebnis negativ: 42 - 50 = -8."
-    },
-    {
-        "question": "Berechne: (-11) - 11 = ?",
-        "answers": [
-            "-22",
-            "0",
-            "22"
-        ],
-        "correctAnswer": 0,
-        "explanation": "Subtrahierst du eine positive Zahl von einer negativen Zahl, addierst du ihre Beträge und behältst das negative Vorzeichen: 11 + 11 = 22, also -22."
-    },
-    {
-        "question": "Berechne: 16 - (-9) = ?",
-        "answers": [
-            "25",
-            "-25",
-            "7"
-        ],
-        "correctAnswer": 0,
-        "explanation": "Subtrahierst du eine negative Zahl, addierst du ihren Betrag: 16 + 9 = 25."
-    },
-    {
-        "question": "Berechne: (-13) + 20 = ?",
-        "answers": [
-            "7",
-            "-7",
-            "33"
-        ],
-        "correctAnswer": 0,
-        "explanation": "Addierst du eine positive Zahl zu einer negativen Zahl, subtrahierst du den Betrag der negativen Zahl von der positiven Zahl: 20 - 13 = 7."
-    },
-    {
-        "question": "Berechne: 35 - 47 = ?",
-        "answers": [
-            "-12",
-            "12",
-            "82"
-        ],
-        "correctAnswer": 0,
-        "explanation": "Subtrahierst du eine größere Zahl von einer kleineren, ist das Ergebnis negativ: 35 - 47 = -12."
-    },
-    {
-        "question": "Berechne: (-8) + (-15) = ?",
-        "answers": [
-            "-23",
-            "7",
-            "23"
-        ],
-        "correctAnswer": 0,
-        "explanation": "Addierst du zwei negative Zahlen, addierst du ihre Beträge und behältst das negative Vorzeichen: 8 + 15 = 23, also -23."
-    },
-    {
-        "question": "Berechne: 50 - (-25) = ?",
-        "answers": [
-            "75",
-            "-75",
-            "25"
-        ],
-        "correctAnswer": 0,
-        "explanation": "Subtrahierst du eine negative Zahl, addierst du ihren Betrag: 50 + 25 = 75."
-    },
-    {
-        "question": "Berechne: (-30) + 12 = ?",
-        "answers": [
-            "-18",
-            "18",
-            "42"
-        ],
-        "correctAnswer": 0,
-        "explanation": "Addierst du eine positive Zahl zu einer negativen Zahl, subtrahierst du den Betrag der negativen Zahl von der positiven Zahl: 30 - 12 = 18, also -18."
-    },
-    {
-        "question": "Berechne: 63 - 70 = ?",
-        "answers": [
-            "-7",
-            "7",
-            "133"
-        ],
-        "correctAnswer": 0,
-        "explanation": "Subtrahierst du eine größere Zahl von einer kleineren, ist das Ergebnis negativ: 63 - 70 = -7."
-    },
-    {
-        "question": "Berechne: (-18) + (-27) = ?",
-        "answers": [
-            "-45",
-            "7",
-            "45"
-        ],
-        "correctAnswer": 0,
-        "explanation": "Addierst du zwei negative Zahlen, addierst du ihre Beträge und behältst das negative Vorzeichen: 18 + 27 = 45, also -45."
-    },
-    {
-        "question": "Berechne: 29 - (-14) = ?",
-        "answers": [
-            "43",
-            "-43",
-            "15"
-        ],
-        "correctAnswer": 0,
-        "explanation": "Subtrahierst du eine negative Zahl, addierst du ihren Betrag: 29 + 14 = 43."
-    },
-    {
-        "question": "Berechne: (-40) + 22 = ?",
-        "answers": [
-            "-18",
-            "18",
-            "62"
-        ],
-        "correctAnswer": 0,
-        "explanation": "Addierst du eine positive Zahl zu einer negativen Zahl, subtrahierst du den Betrag der negativen Zahl von der positiven Zahl: 40 - 22 = 18, also -18."
-    },
-    {
-        "question": "Berechne: 78 - 85 = ?",
-        "answers": [
-            "-7",
-            "7",
-            "163"
-        ],
-        "correctAnswer": 0,
-        "explanation": "Subtrahierst du eine größere Zahl von einer kleineren, ist das Ergebnis negativ: 78 - 85 = -7."
-    },
-    {
-        "question": "Berechne: (-21) + (-34) = ?",
-        "answers": [
-            "-55",
-            "13",
-            "55"
-        ],
-        "correctAnswer": 0,
-        "explanation": "Addierst du zwei negative Zahlen, addierst du ihre Beträge und behältst das negative Vorzeichen: 21 + 34 = 55, also -55."
-    },
-    {
-        "question": "Berechne: 54 - (-36) = ?",
-        "answers": [
-            "90",
-            "-90",
-            "18"
-        ],
-        "correctAnswer": 0,
-        "explanation": "Subtrahierst du eine negative Zahl, addierst du ihren Betrag: 54 + 36 = 90."
-    },
-    {
-        "question": "Berechne: (-50) + 40 = ?",
-        "answers": [
-            "-10",
-            "10",
-            "90"
-        ],
-        "correctAnswer": 0,
-        "explanation": "Addierst du eine positive Zahl zu einer negativen Zahl, subtrahierst du den Betrag der negativen Zahl von der positiven Zahl: 50 - 40 = 10, also -10."
-    },
-    {
-        "question": "Berechne: 99 - 108 = ?",
-        "answers": [
-            "-9",
-            "9",
-            "207"
-        ],
-        "correctAnswer": 0,
-        "explanation": "Subtrahierst du eine größere Zahl von einer kleineren, ist das Ergebnis negativ: 99 - 108 = -9."
-    }
+  {
+    "question": "➗ Kürze den Bruch $\\frac{6}{8}$.",
+    "answers": [
+      "$\\frac{3}{4}$",
+      "$\\frac{2}{3}$",
+      "$\\frac{4}{6}$"
+    ],
+    "correctAnswer": 0,
+    "explanation": "Teile Zähler und Nenner durch $2$: $\\frac{6}{8}=\\frac{3}{4}$."
+  },
+  {
+    "question": "🔢 Erweitere $\\frac{2}{3}$ mit $4$.",
+    "answers": [
+      "$\\frac{6}{12}$",
+      "$\\frac{8}{12}$",
+      "$\\frac{8}{7}$"
+    ],
+    "correctAnswer": 1,
+    "explanation": "Multipliziere Zähler und Nenner mit $4$: $\\frac{2}{3}=\\frac{8}{12}$."
+  },
+  {
+    "question": "Berechne: $\\frac{1}{4}+\\frac{2}{4}$",
+    "answers": [
+      "$\\frac{3}{4}$",
+      "$\\frac{3}{8}$",
+      "$\\frac{1}{2}$"
+    ],
+    "correctAnswer": 0,
+    "explanation": "Bei gleichem Nenner werden die Zähler addiert: $\\frac{1+2}{4}=\\frac{3}{4}$."
+  },
+  {
+    "question": "Berechne: $\\frac{5}{6}-\\frac{1}{6}$",
+    "answers": [
+      "$\\frac{4}{6}$",
+      "$\\frac{2}{3}$",
+      "$\\frac{5}{5}$"
+    ],
+    "correctAnswer": 1,
+    "explanation": "$\\frac{5}{6}-\\frac{1}{6}=\\frac{4}{6}=\\frac{2}{3}$."
+  },
+  {
+    "question": "Berechne: $\\frac{1}{2}+\\frac{1}{3}$",
+    "answers": [
+      "$\\frac{2}{5}$",
+      "$\\frac{5}{6}$",
+      "$\\frac{1}{6}$"
+    ],
+    "correctAnswer": 1,
+    "explanation": "Der Hauptnenner ist $6$: $\\frac{3}{6}+\\frac{2}{6}=\\frac{5}{6}$."
+  },
+  {
+    "question": "Berechne: $\\frac{3}{4}-\\frac{1}{2}$",
+    "answers": [
+      "$\\frac{1}{4}$",
+      "$\\frac{2}{2}$",
+      "$\\frac{3}{2}$"
+    ],
+    "correctAnswer": 0,
+    "explanation": "Erweitere $\\frac{1}{2}$ zu $\\frac{2}{4}$: $\\frac{3}{4}-\\frac{2}{4}=\\frac{1}{4}$."
+  },
+  {
+    "question": "Multipliziere: $\\frac{2}{3}\\cdot\\frac{5}{4}$",
+    "answers": [
+      "$\\frac{10}{12}$",
+      "$\\frac{7}{12}$",
+      "$\\frac{5}{6}$"
+    ],
+    "correctAnswer": 2,
+    "explanation": "$\\frac{2}{3}\\cdot\\frac{5}{4}=\\frac{10}{12}=\\frac{5}{6}$."
+  },
+  {
+    "question": "Dividiere: $\\frac{3}{5}:\\frac{2}{7}$",
+    "answers": [
+      "$\\frac{6}{35}$",
+      "$\\frac{21}{10}$",
+      "$\\frac{5}{3}$"
+    ],
+    "correctAnswer": 1,
+    "explanation": "Beim Dividieren wird mit dem Kehrbruch multipliziert: $\\frac{3}{5}\\cdot\\frac{7}{2}=\\frac{21}{10}$."
+  },
+  {
+    "question": "Welcher Bruch ist größer?",
+    "answers": [
+      "$\\frac{3}{8}$",
+      "$\\frac{1}{2}$",
+      "$\\frac{2}{5}$"
+    ],
+    "correctAnswer": 1,
+    "explanation": "$\\frac{1}{2}=\\frac{4}{8}$ und damit gilt $\\frac{1}{2}>\\frac{3}{8}$."
+  },
+  {
+    "question": "Schreibe $\\frac{7}{4}$ als gemischte Zahl.",
+    "answers": [
+      "$1\\frac{3}{4}$",
+      "$2\\frac{1}{4}$",
+      "$3\\frac{1}{4}$"
+    ],
+    "correctAnswer": 0,
+    "explanation": "$7:4=1$ Rest $3$. Daher gilt $\\frac{7}{4}=1\\frac{3}{4}$."
+  },
+  {
+    "question": "Schreibe $2\\frac{1}{3}$ als unechten Bruch.",
+    "answers": [
+      "$\\frac{5}{3}$",
+      "$\\frac{6}{3}$",
+      "$\\frac{7}{3}$"
+    ],
+    "correctAnswer": 2,
+    "explanation": "$2\\cdot3+1=7$. Deshalb gilt $2\\frac{1}{3}=\\frac{7}{3}$."
+  },
+  {
+    "question": "Forme $\\frac{x}{3}=4$ nach $x$ um.",
+    "answers": [
+      "$x=\\frac{4}{3}$",
+      "$x=12$",
+      "$x=7$"
+    ],
+    "correctAnswer": 1,
+    "explanation": "Multipliziere beide Seiten mit $3$: $x=4\\cdot3=12$."
+  },
+  {
+    "question": "Forme $\\frac{x}{5}=\\frac{2}{3}$ nach $x$ um.",
+    "answers": [
+      "$x=\\frac{2}{15}$",
+      "$x=\\frac{10}{3}$",
+      "$x=\\frac{3}{10}$"
+    ],
+    "correctAnswer": 1,
+    "explanation": "Multipliziere beide Seiten mit $5$: $x=5\\cdot\\frac{2}{3}=\\frac{10}{3}$."
+  },
+  {
+    "question": "Forme $\\frac{2x}{3}=8$ nach $x$ um.",
+    "answers": [
+      "$x=12$",
+      "$x=\\frac{16}{3}$",
+      "$x=\\frac{3}{16}$"
+    ],
+    "correctAnswer": 0,
+    "explanation": "Multipliziere mit $3$ und teile durch $2$: $x=\\frac{8\\cdot3}{2}=12$."
+  },
+  {
+    "question": "Löse: $x+\\frac{1}{4}=\\frac{3}{4}$",
+    "answers": [
+      "$x=\\frac{1}{2}$",
+      "$x=1$",
+      "$x=\\frac{3}{16}$"
+    ],
+    "correctAnswer": 0,
+    "explanation": "Subtrahiere $\\frac{1}{4}$: $x=\\frac{3}{4}-\\frac{1}{4}=\\frac{2}{4}=\\frac{1}{2}$."
+  },
+  {
+    "question": "Löse: $x-\\frac{2}{5}=\\frac{1}{5}$",
+    "answers": [
+      "$x=\\frac{1}{5}$",
+      "$x=\\frac{3}{5}$",
+      "$x=\\frac{2}{25}$"
+    ],
+    "correctAnswer": 1,
+    "explanation": "Addiere $\\frac{2}{5}$: $x=\\frac{1}{5}+\\frac{2}{5}=\\frac{3}{5}$."
+  },
+  {
+    "question": "Welche Regel gilt beim Multiplizieren von Brüchen?",
+    "answers": [
+      "Zähler mal Zähler",
+      "Nenner plus Nenner",
+      "Zähler plus Nenner"
+    ],
+    "correctAnswer": 0,
+    "explanation": "Beim Multiplizieren werden Zähler miteinander und Nenner miteinander multipliziert."
+  },
+  {
+    "question": "Welcher Bruch ist vollständig gekürzt?",
+    "answers": [
+      "$\\frac{6}{9}$",
+      "$\\frac{8}{12}$",
+      "$\\frac{5}{7}$"
+    ],
+    "correctAnswer": 2,
+    "explanation": "Bei $5$ und $7$ gibt es keinen gemeinsamen Teiler außer $1$."
+  }
 ]
