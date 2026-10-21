@@ -1,3 +1,145 @@
+// ==================================================
+// SCORM 1.2
+// ==================================================
+
+const SCORM = {
+    api: null,
+    initialized: false,
+    finished: false,
+
+    findAPI(currentWindow) {
+        let attempts = 0;
+
+        while (
+            currentWindow &&
+            !currentWindow.API &&
+            currentWindow.parent &&
+            currentWindow.parent !== currentWindow &&
+            attempts < 500
+        ) {
+            attempts++;
+            currentWindow = currentWindow.parent;
+        }
+
+        if (currentWindow && currentWindow.API) {
+            return currentWindow.API;
+        }
+
+        return null;
+    },
+
+    init() {
+        if (this.initialized) return true;
+
+        this.api = this.findAPI(window);
+
+        if (!this.api && window.opener) {
+            this.api = this.findAPI(window.opener);
+        }
+
+        if (!this.api) {
+            console.warn(
+                "Keine SCORM-1.2-API gefunden. " +
+                "Das Spiel läuft trotzdem lokal weiter."
+            );
+
+            return false;
+        }
+
+        const result = this.api.LMSInitialize("");
+
+        if (result !== "true") {
+            console.warn(
+                "SCORM konnte nicht initialisiert werden."
+            );
+
+            return false;
+        }
+
+        this.initialized = true;
+
+        this.api.LMSSetValue(
+            "cmi.core.lesson_status",
+            "incomplete"
+        );
+
+        this.api.LMSCommit("");
+
+        return true;
+    },
+
+    setScore(score, maxScore) {
+        if (!this.initialized || !this.api) return;
+
+        const percentage =
+            maxScore > 0 ? score / maxScore : 0;
+
+        this.api.LMSSetValue(
+            "cmi.core.score.min",
+            "0"
+        );
+
+        this.api.LMSSetValue(
+            "cmi.core.score.max",
+            String(maxScore)
+        );
+
+        this.api.LMSSetValue(
+            "cmi.core.score.raw",
+            String(score)
+        );
+
+        // Manche LMS unterstützen score.scaled auch bei SCORM 1.2.
+        this.api.LMSSetValue(
+            "cmi.core.score.scaled",
+            String(percentage)
+        );
+
+        this.api.LMSCommit("");
+    },
+
+    finish(score, maxScore, passLimit = 0.66) {
+        if (
+            !this.initialized ||
+            !this.api ||
+            this.finished
+        ) {
+            return;
+        }
+
+        const percentage =
+            maxScore > 0 ? score / maxScore : 0;
+
+        const status =
+            percentage >= passLimit
+                ? "passed"
+                : "failed";
+
+        this.setScore(score, maxScore);
+
+        this.api.LMSSetValue(
+            "cmi.core.lesson_status",
+            status
+        );
+
+        this.api.LMSSetValue(
+            "cmi.core.exit",
+            ""
+        );
+
+        this.api.LMSCommit("");
+        this.api.LMSFinish("");
+
+        this.finished = true;
+        this.initialized = false;
+    }
+};
+
+
+// ==================================================
+// Ton
+// ==================================================
+
 const Sound = {
     ctx: null,
     isMuted: true,
@@ -5,7 +147,8 @@ const Sound = {
     init() {
         if (!this.ctx) {
             const AudioContext =
-                window.AudioContext || window.webkitAudioContext;
+                window.AudioContext ||
+                window.webkitAudioContext;
 
             if (!AudioContext) return;
 
@@ -20,10 +163,14 @@ const Sound = {
     play(frequency, type, duration) {
         if (!this.ctx || this.isMuted) return;
 
-        const oscillator = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
+        const oscillator =
+            this.ctx.createOscillator();
+
+        const gain =
+            this.ctx.createGain();
 
         oscillator.type = type;
+
         oscillator.frequency.setValueAtTime(
             frequency,
             this.ctx.currentTime
@@ -32,28 +179,42 @@ const Sound = {
         oscillator.connect(gain);
         gain.connect(this.ctx.destination);
 
-        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+        gain.gain.setValueAtTime(
+            0.1,
+            this.ctx.currentTime
+        );
+
         gain.gain.exponentialRampToValueAtTime(
             0.01,
             this.ctx.currentTime + duration
         );
 
         oscillator.start();
-        oscillator.stop(this.ctx.currentTime + duration);
+
+        oscillator.stop(
+            this.ctx.currentTime + duration
+        );
     }
 };
 
 
-// --------------------------------------------------
+// ==================================================
 // HTML-Elemente
-// --------------------------------------------------
+// ==================================================
 
-const canvas = document.getElementById("gameCanvas");
+const canvas =
+    document.getElementById("gameCanvas");
+
 const ctx = canvas.getContext("2d");
 
-const startScreen = document.getElementById("startScreen");
-const startBtn = document.getElementById("startBtn");
-const questionSetSelect = document.getElementById("questionSet");
+const startScreen =
+    document.getElementById("startScreen");
+
+const startBtn =
+    document.getElementById("startBtn");
+
+const questionSetSelect =
+    document.getElementById("questionSet");
 
 const answerContainer =
     document.getElementById("answerContainer");
@@ -74,15 +235,15 @@ const muteToggle =
     document.getElementById("muteToggle");
 
 
-// --------------------------------------------------
+// ==================================================
 // Spielvariablen
-// --------------------------------------------------
+// ==================================================
 
 let viewW = 0;
 let viewH = 0;
 
 let questions = [];
-let curQ = null;
+let currentQuestion = null;
 let asked = 0;
 let score = 0;
 let selectedAnswer = -1;
@@ -102,9 +263,9 @@ const rocket = {
 };
 
 
-// --------------------------------------------------
+// ==================================================
 // Verfügbare Fragensätze
-// --------------------------------------------------
+// ==================================================
 
 const questionSets = {
     mathe: "question/mathe.json",
@@ -114,34 +275,35 @@ const questionSets = {
 };
 
 
-// --------------------------------------------------
+// ==================================================
 // Hilfsfunktionen
-// --------------------------------------------------
+// ==================================================
 
-function renderLatex(text) {
-    if (!window.katex || typeof text !== "string") {
-        return text;
-    }
+function renderText(element, text) {
+    if (
+        window.katex &&
+        typeof text === "string"
+    ) {
+        element.innerHTML = text.replace(
+            /\$(.*?)\$/g,
+            (match, formula) => {
+                try {
+                    return katex.renderToString(
+                        formula,
+                        {
+                            throwOnError: false
+                        }
+                    );
+                } catch (error) {
+                    console.error(
+                        "Fehler beim Rendern von KaTeX:",
+                        error
+                    );
 
-    return text.replace(
-        /\$(.*?)\$/g,
-        (match, formula) => {
-            try {
-                return katex.renderToString(formula, {
-                    throwOnError: false
-                });
-            } catch (error) {
-                console.error("KaTeX-Fehler:", error);
-                return match;
+                    return match;
+                }
             }
-        }
-    );
-}
-
-
-function showQuestionText(element, text) {
-    if (window.katex) {
-        element.innerHTML = renderLatex(text);
+        );
     } else {
         element.innerText = text;
     }
@@ -152,7 +314,7 @@ function resetGame() {
     asked = 0;
     score = 0;
     selectedAnswer = -1;
-    curQ = null;
+    currentQuestion = null;
 
     scoreDisplay.innerText = "Punkte: 0";
     astronautFeedback.style.display = "none";
@@ -160,9 +322,30 @@ function resetGame() {
 }
 
 
-// --------------------------------------------------
+function shuffleQuestions(data) {
+    const shuffled = [...data];
+
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(
+            Math.random() * (i + 1)
+        );
+
+        [
+            shuffled[i],
+            shuffled[j]
+        ] = [
+            shuffled[j],
+            shuffled[i]
+        ];
+    }
+
+    return shuffled;
+}
+
+
+// ==================================================
 // Fenstergröße und Rakete
-// --------------------------------------------------
+// ==================================================
 
 function resize() {
     viewW = window.innerWidth;
@@ -181,60 +364,70 @@ function resize() {
 
 
 function resetRocket() {
-    rocket.x = viewW / 2 - ROCKET_SIZE / 2;
-    rocket.y = viewH * 0.65;
+    rocket.x =
+        viewW / 2 - ROCKET_SIZE / 2;
+
+    rocket.y =
+        viewH * 0.65;
+
     rocket.angle = EMOJI_FIX;
 }
 
 
-// --------------------------------------------------
-// Frage anzeigen
-// --------------------------------------------------
+// ==================================================
+// Fragen
+// ==================================================
 
 function nextQuestion() {
     if (asked >= questions.length) {
-        finish();
+        finishGame();
         return;
     }
 
     astronautFeedback.style.display = "none";
 
-    curQ = questions[asked];
+    currentQuestion = questions[asked];
     asked++;
     selectedAnswer = -1;
 
-    showQuestionText(
+    renderText(
         questionDisplay,
-        curQ.question
+        currentQuestion.question
     );
 
     answerContainer.innerHTML = "";
 
-    curQ.answers.forEach((answer, index) => {
-        const answerBox = document.createElement("div");
+    currentQuestion.answers.forEach(
+        (answer, index) => {
+            const answerBox =
+                document.createElement("div");
 
-        answerBox.className = "answerBox";
-        answerBox.dataset.index = index;
+            answerBox.className = "answerBox";
+            answerBox.dataset.index = index;
 
-        showQuestionText(answerBox, answer);
+            renderText(answerBox, answer);
 
-        answerBox.addEventListener("click", () => {
-            if (gameState === "playing") {
-                launch(index);
-            }
-        });
+            answerBox.addEventListener(
+                "click",
+                () => {
+                    if (gameState === "playing") {
+                        launch(index);
+                    }
+                }
+            );
 
-        answerContainer.appendChild(answerBox);
-    });
+            answerContainer.appendChild(answerBox);
+        }
+    );
 
     resetRocket();
     gameState = "playing";
 }
 
 
-// --------------------------------------------------
-// Rakete starten
-// --------------------------------------------------
+// ==================================================
+// Antwort auswählen und Rakete starten
+// ==================================================
 
 function launch(index) {
     if (gameState !== "playing") return;
@@ -244,8 +437,8 @@ function launch(index) {
 
     if (!answerBoxes[index]) return;
 
-    gameState = "flying";
     selectedAnswer = index;
+    gameState = "flying";
 
     answerBoxes[index].classList.add("selected");
 
@@ -253,13 +446,19 @@ function launch(index) {
         answerBoxes[index].getBoundingClientRect();
 
     rocket.targetX =
-        rect.left + rect.width / 2 - ROCKET_SIZE / 2;
+        rect.left +
+        rect.width / 2 -
+        ROCKET_SIZE / 2;
 
     rocket.targetY =
-        rect.top + rect.height / 2;
+        rect.top +
+        rect.height / 2;
 
-    const dx = rocket.targetX - rocket.x;
-    const dy = rocket.targetY - rocket.y;
+    const dx =
+        rocket.targetX - rocket.x;
+
+    const dy =
+        rocket.targetY - rocket.y;
 
     rocket.angle =
         Math.atan2(dy, dx) +
@@ -268,9 +467,9 @@ function launch(index) {
 }
 
 
-// --------------------------------------------------
-// Ergebnis anzeigen
-// --------------------------------------------------
+// ==================================================
+// Ergebnis
+// ==================================================
 
 function showResult(isCorrect) {
     gameState = "feedback";
@@ -282,39 +481,68 @@ function showResult(isCorrect) {
         Sound.play(150, "sawtooth", 0.4);
     }
 
-    scoreDisplay.innerText = "Punkte: " + score;
+    scoreDisplay.innerText =
+        "Punkte: " + score;
+
+    // Punktestand laufend an Moodle übertragen
+    SCORM.setScore(
+        score,
+        questions.length * 10
+    );
 
     astronautFeedback.style.display = "flex";
 
     const feedbackText =
-        (isCorrect ? "✅ Richtig! " : "❌ Falsch... ") +
-        curQ.explanation;
+        (
+            isCorrect
+                ? "✅ Richtig! "
+                : "❌ Falsch... "
+        ) + currentQuestion.explanation;
 
-    showQuestionText(
+    renderText(
         astronautSpeech,
         feedbackText
     );
 }
 
 
-// --------------------------------------------------
-// Spiel beenden
-// --------------------------------------------------
+// ==================================================
+// Spielende und SCORM-Ergebnis
+// ==================================================
 
-function finish() {
+function finishGame() {
     gameState = "end";
 
+    const maxScore =
+        questions.length * 10;
+
     const percentage =
-        questions.length > 0
+        maxScore > 0
             ? Math.round(
-                (score / (questions.length * 10)) * 100
+                (score / maxScore) * 100
             )
             : 0;
+
+    const passed =
+        percentage >= 66;
+
+    // Endergebnis an Moodle übertragen
+    SCORM.finish(
+        score,
+        maxScore,
+        0.66
+    );
 
     questionDisplay.innerHTML = `
         <h2>Mission Ende!</h2>
         <p>Erfolg: ${percentage}%</p>
-        <button class="main-btn" id="restartBtn">
+        <p>
+            Status:
+            ${passed ? "Bestanden" : "Nicht bestanden"}
+        </p>
+        <button
+            class="main-btn"
+            id="restartBtn">
             Neustart
         </button>
     `;
@@ -324,28 +552,34 @@ function finish() {
     const restartBtn =
         document.getElementById("restartBtn");
 
-    restartBtn.addEventListener("click", () => {
-        location.reload();
-    });
+    restartBtn.addEventListener(
+        "click",
+        () => {
+            location.reload();
+        }
+    );
 }
 
 
-// --------------------------------------------------
-// Fragensatz laden
-// --------------------------------------------------
+// ==================================================
+// Fragen laden
+// ==================================================
 
-async function loadQuestions(questionFile) {
-    const response = await fetch(questionFile);
+async function loadQuestions(file) {
+    const response = await fetch(file);
 
     if (!response.ok) {
         throw new Error(
-            `Datei konnte nicht geladen werden: ${response.status}`
+            `Fehler beim Laden der Datei: ${response.status}`
         );
     }
 
     const data = await response.json();
 
-    if (!Array.isArray(data) || data.length === 0) {
+    if (
+        !Array.isArray(data) ||
+        data.length === 0
+    ) {
         throw new Error(
             "Der Fragensatz ist leer oder ungültig."
         );
@@ -357,16 +591,28 @@ async function loadQuestions(questionFile) {
 
 async function startGame() {
     Sound.init();
+    SCORM.init();
 
-    const setName = questionSetSelect.value;
-    const questionFile = questionSets[setName];
+    const setName =
+        questionSetSelect.value;
 
-    console.log("Ausgewählter Fragensatz:", setName);
-    console.log("Geladene Datei:", questionFile);
+    const questionFile =
+        questionSets[setName];
+
+    console.log(
+        "Ausgewählter Fragensatz:",
+        setName
+    );
+
+    console.log(
+        "Geladene Datei:",
+        questionFile
+    );
 
     if (!questionFile) {
         questionDisplay.innerText =
             "Dieser Fragensatz wurde nicht gefunden.";
+
         return;
     }
 
@@ -374,11 +620,11 @@ async function startGame() {
     startBtn.innerText = "LÄDT ...";
 
     try {
-        const data = await loadQuestions(questionFile);
+        const data =
+            await loadQuestions(questionFile);
 
-        questions = data.sort(
-            () => Math.random() - 0.5
-        );
+        questions =
+            shuffleQuestions(data);
 
         resetGame();
 
@@ -389,11 +635,13 @@ async function startGame() {
     } catch (error) {
         console.error(error);
 
-        gameState = "start";
         startScreen.style.display = "flex";
+        gameState = "start";
 
         questionDisplay.innerHTML = `
-            <p>Die Fragen konnten nicht geladen werden.</p>
+            <p>
+                Die Fragen konnten nicht geladen werden.
+            </p>
             <p>
                 Überprüfte Datei:
                 <strong>${questionFile}</strong>
@@ -406,12 +654,17 @@ async function startGame() {
 }
 
 
-// --------------------------------------------------
+// ==================================================
 // Animation
-// --------------------------------------------------
+// ==================================================
 
 function loop() {
-    ctx.clearRect(0, 0, viewW, viewH);
+    ctx.clearRect(
+        0,
+        0,
+        viewW,
+        viewH
+    );
 
     // Sterne
     ctx.fillStyle = "white";
@@ -427,9 +680,14 @@ function loop() {
 
     // Rakete bewegen
     if (gameState === "flying") {
-        const dx = rocket.targetX - rocket.x;
-        const dy = rocket.targetY - rocket.y;
-        const distance = Math.hypot(dx, dy);
+        const dx =
+            rocket.targetX - rocket.x;
+
+        const dy =
+            rocket.targetY - rocket.y;
+
+        const distance =
+            Math.hypot(dx, dy);
 
         if (distance > 10) {
             rocket.x +=
@@ -439,7 +697,8 @@ function loop() {
                 (dy / distance) * rocket.speed;
         } else {
             const isCorrect =
-                selectedAnswer === curQ.correctAnswer;
+                selectedAnswer ===
+                currentQuestion.correctAnswer;
 
             showResult(isCorrect);
         }
@@ -459,7 +718,9 @@ function loop() {
 
         ctx.rotate(rocket.angle);
 
-        ctx.font = ROCKET_SIZE + "px serif";
+        ctx.font =
+            ROCKET_SIZE + "px serif";
+
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
 
@@ -472,9 +733,9 @@ function loop() {
 }
 
 
-// --------------------------------------------------
+// ==================================================
 // Eingaben
-// --------------------------------------------------
+// ==================================================
 
 function globalProgress() {
     if (gameState === "feedback") {
@@ -483,67 +744,105 @@ function globalProgress() {
 }
 
 
-window.addEventListener("pointerdown", event => {
-    if (
-        event.target.closest(".ui-icon") ||
-        event.target.closest(".main-btn") ||
-        event.target.closest(".answerBox") ||
-        event.target.closest("select") ||
-        event.target.closest("label")
-    ) {
-        return;
+window.addEventListener(
+    "pointerdown",
+    event => {
+        if (
+            event.target.closest(".ui-icon") ||
+            event.target.closest(".main-btn") ||
+            event.target.closest(".answerBox") ||
+            event.target.closest("select") ||
+            event.target.closest("label")
+        ) {
+            return;
+        }
+
+        globalProgress();
     }
-
-    globalProgress();
-});
+);
 
 
-window.addEventListener("keydown", event => {
-    if (gameState === "feedback") {
-        nextQuestion();
-        return;
+window.addEventListener(
+    "keydown",
+    event => {
+        if (gameState === "feedback") {
+            nextQuestion();
+            return;
+        }
+
+        if (gameState !== "playing") return;
+
+        if (event.key === "ArrowLeft") {
+            launch(0);
+        }
+
+        if (
+            event.key === "ArrowUp" ||
+            event.key === " "
+        ) {
+            launch(1);
+        }
+
+        if (event.key === "ArrowRight") {
+            launch(2);
+        }
     }
+);
 
-    if (gameState !== "playing") return;
 
-    if (event.key === "ArrowLeft") {
-        launch(0);
+// ==================================================
+// Buttons und Ereignisse
+// ==================================================
+
+startBtn.addEventListener(
+    "click",
+    startGame
+);
+
+
+muteToggle.addEventListener(
+    "click",
+    event => {
+        Sound.init();
+
+        Sound.isMuted =
+            !Sound.isMuted;
+
+        event.currentTarget.innerText =
+            Sound.isMuted
+                ? "🔇"
+                : "🔊";
     }
+);
 
-    if (
-        event.key === "ArrowUp" ||
-        event.key === " "
-    ) {
-        launch(1);
+
+window.addEventListener(
+    "resize",
+    resize
+);
+
+
+// Beim Verlassen SCORM ordnungsgemäß beenden
+window.addEventListener(
+    "beforeunload",
+    () => {
+        if (
+            SCORM.initialized &&
+            !SCORM.finished
+        ) {
+            SCORM.finish(
+                score,
+                questions.length * 10,
+                0.66
+            );
+        }
     }
-
-    if (event.key === "ArrowRight") {
-        launch(2);
-    }
-});
+);
 
 
-// --------------------------------------------------
-// Buttons
-// --------------------------------------------------
-
-startBtn.addEventListener("click", startGame);
-
-
-muteToggle.addEventListener("click", event => {
-    Sound.init();
-
-    Sound.isMuted = !Sound.isMuted;
-    event.currentTarget.innerText =
-        Sound.isMuted ? "🔇" : "🔊";
-});
-
-
-// --------------------------------------------------
+// ==================================================
 // Initialisierung
-// --------------------------------------------------
-
-window.addEventListener("resize", resize);
+// ==================================================
 
 resize();
 loop();
