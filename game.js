@@ -631,31 +631,89 @@ function finishGame() {
 // Fragensatz laden
 // ==================================================
 
-async function loadQuestions(file) {
-    const response = await fetch(
-        file + "?v=" + Date.now()
-    );
-
-    if (!response.ok) {
+async function loadQuestionSetList() {
+    if (!questionSetSelect) {
         throw new Error(
-            `Fragensatz konnte nicht geladen werden: ${
-                response.status
-            }`
+            "Das Auswahlfeld #questionSet wurde nicht gefunden."
         );
     }
 
-    const data = await response.json();
+    const file = "question/sets.json";
 
-    if (
-        !Array.isArray(data) ||
-        data.length === 0
-    ) {
-        throw new Error(
-            "Der Fragensatz ist leer oder ungültig."
+    try {
+        const response = await fetch(
+            `${file}?v=${Date.now()}`
         );
-    }
 
-    return data;
+        if (!response.ok) {
+            throw new Error(
+                `HTTP-Fehler ${response.status}: ${file}`
+            );
+        }
+
+        const data = await response.json();
+
+        if (
+            !data ||
+            typeof data !== "object" ||
+            Array.isArray(data) ||
+            Object.keys(data).length === 0
+        ) {
+            throw new Error(
+                "sets.json enthält keine gültigen Fragensätze."
+            );
+        }
+
+        questionSets = data;
+        questionSetSelect.innerHTML = "";
+
+        Object.entries(questionSets).forEach(
+            ([id, set]) => {
+                const option =
+                    document.createElement("option");
+
+                option.value = id;
+
+                if (
+                    typeof set === "object" &&
+                    set !== null &&
+                    set.title &&
+                    set.file
+                ) {
+                    option.textContent = set.title;
+                } else {
+                    option.textContent = id;
+                }
+
+                questionSetSelect.appendChild(option);
+            }
+        );
+
+        console.log(
+            "Fragensätze erfolgreich geladen:",
+            questionSets
+        );
+    } catch (error) {
+        console.error(
+            "Fehler beim Laden der Fragensätze:",
+            error
+        );
+
+        questionSetSelect.innerHTML = "";
+
+        const option =
+            document.createElement("option");
+
+        option.value = "";
+        option.textContent =
+            "Keine Fragensätze verfügbar";
+
+        questionSetSelect.appendChild(option);
+
+        startBtn.disabled = true;
+
+        throw error;
+    }
 }
 
 
