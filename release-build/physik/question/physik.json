@@ -1,0 +1,172 @@
+[
+  {
+    "question": "🚀 Welche Formel gilt für die Geschwindigkeit?",
+    "answers": [
+      "$v=\\frac{s}{t}$",
+      "$v=s\\cdot t$",
+      "$v=\\frac{t}{s}$"
+    ],
+    "correctAnswer": 0,
+    "explanation": "Die Geschwindigkeit berechnet man mit $v=\\frac{s}{t}$: Strecke geteilt durch Zeit. 🌟"
+  },
+  {
+    "question": "🛰️ Forme $v=\\frac{s}{t}$ nach $s$ um.",
+    "answers": [
+      "$s=\\frac{v}{t}$",
+      "$s=v\\cdot t$",
+      "$s=v+t$"
+    ],
+    "correctAnswer": 1,
+    "explanation": "Multipliziere beide Seiten mit $t$: $s=v\\cdot t$. 🚀"
+  },
+  {
+    "question": "🌌 Forme $v=\\frac{s}{t}$ nach $t$ um.",
+    "answers": [
+      "$t=\\frac{s}{v}$",
+      "$t=s\\cdot v$",
+      "$t=\\frac{v}{s}$"
+    ],
+    "correctAnswer": 0,
+    "explanation": "Teile beide Seiten durch $v$: $t=\\frac{s}{v}$. ⏱️"
+  },
+  {
+    "question": "🚀 Ein Raumschiff legt $100\\,\\text{m}$ in $20\\,\\text{s}$ zurück. Wie groß ist $v$?",
+    "answers": [
+      "$5\\,\\text{m/s}$",
+      "$20\\,\\text{m/s}$",
+      "$2000\\,\\text{m/s}$"
+    ],
+    "correctAnswer": 0,
+    "explanation": "$v=\\frac{s}{t}=\\frac{100\\,\\text{m}}{20\\,\\text{s}}=5\\,\\text{m/s}$. 🌟"
+  },
+  {
+    "question": "🛰️ Welche Einheit hat die Geschwindigkeit $v$?",
+    "answers": [
+      "$\\text{m/s}$",
+      "$\\text{m/s}^2$",
+      "$\\text{s/m}$"
+    ],
+    "correctAnswer": 0,
+    "explanation": "Aus $v=\\frac{s}{t}$ folgt die Einheit Meter pro Sekunde: $\\text{m/s}$."
+  },
+  {
+    "question": "🚀 Welche Formel gilt für die Beschleunigung?",
+    "answers": [
+      "$a=\\frac{\\Delta v}{\\Delta t}$",
+      "$a=\\Delta v\\cdot\\Delta t$",
+      "$a=\\frac{\\Delta t}{\\Delta v}$"
+    ],
+    "correctAnswer": 0,
+    "explanation": "Beschleunigung beschreibt die Geschwindigkeitsänderung pro Zeit: $a=\\frac{\\Delta v}{\\Delta t}$. ⚡"
+  },
+  {
+    "question": "🌠 Forme $a=\\frac{\\Delta v}{\\Delta t}$ nach $\\Delta v$ um.",
+    "answers": [
+      "$\\Delta v=\\frac{a}{\\Delta t}$",
+      "$\\Delta v=a\\cdot\\Delta t$",
+      "$\\Delta v=a+\\Delta t$"
+    ],
+    "correctAnswer": 1,
+    "explanation": "Multipliziere mit $\\Delta t$: $\\Delta v=a\\cdot\\Delta t$."
+  },
+  {
+    "question": "🛰️ Was bedeutet $a=0$ bei einer Bewegung?",
+    "answers": [
+      "$v=\\text{konst.}$",
+      "$v=0$ immer",
+      "$s=0$ immer"
+    ],
+    "correctAnswer": 0,
+    "explanation": "Bei $a=0$ ändert sich die Geschwindigkeit nicht: $v=\\text{konst.}$. 🚀"
+  },
+  {
+    "question": "🚀 Ein Raumschiff startet mit $v_0=2\\,\\text{m/s}$. Es beschleunigt mit $a=3\\,\\text{m/s}^2$ für $4\\,\\text{s}$. Wie groß ist $v$?",
+    "answers": [
+      "$5\\,\\text{m/s}$",
+      "$12\\,\\text{m/s}$",
+      "$14\\,\\text{m/s}$"
+    ],
+    "correctAnswer": 2,
+    "explanation": "Es gilt $v=v_0+a\\cdot t=2+3\\cdot4=14\\,\\text{m/s}$. 🌟"
+  },
+  {
+    "question": "🌌 Welche Formel gilt bei gleichmäßig beschleunigter Bewegung?",
+    "answers": [
+      "$v=v_0+a\\cdot t$",
+      "$v=v_0+\\frac{a}{t}$",
+      "$v=a\\cdot t^2$"
+    ],
+    "correctAnswer": 0,
+    "explanation": "Die Geschwindigkeit lautet $v=v_0+a\\cdot t$. Dabei ist $v_0$ die Anfangsgeschwindigkeit."
+  },
+  {
+    "question": "🛰️ Was besagt der Trägheitssatz?",
+    "answers": [
+      "$F=0\\Rightarrow v=\\text{konst.}$",
+      "$F=0\\Rightarrow a\\uparrow$",
+      "$F=0\\Rightarrow v=0$"
+    ],
+    "correctAnswer": 0,
+    "explanation": "Wirkt keine resultierende Kraft, bleibt ein Körper in Ruhe oder bewegt sich gleichförmig weiter. 🚀"
+  },
+  {
+    "question": "🚀 Ein Satellit bewegt sich geradlinig mit $v=\\text{konst.}$. Welche Aussage gilt?",
+    "answers": [
+      "$F_{res}=0$",
+      "$a\\ne0$",
+      "$v=0$"
+    ],
+    "correctAnswer": 0,
+    "explanation": "Nach dem Trägheitssatz gilt bei $v=\\text{konst.}$: $a=0$ und damit $F_{res}=0$."
+  },
+  {
+    "question": "🌟 Was gilt bei $F_{res}\\ne0$?",
+    "answers": [
+      "$a\\ne0$",
+      "$v=\\text{konst.}$ immer",
+      "$s=0$"
+    ],
+    "correctAnswer": 0,
+    "explanation": "Eine resultierende Kraft verursacht eine Beschleunigung: $F_{res}\\ne0\\Rightarrow a\\ne0$."
+  },
+  {
+    "question": "🚀 Ein Raumfahrzeug bewegt sich mit $v=\\text{konst.}$ auf einer geraden Strecke. Was gilt?",
+    "answers": [
+      "$a=0$",
+      "$a\\uparrow$",
+      "$a=\\text{konst.}\\ne0$"
+    ],
+    "correctAnswer": 0,
+    "explanation": "Bei gleichförmiger geradliniger Bewegung bleibt die Geschwindigkeit konstant. Daher gilt $a=0$."
+  },
+  {
+    "question": "🛰️ Welche Strecke wird bei $v=8\\,\\text{m/s}$ und $t=5\\,\\text{s}$ zurückgelegt?",
+    "answers": [
+      "$13\\,\\text{m}$",
+      "$40\\,\\text{m}$",
+      "$1{,}6\\,\\text{m}$"
+    ],
+    "correctAnswer": 1,
+    "explanation": "Mit $s=v\\cdot t$ folgt $s=8\\cdot5=40\\,\\text{m}$. 🌌"
+  },
+  {
+    "question": "🌠 Was bedeutet eine negative Beschleunigung?",
+    "answers": [
+      "$v\\downarrow$",
+      "$v\\uparrow$",
+      "$s=0$"
+    ],
+    "correctAnswer": 0,
+    "explanation": "Bei positiver Bewegungsrichtung führt eine negative Beschleunigung meist zu einer Abnahme der Geschwindigkeit: $v\\downarrow$."
+  },
+  {
+    "question": "🚀 Welche Einheit hat die Beschleunigung?",
+    "answers": [
+      "$\\text{m/s}$",
+      "$\\text{m/s}^2$",
+      "$\\text{s}^2/\\text{m}$"
+    ],
+    "correctAnswer": 1,
+    "explanation": "Aus $a=\\frac{\\Delta v}{\\Delta t}$ folgt die Einheit $\\text{m/s}^2$. ⚡"
+  }
+]

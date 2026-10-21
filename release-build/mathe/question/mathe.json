@@ -1,0 +1,152 @@
+[
+  {
+    "question": "🚀 Die Raumfähre hat $\\frac{6}{8}$ Tankfüllung. Kürze den Bruch.",
+    "answers": [
+      "$\\frac{3}{4}$",
+      "$\\frac{2}{3}$",
+      "$\\frac{4}{6}$"
+    ],
+    "correctAnswer": 0,
+    "explanation": "Teile Zähler und Nenner durch $2$: $\\frac{6}{8}=\\frac{3}{4}$."
+  },
+  {
+    "question": "🌌 Erweitere $\\frac{2}{3}$ mit $4$.",
+    "answers": [
+      "$\\frac{6}{12}$",
+      "$\\frac{8}{12}$",
+      "$\\frac{8}{7}$"
+    ],
+    "correctAnswer": 1,
+    "explanation": "Multipliziere Zähler und Nenner mit $4$: $\\frac{2}{3}=\\frac{8}{12}$."
+  },
+  {
+    "question": "🛰️ Welche Brüche sind gleich groß?",
+    "answers": [
+      "$\\frac{1}{2}$ und $\\frac{2}{4}$",
+      "$\\frac{1}{3}$ und $\\frac{2}{5}$",
+      "$\\frac{2}{3}$ und $\\frac{3}{5}$"
+    ],
+    "correctAnswer": 0,
+    "explanation": "$\\frac{1}{2}$ wird mit $2$ zu $\\frac{2}{4}$ erweitert."
+  },
+  {
+    "question": "🚀 Berechne: $\\frac{1}{5}+\\frac{2}{5}$.",
+    "answers": [
+      "$\\frac{3}{5}$",
+      "$\\frac{3}{10}$",
+      "$\\frac{2}{5}$"
+    ],
+    "correctAnswer": 0,
+    "explanation": "Bei gleichem Nenner werden die Zähler addiert: $\\frac{1+2}{5}=\\frac{3}{5}$."
+  },
+  {
+    "question": "🌟 Berechne: $\\frac{7}{8}-\\frac{3}{8}$.",
+    "answers": [
+      "$\\frac{4}{8}$",
+      "$\\frac{10}{8}$",
+      "$\\frac{4}{16}$"
+    ],
+    "correctAnswer": 0,
+    "explanation": "$\\frac{7}{8}-\\frac{3}{8}=\\frac{4}{8}=\\frac{1}{2}$."
+  },
+  {
+    "question": "🪐 Berechne: $\\frac{1}{2}+\\frac{1}{4}$.",
+    "answers": [
+      "$\\frac{2}{6}$",
+      "$\\frac{3}{4}$",
+      "$\\frac{1}{6}$"
+    ],
+    "correctAnswer": 1,
+    "explanation": "Erweitere $\\frac{1}{2}$ zu $\\frac{2}{4}$: $\\frac{2}{4}+\\frac{1}{4}=\\frac{3}{4}$."
+  },
+  {
+    "question": "🚀 Berechne: $\\frac{5}{6}-\\frac{1}{3}$.",
+    "answers": [
+      "$\\frac{4}{3}$",
+      "$\\frac{1}{2}$",
+      "$\\frac{4}{6}$"
+    ],
+    "correctAnswer": 1,
+    "explanation": "Erweitere $\\frac{1}{3}$ zu $\\frac{2}{6}$: $\\frac{5}{6}-\\frac{2}{6}=\\frac{3}{6}=\\frac{1}{2}$."
+  },
+  {
+    "question": "🌌 Berechne: $\\frac{2}{3}\\cdot\\frac{3}{4}$.",
+    "answers": [
+      "$\\frac{6}{7}$",
+      "$\\frac{1}{2}$",
+      "$\\frac{5}{12}$"
+    ],
+    "correctAnswer": 1,
+    "explanation": "$\\frac{2}{3}\\cdot\\frac{3}{4}=\\frac{6}{12}=\\frac{1}{2}$."
+  },
+  {
+    "question": "🛰️ Berechne: $\\frac{3}{5}\\cdot\\frac{10}{9}$.",
+    "answers": [
+      "$\\frac{2}{3}$",
+      "$\\frac{30}{45}$",
+      "$\\frac{13}{14}$"
+    ],
+    "correctAnswer": 0,
+    "explanation": "$\\frac{3}{5}\\cdot\\frac{10}{9}=\\frac{30}{45}=\\frac{2}{3}$."
+  },
+  {
+    "question": "🚀 Berechne: $\\frac{3}{4}:\\frac{1}{2}$.",
+    "answers": [
+      "$\\frac{3}{8}$",
+      "$\\frac{3}{2}$",
+      "$\\frac{1}{2}$"
+    ],
+    "correctAnswer": 1,
+    "explanation": "Multipliziere mit dem Kehrbruch: $\\frac{3}{4}\\cdot\\frac{2}{1}=\\frac{6}{4}=\\frac{3}{2}$."
+  },
+  {
+    "question": "🌟 Welcher Bruch ist größer?",
+    "answers": [
+      "$\\frac{3}{8}$",
+      "$\\frac{1}{2}$",
+      "$\\frac{2}{5}$"
+    ],
+    "correctAnswer": 1,
+    "explanation": "$\\frac{1}{2}=\\frac{4}{8}$ und ist damit größer als $\\frac{3}{8}$."
+  },
+  {
+    "question": "🪐 Ordne aufsteigend: $\\frac{1}{4}$, $\\frac{3}{4}$, $\\frac{1}{2}$.",
+    "answers": [
+      "$\\frac{1}{4}<\\frac{1}{2}<\\frac{3}{4}$",
+      "$\\frac{3}{4}<\\frac{1}{2}<\\frac{1}{4}$",
+      "$\\frac{1}{2}<\\frac{1}{4}<\\frac{3}{4}$"
+    ],
+    "correctAnswer": 0,
+    "explanation": "Mit dem Nenner $4$ gilt: $\\frac{1}{4}<\\frac{2}{4}<\\frac{3}{4}$."
+  },
+  {
+    "question": "🚀 Schreibe $\\frac{7}{3}$ als gemischte Zahl.",
+    "answers": [
+      "$1\\frac{4}{3}$",
+      "$2\\frac{1}{3}$",
+      "$3\\frac{1}{2}$"
+    ],
+    "correctAnswer": 1,
+    "explanation": "$7:3=2$ Rest $1$. Daher gilt $\\frac{7}{3}=2\\frac{1}{3}$."
+  },
+  {
+    "question": "🌌 Schreibe $2\\frac{1}{4}$ als unechten Bruch.",
+    "answers": [
+      "$\\frac{6}{4}$",
+      "$\\frac{8}{4}$",
+      "$\\frac{9}{4}$"
+    ],
+    "correctAnswer": 2,
+    "explanation": "$2\\cdot4+1=9$. Deshalb gilt $2\\frac{1}{4}=\\frac{9}{4}$."
+  },
+  {
+    "question": "🛰️ Wie viel sind $\\frac{3}{4}$ von $20$ Raumkapseln?",
+    "answers": [
+      "$5$",
+      "$15$",
+      "$17$"
+    ],
+    "correctAnswer": 1,
+    "explanation": "$\\frac{3}{4}\\cdot20=15$. Es sind $15$ Raumkapseln."
+  }
+]

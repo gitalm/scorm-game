@@ -1,0 +1,202 @@
+[
+  {
+    "question": "Welche Zahlen sind Teiler von $12$?",
+    "answers": [
+      "$1,2,3,4,6,12$",
+      "$2,4,6,8,12$",
+      "$1,3,5,7,12$"
+    ],
+    "correctAnswer": 0,
+    "explanation": "Die Teilermenge von $12$ ist $T_{12}=\\{1,2,3,4,6,12\\}$."
+  },
+  {
+    "question": "Welche Zahlen gehören zur Teilermenge $T_{18}$?",
+    "answers": [
+      "$1,2,3,6,9,18$",
+      "$1,2,4,6,9,18$",
+      "$2,3,5,9,18$"
+    ],
+    "correctAnswer": 0,
+    "explanation": "Die Zahlen $1,2,3,6,9$ und $18$ teilen $18$ ohne Rest."
+  },
+  {
+    "question": "Ist $4$ ein Teiler von $20$?",
+    "answers": [
+      "Ja, $20:4=5$",
+      "Nein, Rest $2$",
+      "Nein, Rest $4$"
+    ],
+    "correctAnswer": 0,
+    "explanation": "$20:4=5$. Deshalb ist $4$ ein Teiler von $20$."
+  },
+  {
+    "question": "Welche Zahl ist kein Teiler von $24$?",
+    "answers": [
+      "$3$",
+      "$6$",
+      "$5$"
+    ],
+    "correctAnswer": 2,
+    "explanation": "$24$ ist nicht durch $5$ teilbar, da die letzte Ziffer nicht $0$ oder $5$ ist."
+  },
+  {
+    "question": "Welche Zahlen sind Vielfache von $5$?",
+    "answers": [
+      "$10,15,20$",
+      "$5,12,18$",
+      "$6,10,14$"
+    ],
+    "correctAnswer": 0,
+    "explanation": "Vielfache von $5$ entstehen durch $5\\cdot n$: $10,15$ und $20$ sind solche Vielfachen."
+  },
+  {
+    "question": "Welche Zahl ist ein Vielfaches von $7$?",
+    "answers": [
+      "$20$",
+      "$28$",
+      "$ thirty$"
+    ],
+    "correctAnswer": 1,
+    "explanation": "$28=7\\cdot4$. Daher ist $28$ ein Vielfaches von $7$."
+  },
+  {
+    "question": "Welche Zahl ist das kleinste positive Vielfache von $9$?",
+    "answers": [
+      "$0$",
+      "$1$",
+      "$9$"
+    ],
+    "correctAnswer": 2,
+    "explanation": "Die positiven Vielfachen von $9$ beginnen mit $9,18,27,\\ldots$."
+  },
+  {
+    "question": "Welche Teilbarkeitsregel gilt für $2$?",
+    "answers": [
+      "Letzte Ziffer gerade",
+      "Ziffernsumme durch $2$ teilbar",
+      "Letzte Ziffer $5$"
+    ],
+    "correctAnswer": 0,
+    "explanation": "Eine Zahl ist durch $2$ teilbar, wenn ihre letzte Ziffer $0,2,4,6$ oder $8$ ist."
+  },
+  {
+    "question": "Ist $438$ durch $2$ teilbar?",
+    "answers": [
+      "Ja",
+      "Nein",
+      "Nur durch $3$"
+    ],
+    "correctAnswer": 0,
+    "explanation": "Die letzte Ziffer von $438$ ist $8$. Daher ist die Zahl durch $2$ teilbar."
+  },
+  {
+    "question": "Welche Teilbarkeitsregel gilt für $3$?",
+    "answers": [
+      "Letzte Ziffer gerade",
+      "Ziffernsumme durch $3$ teilbar",
+      "Letzte Ziffer $0$"
+    ],
+    "correctAnswer": 1,
+    "explanation": "Eine Zahl ist durch $3$ teilbar, wenn ihre Ziffernsumme durch $3$ teilbar ist."
+  },
+  {
+    "question": "Ist $246$ durch $3$ teilbar?",
+    "answers": [
+      "Ja, $2+4+6=12$",
+      "Nein, $2+4+6=12$",
+      "Ja, letzte Ziffer $6$"
+    ],
+    "correctAnswer": 0,
+    "explanation": "Die Ziffernsumme ist $2+4+6=12$. Da $12$ durch $3$ teilbar ist, gilt das auch für $246$."
+  },
+  {
+    "question": "Welche Teilbarkeitsregel gilt für $5$?",
+    "answers": [
+      "Letzte Ziffer $0$ oder $5$",
+      "Ziffernsumme durch $5$ teilbar",
+      "Letzte Ziffer gerade"
+    ],
+    "correctAnswer": 0,
+    "explanation": "Eine Zahl ist durch $5$ teilbar, wenn sie auf $0$ oder $5$ endet."
+  },
+  {
+    "question": "Welche Zahl ist durch $9$ teilbar?",
+    "answers": [
+      "$234$",
+      "$351$",
+      "$425$"
+    ],
+    "correctAnswer": 1,
+    "explanation": "Für $351$ gilt: $3+5+1=9$. Die Ziffernsumme ist durch $9$ teilbar."
+  },
+  {
+    "question": "Welche Zahl ist durch $10$ teilbar?",
+    "answers": [
+      "$145$",
+      "$230$",
+      "$327$"
+    ],
+    "correctAnswer": 1,
+    "explanation": "Eine Zahl ist durch $10$ teilbar, wenn ihre letzte Ziffer $0$ ist."
+  },
+  {
+    "question": "Welche Zahl ist durch $6$ teilbar?",
+    "answers": [
+      "$24$",
+      "$25$",
+      "$35$"
+    ],
+    "correctAnswer": 0,
+    "explanation": "Eine Zahl ist durch $6$ teilbar, wenn sie durch $2$ und durch $3$ teilbar ist. $24$ erfüllt beide Regeln."
+  },
+  {
+    "question": "Ist $42$ durch $6$ teilbar?",
+    "answers": [
+      "Ja, durch $2$ und $3$",
+      "Nein, nur durch $2$",
+      "Nein, nur durch $3$"
+    ],
+    "correctAnswer": 0,
+    "explanation": "$42$ ist gerade und die Ziffernsumme $4+2=6$ ist durch $3$ teilbar. Daher ist $42$ durch $6$ teilbar."
+  },
+  {
+    "question": "Welche Aussage ist richtig?",
+    "answers": [
+      "$3$ ist Teiler von $18$",
+      "$18$ ist Teiler von $3$",
+      "$3$ ist Vielfaches von $18$"
+    ],
+    "correctAnswer": 0,
+    "explanation": "Da $18:3=6$ ohne Rest gilt, ist $3$ ein Teiler von $18$."
+  },
+  {
+    "question": "Welche Aussage ist richtig?",
+    "answers": [
+      "$35$ ist ein Vielfaches von $5$",
+      "$5$ ist ein Vielfaches von $35$",
+      "$35$ ist kein Vielfaches von $5$"
+    ],
+    "correctAnswer": 0,
+    "explanation": "$35=5\\cdot7$. Deshalb ist $35$ ein Vielfaches von $5$."
+  },
+  {
+    "question": "Welche Zahlen sind gemeinsame Teiler von $12$ und $18$?",
+    "answers": [
+      "$1,2,3,6$",
+      "$1,3,6,9$",
+      "$2,4,6,12$"
+    ],
+    "correctAnswer": 0,
+    "explanation": "Die gemeinsamen Teiler von $12$ und $18$ sind $1,2,3$ und $6$."
+  },
+  {
+    "question": "Welches ist das kleinste gemeinsame Vielfache von $4$ und $6$?",
+    "answers": [
+      "$6$",
+      "$10$",
+      "$12$"
+    ],
+    "correctAnswer": 2,
+    "explanation": "Die Vielfachen sind $4,8,12,\\ldots$ und $6,12,\\ldots$. Das kleinste gemeinsame Vielfache ist $12$."
+  }
+]
