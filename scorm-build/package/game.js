@@ -21,11 +21,7 @@ const SCORM = {
             currentWindow = currentWindow.parent;
         }
 
-        if (currentWindow && currentWindow.API) {
-            return currentWindow.API;
-        }
-
-        return null;
+        return currentWindow?.API || null;
     },
 
     init() {
@@ -40,19 +36,15 @@ const SCORM = {
         if (!this.api) {
             console.warn(
                 "Keine SCORM-1.2-API gefunden. " +
-                "Das Spiel läuft trotzdem lokal weiter."
+                "Das Spiel läuft trotzdem weiter."
             );
-
             return false;
         }
 
         const result = this.api.LMSInitialize("");
 
         if (result !== "true") {
-            console.warn(
-                "SCORM konnte nicht initialisiert werden."
-            );
-
+            console.warn("SCORM konnte nicht initialisiert werden.");
             return false;
         }
 
@@ -89,13 +81,9 @@ const SCORM = {
             String(score)
         );
 
-        // Manche LMS unterstützen score.scaled auch bei SCORM 1.2.
-        this.api.LMSSetValue(
-            "cmi.core.score.scaled",
-            String(percentage)
-        );
-
         this.api.LMSCommit("");
+
+        return percentage;
     },
 
     finish(score, maxScore, passLimit = 0.66) {
@@ -110,12 +98,12 @@ const SCORM = {
         const percentage =
             maxScore > 0 ? score / maxScore : 0;
 
+        this.setScore(score, maxScore);
+
         const status =
             percentage >= passLimit
                 ? "passed"
                 : "failed";
-
-        this.setScore(score, maxScore);
 
         this.api.LMSSetValue(
             "cmi.core.lesson_status",
@@ -250,6 +238,9 @@ let selectedAnswer = -1;
 
 let gameState = "start";
 
+// Wird automatisch aus question/sets.json geladen
+let questionSets = {};
+
 const ROCKET_SIZE = 60;
 const EMOJI_FIX = -Math.PI / 4;
 
@@ -264,19 +255,7 @@ const rocket = {
 
 
 // ==================================================
-// Verfügbare Fragensätze
-// ==================================================
-
-const questionSets = {
-    mathe: "question/mathe.json",
-    physik: "question/physik.json",
-    rot1: "question/rot1.json",
-    geschichte: "question/geschichte.json"
-};
-
-
-// ==================================================
-// Hilfsfunktionen
+// Darstellung
 // ==================================================
 
 function renderText(element, text) {
@@ -296,7 +275,7 @@ function renderText(element, text) {
                     );
                 } catch (error) {
                     console.error(
-                        "Fehler beim Rendern von KaTeX:",
+                        "KaTeX-Fehler:",
                         error
                     );
 
@@ -307,6 +286,27 @@ function renderText(element, text) {
     } else {
         element.innerText = text;
     }
+}
+
+
+function shuffleArray(array) {
+    const result = [...array];
+
+    for (let i = result.length - 1; i > 0; i--) {
+        const j = Math.floor(
+            Math.random() * (i + 1)
+        );
+
+        [
+            result[i],
+            result[j]
+        ] = [
+            result[j],
+            result[i]
+        ];
+    }
+
+    return result;
 }
 
 
@@ -322,24 +322,92 @@ function resetGame() {
 }
 
 
-function shuffleQuestions(data) {
-    const shuffled = [...data];
+// ==================================================
+// Fragensätze dynamisch laden
+// ==================================================
 
-    for (let i = shuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(
-            Math.random() * (i + 1)
+async function loadQuestionSetList() {
+    const response = await fetch(
+        "question/sets.json?v=" + Date.now()
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            `Fragensatz-Liste konnte nicht geladen werden: ${
+                response.status
+            }`
         );
-
-        [
-            shuffled[i],
-            shuffled[j]
-        ] = [
-            shuffled[j],
-            shuffled[i]
-        ];
     }
 
-    return shuffled;
+    const data = await response.json();
+
+    if (
+        !data ||
+        typeof data !== "object" ||
+        Array.isArray(data) ||
+        Object.keys(data).length === 0
+    ) {
+        throw new Error(
+            "question/sets.json ist leer oder ungültig."
+        );
+    }
+
+    questionSets = data;
+    questionSetSelect.innerHTML = "";
+
+    Object.entries(questionSets).forEach(
+        ([id, set]) => {
+            const option =
+                document.createElement("option");
+
+            option.value = id;
+
+            if (
+                typeof set === "object" &&
+                set.title
+            ) {
+                option.textContent = set.title;
+            } else {
+                option.textContent = id;
+            }
+
+            questionSetSelect.appendChild(option);
+        }
+    );
+}
+
+
+function getSelectedQuestionFile() {
+    const setName =
+        questionSetSelect.value;
+
+    const selectedSet =
+        questionSets[setName];
+
+    if (!selectedSet) {
+        return null;
+    }
+
+    // Unterstützt dieses Format:
+    // "mathe": "question/mathe.json"
+    if (typeof selectedSet === "string") {
+        return {
+            id: setName,
+            title: setName,
+            file: selectedSet
+        };
+    }
+
+    // Unterstützt dieses Format:
+    // "mathe": {
+    //     "title": "Mathematik",
+    //     "file": "question/mathe.json"
+    // }
+    return {
+        id: setName,
+        title: selectedSet.title || setName,
+        file: selectedSet.file
+    };
 }
 
 
@@ -375,7 +443,7 @@ function resetRocket() {
 
 
 // ==================================================
-// Fragen
+// Fragen anzeigen
 // ==================================================
 
 function nextQuestion() {
@@ -426,7 +494,7 @@ function nextQuestion() {
 
 
 // ==================================================
-// Antwort auswählen und Rakete starten
+// Antwort auswählen
 // ==================================================
 
 function launch(index) {
@@ -468,7 +536,7 @@ function launch(index) {
 
 
 // ==================================================
-// Ergebnis
+// Ergebnis anzeigen
 // ==================================================
 
 function showResult(isCorrect) {
@@ -484,7 +552,6 @@ function showResult(isCorrect) {
     scoreDisplay.innerText =
         "Punkte: " + score;
 
-    // Punktestand laufend an Moodle übertragen
     SCORM.setScore(
         score,
         questions.length * 10
@@ -507,7 +574,7 @@ function showResult(isCorrect) {
 
 
 // ==================================================
-// Spielende und SCORM-Ergebnis
+// Spiel beenden
 // ==================================================
 
 function finishGame() {
@@ -526,7 +593,6 @@ function finishGame() {
     const passed =
         percentage >= 66;
 
-    // Endergebnis an Moodle übertragen
     SCORM.finish(
         score,
         maxScore,
@@ -562,30 +628,92 @@ function finishGame() {
 
 
 // ==================================================
-// Fragen laden
+// Fragensatz laden
 // ==================================================
 
-async function loadQuestions(file) {
-    const response = await fetch(file);
-
-    if (!response.ok) {
+async function loadQuestionSetList() {
+    if (!questionSetSelect) {
         throw new Error(
-            `Fehler beim Laden der Datei: ${response.status}`
+            "Das Auswahlfeld #questionSet wurde nicht gefunden."
         );
     }
 
-    const data = await response.json();
+    const file = "question/sets.json";
 
-    if (
-        !Array.isArray(data) ||
-        data.length === 0
-    ) {
-        throw new Error(
-            "Der Fragensatz ist leer oder ungültig."
+    try {
+        const response = await fetch(
+            `${file}?v=${Date.now()}`
         );
-    }
 
-    return data;
+        if (!response.ok) {
+            throw new Error(
+                `HTTP-Fehler ${response.status}: ${file}`
+            );
+        }
+
+        const data = await response.json();
+
+        if (
+            !data ||
+            typeof data !== "object" ||
+            Array.isArray(data) ||
+            Object.keys(data).length === 0
+        ) {
+            throw new Error(
+                "sets.json enthält keine gültigen Fragensätze."
+            );
+        }
+
+        questionSets = data;
+        questionSetSelect.innerHTML = "";
+
+        Object.entries(questionSets).forEach(
+            ([id, set]) => {
+                const option =
+                    document.createElement("option");
+
+                option.value = id;
+
+                if (
+                    typeof set === "object" &&
+                    set !== null &&
+                    set.title &&
+                    set.file
+                ) {
+                    option.textContent = set.title;
+                } else {
+                    option.textContent = id;
+                }
+
+                questionSetSelect.appendChild(option);
+            }
+        );
+
+        console.log(
+            "Fragensätze erfolgreich geladen:",
+            questionSets
+        );
+    } catch (error) {
+        console.error(
+            "Fehler beim Laden der Fragensätze:",
+            error
+        );
+
+        questionSetSelect.innerHTML = "";
+
+        const option =
+            document.createElement("option");
+
+        option.value = "";
+        option.textContent =
+            "Keine Fragensätze verfügbar";
+
+        questionSetSelect.appendChild(option);
+
+        startBtn.disabled = true;
+
+        throw error;
+    }
 }
 
 
@@ -593,28 +721,28 @@ async function startGame() {
     Sound.init();
     SCORM.init();
 
-    const setName =
-        questionSetSelect.value;
+    const selectedSet =
+        getSelectedQuestionFile();
+
+    if (!selectedSet || !selectedSet.file) {
+        alert(
+            "Kein gültiger Fragensatz ausgewählt."
+        );
+        return;
+    }
 
     const questionFile =
-        questionSets[setName];
+        selectedSet.file;
 
     console.log(
         "Ausgewählter Fragensatz:",
-        setName
+        selectedSet.id
     );
 
     console.log(
         "Geladene Datei:",
         questionFile
     );
-
-    if (!questionFile) {
-        questionDisplay.innerText =
-            "Dieser Fragensatz wurde nicht gefunden.";
-
-        return;
-    }
 
     startBtn.disabled = true;
     startBtn.innerText = "LÄDT ...";
@@ -624,7 +752,7 @@ async function startGame() {
             await loadQuestions(questionFile);
 
         questions =
-            shuffleQuestions(data);
+            shuffleArray(data);
 
         resetGame();
 
@@ -635,15 +763,19 @@ async function startGame() {
     } catch (error) {
         console.error(error);
 
-        startScreen.style.display = "flex";
         gameState = "start";
+        startScreen.style.display = "flex";
 
         questionDisplay.innerHTML = `
             <p>
                 Die Fragen konnten nicht geladen werden.
             </p>
             <p>
-                Überprüfte Datei:
+                Fragensatz:
+                <strong>${selectedSet.title}</strong>
+            </p>
+            <p>
+                Datei:
                 <strong>${questionFile}</strong>
             </p>
         `;
@@ -791,7 +923,7 @@ window.addEventListener(
 
 
 // ==================================================
-// Buttons und Ereignisse
+// Buttons
 // ==================================================
 
 startBtn.addEventListener(
@@ -816,13 +948,10 @@ muteToggle.addEventListener(
 );
 
 
-window.addEventListener(
-    "resize",
-    resize
-);
+// ==================================================
+// SCORM beim Verlassen beenden
+// ==================================================
 
-
-// Beim Verlassen SCORM ordnungsgemäß beenden
 window.addEventListener(
     "beforeunload",
     () => {
@@ -844,5 +973,33 @@ window.addEventListener(
 // Initialisierung
 // ==================================================
 
-resize();
-loop();
+async function initializeGame() {
+    resize();
+    loop();
+
+    try {
+        await loadQuestionSetList();
+    } catch (error) {
+        console.error(error);
+
+        questionSetSelect.innerHTML = `
+            <option value="">
+                Keine Fragensätze verfügbar
+            </option>
+        `;
+
+        startBtn.disabled = true;
+
+        questionDisplay.innerHTML = `
+            <p>
+                Die Fragensätze konnten nicht geladen werden.
+            </p>
+            <p>
+                Bitte prüfe die Datei:
+                <strong>question/sets.json</strong>
+            </p>
+        `;
+    }
+}
+
+initializeGame();

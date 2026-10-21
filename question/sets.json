@@ -2,6 +2,10 @@
     "mathe": {
         "title": "Mathematik 🍕",
         "file": "question/mathe.json"
+    },    
+    "default": {
+        "title": "Standard",
+        "file": "question/default.json"
     },
     "physik": {
         "title": "Physik 🚴‍♀️",

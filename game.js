@@ -327,53 +327,88 @@ function resetGame() {
 // ==================================================
 
 async function loadQuestionSetList() {
-    const response = await fetch(
-        "question/sets.json?v=" + Date.now()
-    );
-
-    if (!response.ok) {
+    if (!questionSetSelect) {
         throw new Error(
-            `Fragensatz-Liste konnte nicht geladen werden: ${
-                response.status
-            }`
+            "Das Auswahlfeld #questionSet wurde nicht gefunden."
         );
     }
 
-    const data = await response.json();
+    const file = "question/sets.json";
 
-    if (
-        !data ||
-        typeof data !== "object" ||
-        Array.isArray(data) ||
-        Object.keys(data).length === 0
-    ) {
-        throw new Error(
-            "question/sets.json ist leer oder ungültig."
+    try {
+        const response = await fetch(
+            `${file}?v=${Date.now()}`
         );
-    }
 
-    questionSets = data;
-    questionSetSelect.innerHTML = "";
-
-    Object.entries(questionSets).forEach(
-        ([id, set]) => {
-            const option =
-                document.createElement("option");
-
-            option.value = id;
-
-            if (
-                typeof set === "object" &&
-                set.title
-            ) {
-                option.textContent = set.title;
-            } else {
-                option.textContent = id;
-            }
-
-            questionSetSelect.appendChild(option);
+        if (!response.ok) {
+            throw new Error(
+                `HTTP-Fehler ${response.status}: ${file}`
+            );
         }
-    );
+
+        const data = await response.json();
+
+        if (
+            !data ||
+            typeof data !== "object" ||
+            Array.isArray(data) ||
+            Object.keys(data).length === 0
+        ) {
+            throw new Error(
+                "sets.json enthält keine gültigen Fragensätze."
+            );
+        }
+
+        questionSets = data;
+        questionSetSelect.innerHTML = "";
+
+        Object.entries(questionSets).forEach(
+            ([id, set]) => {
+                const option =
+                    document.createElement("option");
+
+                option.value = id;
+
+                if (
+                    typeof set === "object" &&
+                    set !== null &&
+                    set.title &&
+                    set.file
+                ) {
+                    option.textContent = set.title;
+                } else {
+                    option.textContent = id;
+                }
+
+                questionSetSelect.appendChild(option);
+            }
+        );
+
+        console.log(
+            "Fragensätze erfolgreich geladen:",
+            questionSets
+        );
+    } catch (error) {
+        console.error(
+            "Fehler beim Laden der Fragensätze:",
+            error
+        );
+
+        questionSetSelect.innerHTML = "";
+
+        const option =
+            document.createElement("option");
+
+        option.value = "";
+        option.textContent =
+            "Keine Fragensätze verfügbar";
+
+        questionSetSelect.appendChild(option);
+
+        startBtn.disabled = true;
+
+        throw error;
+    }
 }
 
 
@@ -408,6 +443,87 @@ function getSelectedQuestionFile() {
         title: selectedSet.title || setName,
         file: selectedSet.file
     };
+}
+
+
+// ==================================================
+// Fragen laden mit Fallback auf default.json
+// ==================================================
+
+async function loadQuestions(questionFile) {
+    const defaultFile =
+        questionSets.default?.file ||
+        "question/default.json";
+
+    try {
+        const response = await fetch(
+            `${questionFile}?v=${Date.now()}`
+        );
+
+        if (!response.ok) {
+            throw new Error(
+                `Fragen-Datei konnte nicht geladen werden: ${
+                    response.status
+                }`
+            );
+        }
+
+        const data = await response.json();
+
+        if (
+            !Array.isArray(data) ||
+            data.length === 0
+        ) {
+            throw new Error(
+                "Die Fragen-Datei ist leer oder ungültig."
+            );
+        }
+
+        return data;
+
+    } catch (error) {
+        console.warn(
+            `Die Datei ${questionFile} konnte nicht geladen werden.`
+        );
+
+        console.warn(
+            `Fallback wird verwendet: ${defaultFile}`
+        );
+
+        // Verhindert einen unnötigen zweiten Versuch,
+        // wenn bereits default.json geladen werden sollte.
+        if (questionFile === defaultFile) {
+            throw new Error(
+                "Auch question/default.json konnte nicht geladen werden."
+            );
+        }
+
+        const fallbackResponse = await fetch(
+            `${defaultFile}?v=${Date.now()}`
+        );
+
+        if (!fallbackResponse.ok) {
+            throw new Error(
+                `Auch die Standarddatei konnte nicht geladen werden: ${
+                    fallbackResponse.status
+                }`
+            );
+        }
+
+        const fallbackData =
+            await fallbackResponse.json();
+
+        if (
+            !Array.isArray(fallbackData) ||
+            fallbackData.length === 0
+        ) {
+            throw new Error(
+                "question/default.json ist leer oder ungültig."
+            );
+        }
+
+        return fallbackData;
+    }
 }
 
 
@@ -628,94 +744,8 @@ function finishGame() {
 
 
 // ==================================================
-// Fragensatz laden
+// Spiel starten
 // ==================================================
-
-async function loadQuestionSetList() {
-    if (!questionSetSelect) {
-        throw new Error(
-            "Das Auswahlfeld #questionSet wurde nicht gefunden."
-        );
-    }
-
-    const file = "question/sets.json";
-
-    try {
-        const response = await fetch(
-            `${file}?v=${Date.now()}`
-        );
-
-        if (!response.ok) {
-            throw new Error(
-                `HTTP-Fehler ${response.status}: ${file}`
-            );
-        }
-
-        const data = await response.json();
-
-        if (
-            !data ||
-            typeof data !== "object" ||
-            Array.isArray(data) ||
-            Object.keys(data).length === 0
-        ) {
-            throw new Error(
-                "sets.json enthält keine gültigen Fragensätze."
-            );
-        }
-
-        questionSets = data;
-        questionSetSelect.innerHTML = "";
-
-        Object.entries(questionSets).forEach(
-            ([id, set]) => {
-                const option =
-                    document.createElement("option");
-
-                option.value = id;
-
-                if (
-                    typeof set === "object" &&
-                    set !== null &&
-                    set.title &&
-                    set.file
-                ) {
-                    option.textContent = set.title;
-                } else {
-                    option.textContent = id;
-                }
-
-                questionSetSelect.appendChild(option);
-            }
-        );
-
-        console.log(
-            "Fragensätze erfolgreich geladen:",
-            questionSets
-        );
-    } catch (error) {
-        console.error(
-            "Fehler beim Laden der Fragensätze:",
-            error
-        );
-
-        questionSetSelect.innerHTML = "";
-
-        const option =
-            document.createElement("option");
-
-        option.value = "";
-        option.textContent =
-            "Keine Fragensätze verfügbar";
-
-        questionSetSelect.appendChild(option);
-
-        startBtn.disabled = true;
-
-        throw error;
-    }
-}
-
 
 async function startGame() {
     Sound.init();
@@ -777,6 +807,10 @@ async function startGame() {
             <p>
                 Datei:
                 <strong>${questionFile}</strong>
+            </p>
+            <p>
+                Auch <strong>question/default.json</strong>
+                konnte nicht geladen werden.
             </p>
         `;
     } finally {
