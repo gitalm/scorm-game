@@ -1,102 +1,102 @@
 [
   {
-    "question": "Welche Größe beschreibt die Geschwindigkeit eines Körpers auf einer Kreisbahn?",
+    "question": "Welche Größe beschreibt die Bahngeschwindigkeit?",
     "answers": [
-      "Die Kreisgeschwindigkeit v",
-      "Der Radius r",
-      "Die Zentripetalbeschleunigung a_z"
+      "$v$",
+      "$r$",
+      "$a_z$"
     ],
     "correctAnswer": 0,
-    "explanation": "Die Kreisgeschwindigkeit v gibt an, wie schnell sich ein Körper auf der Kreisbahn bewegt."
+    "explanation": "Die Bahngeschwindigkeit wird mit $v$ angegeben."
   },
   {
-    "question": "Welche Formel beschreibt die Zentripetalbeschleunigung?",
+    "question": "Welche Formel gilt für die Zentripetalbeschleunigung?",
     "answers": [
       "$a_z = v \\cdot r$",
       "$a_z = \\frac{v^2}{r}$",
       "$a_z = \\frac{r}{v^2}$"
     ],
     "correctAnswer": 1,
-    "explanation": "Die Zentripetalbeschleunigung berechnet man mit $a_z = \\frac{v^2}{r}$."
+    "explanation": "Die Zentripetalbeschleunigung berechnet sich mit $a_z = \\frac{v^2}{r}$."
   },
   {
-    "question": "Forme $a_z = \\frac{v^2}{r}$ nach $v$ um.",
+    "question": "Wie lautet $v$ aus $a_z = \\frac{v^2}{r}$?",
     "answers": [
       "$v = \\sqrt{a_z \\cdot r}$",
       "$v = a_z \\cdot r^2$",
       "$v = \\frac{a_z}{r}$"
     ],
     "correctAnswer": 0,
-    "explanation": "Zuerst wird mit $r$ multipliziert: $a_z \\cdot r = v^2$. Danach zieht man die Quadratwurzel: $v = \\sqrt{a_z \\cdot r}$."
+    "explanation": "Umgestellt ergibt sich $v^2 = a_z \\cdot r$ und damit $v = \\sqrt{a_z \\cdot r}$."
   },
   {
-    "question": "Forme $a_z = \\frac{v^2}{r}$ nach $r$ um.",
+    "question": "Wie lautet $r$ aus $a_z = \\frac{v^2}{r}$?",
     "answers": [
       "$r = \\frac{v}{a_z^2}$",
       "$r = a_z \\cdot v^2$",
       "$r = \\frac{v^2}{a_z}$"
     ],
     "correctAnswer": 2,
-    "explanation": "Multipliziert man mit $r$ und teilt anschließend durch $a_z$, erhält man $r = \\frac{v^2}{a_z}$."
+    "explanation": "Nach $r$ umgestellt lautet die Formel $r = \\frac{v^2}{a_z}$."
   },
   {
-    "question": "Was bewirkt eine größere Kreisgeschwindigkeit bei gleichbleibendem Radius?",
+    "question": "Wie verändert sich $a_z$, wenn $v$ größer wird?",
     "answers": [
-      "Die Zentripetalbeschleunigung wird kleiner.",
-      "Die Zentripetalbeschleunigung wird größer.",
-      "Die Zentripetalbeschleunigung bleibt immer gleich."
+      "$a_z$ wird kleiner.",
+      "$a_z$ wird größer.",
+      "$a_z$ bleibt gleich."
     ],
     "correctAnswer": 1,
-    "explanation": "Da $a_z$ vom Quadrat der Geschwindigkeit abhängt, wird die Zentripetalbeschleunigung bei größerem $v$ größer."
+    "explanation": "Da $a_z$ proportional zu $v^2$ ist, nimmt $a_z$ bei größerem $v$ zu."
   },
   {
-    "question": "Welche Aussage über den Radius ist richtig?",
+    "question": "Wie verändert sich $a_z$, wenn $r$ größer wird?",
     "answers": [
-      "Bei gleicher Geschwindigkeit führt ein größerer Radius zu einer kleineren Zentripetalbeschleunigung.",
-      "Der Radius hat keinen Einfluss auf die Zentripetalbeschleunigung.",
-      "Bei gleicher Geschwindigkeit führt ein größerer Radius zu einer größeren Zentripetalbeschleunigung."
+      "$a_z$ wird kleiner.",
+      "$a_z$ wird größer.",
+      "$a_z$ bleibt gleich."
     ],
     "correctAnswer": 0,
-    "explanation": "Nach $a_z = \\frac{v^2}{r}$ wird die Zentripetalbeschleunigung bei größerem Radius kleiner."
+    "explanation": "Da $r$ im Nenner steht, wird $a_z$ bei größerem Radius kleiner."
   },
   {
-    "question": "Ein Körper bewegt sich mit $v = 4\\,\\text{m/s}$ auf einer Kreisbahn mit $r = 2\\,\\text{m}$. Wie groß ist $a_z$?",
+    "question": "Gegeben: $v = 4\\,\\text{m/s}$ und $r = 2\\,\\text{m}$. Berechne $a_z$.",
     "answers": [
       "$2\\,\\text{m/s}^2$",
       "$4\\,\\text{m/s}^2$",
       "$8\\,\\text{m/s}^2$"
     ],
     "correctAnswer": 2,
-    "explanation": "Es gilt $a_z = \\frac{v^2}{r} = \\frac{4^2}{2} = \\frac{16}{2} = 8\\,\\text{m/s}^2$."
+    "explanation": "$a_z = \\frac{v^2}{r} = \\frac{4^2}{2} = 8\\,\\text{m/s}^2$."
   },
   {
-    "question": "Welche Formel gilt für die Kreisgeschwindigkeit bei einer Umlaufzeit $T$ und einem Radius $r$?",
+    "question": "Welche Formel gilt für $v$?",
     "answers": [
       "$v = \\frac{2\\pi r}{T}$",
       "$v = 2\\pi r \\cdot T$",
       "$v = \\frac{T}{2\\pi r}$"
     ],
     "correctAnswer": 0,
-    "explanation": "In einer Umlaufzeit wird der Kreisumfang $2\\pi r$ zurückgelegt. Deshalb gilt $v = \\frac{2\\pi r}{T}$."
+    "explanation": "Die Geschwindigkeit ist Strecke geteilt durch Zeit: $v = \\frac{2\\pi r}{T}$."
   },
   {
-    "question": "Forme $v = \\frac{2\\pi r}{T}$ nach $T$ um.",
+    "question": "Wie lautet $T$ aus $v = \\frac{2\\pi r}{T}$?",
     "answers": [
       "$T = \\frac{2\\pi r}{v}$",
       "$T = \\frac{v}{2\\pi r}$",
       "$T = 2\\pi r \\cdot v$"
     ],
     "correctAnswer": 0,
-    "explanation": "Multipliziert man die Gleichung mit $T$ und teilt durch $v$, erhält man $T = \\frac{2\\pi r}{v}$."
+    "explanation": "Nach $T$ umgestellt ergibt sich $T = \\frac{2\\pi r}{v}$."
   },
   {
-    "question": "Ein Körper legt bei einer Kreisbewegung in einer Umlaufzeit den Kreisumfang zurück. Welche Aussage ist richtig?",
+    "question": "Welche Formel beschreibt den Kreisumfang?",
     "answers": [
-      "Der Kreisumfang ist $\\pi r$.",
-      "Der Kreisumfang ist $2\\pi r$.",
-      "Der Kreisumfang ist $r^2$."
+      "$U = \\pi r$",
+      "$U = 2\\pi r$",
+      "$U = r^2$"
     ],
     "correctAnswer": 1,
-    "explanation": "Der Umfang eines Kreises mit Radius $r$ beträgt $U = 2\\pi r$."
+    "explanation": "Der Kreisumfang lautet $U = 2\\pi r$."
   }
 ]
